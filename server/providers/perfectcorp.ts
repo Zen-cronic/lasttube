@@ -5,13 +5,12 @@
 // whole lifecycle is bounded and failure-safe: a stuck task returns 'failed',
 // it never spins forever.
 
-import type {
-  FoundationEffect,
-  LipColorEffect,
-  MakeupEffect,
-  VtoRender,
-} from '../../shared/types.ts';
+import type { MakeupEffect, VtoRender } from '../../shared/types.ts';
 import { ProviderError, redactSecrets } from '../redact.ts';
+
+// Effect constructors live in shared/effects.ts (used by client and server);
+// re-exported here so provider consumers and tests have one import surface.
+export { foundationEffect, lipColorEffect } from '../../shared/effects.ts';
 
 export const RESULT_EXPIRY_NOTE =
   'Rendered by Perfect Corp Makeup VTO. Result URLs are signed and expire (~2 hours); persisted copies are downloaded, not hotlinked.';
@@ -39,33 +38,6 @@ function headers(apiKey: string): Record<string, string> {
 
 function base(opts: PerfectCorpClientOptions): string {
   return opts.baseUrl ?? 'https://yce-api-01.makeupar.com';
-}
-
-/** Convenience constructor for a lip-color effect payload. */
-export function lipColorEffect(
-  hex: string,
-  texture: LipColorEffect['palettes'][number]['texture'] = 'matte',
-  colorIntensity = 80,
-): LipColorEffect {
-  const palette: LipColorEffect['palettes'][number] = { color: hex, texture, colorIntensity };
-  if (texture === 'gloss' || texture === 'sheer') {
-    palette.gloss = 60;
-    palette.transparencyIntensity = 40;
-  }
-  return {
-    category: 'lip_color',
-    shape: { name: 'original' },
-    palettes: [palette],
-    style: { type: 'full' },
-  };
-}
-
-/** Convenience constructor for a foundation effect payload. */
-export function foundationEffect(hex: string, colorIntensity = 70): FoundationEffect {
-  return {
-    category: 'foundation',
-    palettes: [{ color: hex, colorIntensity, glowIntensity: 30, coverageIntensity: 60 }],
-  };
 }
 
 async function requestJson(
