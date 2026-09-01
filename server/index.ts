@@ -7,6 +7,7 @@ import { getPerfectCorpConfig, getSerpApiConfig } from './env.ts';
 import { fixtureSearchResultSet, fixtureVtoRender } from './fixtures.ts';
 import { runMakeupVto } from './providers/perfectcorp.ts';
 import { searchShopping } from './providers/serpapi.ts';
+import { estimateShadeFromUrl } from './shadeEstimate.ts';
 import type { MakeupEffect, SearchResultSet, VtoRender } from '../shared/types.ts';
 
 const app = new Hono();
@@ -46,6 +47,18 @@ app.get('/api/search', async (c) => {
   }
   const result = await searchShopping(q, config);
   return c.json(result, result.providerStatus === 'failed' ? 502 : 200);
+});
+
+// Evidence-derived shade estimation from a merchant product image.
+app.get('/api/shade-estimate', async (c) => {
+  const url = c.req.query('url') ?? '';
+  if (!url) return c.json({ error: 'missing url parameter' }, 400);
+  try {
+    const estimate = await estimateShadeFromUrl(url);
+    return c.json(estimate);
+  } catch (err) {
+    return c.json({ error: (err as Error).message }, 422);
+  }
 });
 
 // Makeup VTO render. Body: { srcFileUrl, effects, mode? }
