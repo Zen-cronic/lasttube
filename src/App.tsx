@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { DemoComparisonBundle } from '../server/fixtures.ts';
 import { SAMPLE_FACE_URL, foundationEffect, lipColorEffect } from '../shared/effects.ts';
 import type { CandidateRecord, SearchResultSet, VtoRender } from '../shared/types.ts';
@@ -54,15 +54,23 @@ export default function App() {
       .catch(() => setHealth(null));
   }, []);
 
+  // Sequence guard so a slow earlier hunt (e.g. a live search still in flight
+  // when the user switches to the labeled demo recording) can never overwrite
+  // a later result with data from the wrong source.
+  const searchSeq = useRef(0);
+
   const runSearch = useCallback(async (q: string, source: DataSource) => {
+    const seq = ++searchSeq.current;
     setSearching(true);
     try {
       const params = new URLSearchParams({ q });
       if (source === 'fixture') params.set('mode', 'fixture');
       const res = await fetch(`/api/search?${params.toString()}`);
       const body = (await res.json()) as SearchResultSet;
+      if (seq !== searchSeq.current) return;
       setSearch(body);
     } catch (err) {
+      if (seq !== searchSeq.current) return;
       setSearch({
         providerStatus: 'failed',
         provider: 'serpapi',
@@ -73,7 +81,7 @@ export default function App() {
         error: `Could not reach the LastTube API: ${(err as Error).message}`,
       });
     } finally {
-      setSearching(false);
+      if (seq === searchSeq.current) setSearching(false);
     }
   }, []);
 
