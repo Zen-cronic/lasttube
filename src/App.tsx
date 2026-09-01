@@ -1,4 +1,6 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useState, type CSSProperties } from 'react';
+import type { CandidateRecord, SearchResultSet } from '../shared/types.ts';
+import { EvidencePanel, type DataSource } from './components/EvidencePanel.tsx';
 import { LostShadePicker } from './components/LostShadePicker.tsx';
 import { ProviderStatusBadge, type BadgeStatus } from './components/ProviderStatusBadge.tsx';
 import { SelfiePanel } from './components/SelfiePanel.tsx';
@@ -16,7 +18,14 @@ function providerBadge(value: string | undefined): BadgeStatus {
 export default function App() {
   const [health, setHealth] = useState<Health | null>(null);
   const [lost, setLost] = useState<LostShade | null>(null);
+
+  // Act 2 state
   const [hunting, setHunting] = useState(false);
+  const [query, setQuery] = useState('');
+  const [dataSource, setDataSource] = useState<DataSource>('live');
+  const [searching, setSearching] = useState(false);
+  const [search, setSearch] = useState<SearchResultSet | null>(null);
+  const [shortlist, setShortlist] = useState<CandidateRecord[]>([]);
 
   useEffect(() => {
     fetch('/api/health')
@@ -24,6 +33,51 @@ export default function App() {
       .then(setHealth)
       .catch(() => setHealth(null));
   }, []);
+
+  const runSearch = useCallback(async (q: string, source: DataSource) => {
+    setSearching(true);
+    try {
+      const params = new URLSearchParams({ q });
+      if (source === 'fixture') params.set('mode', 'fixture');
+      const res = await fetch(`/api/search?${params.toString()}`);
+      const body = (await res.json()) as SearchResultSet;
+      setSearch(body);
+    } catch (err) {
+      setSearch({
+        providerStatus: 'failed',
+        provider: 'serpapi',
+        query: q,
+        observedAt: new Date().toISOString(),
+        candidates: [],
+        warnings: [],
+        error: `Could not reach the LastTube API: ${(err as Error).message}`,
+      });
+    } finally {
+      setSearching(false);
+    }
+  }, []);
+
+  const selectLost = (shade: LostShade) => {
+    setLost(shade);
+    setQuery(shade.defaultQuery);
+    setHunting(false);
+    setSearch(null);
+    setShortlist([]);
+  };
+
+  const startHunt = () => {
+    if (!lost) return;
+    setHunting(true);
+    void runSearch(query || lost.defaultQuery, dataSource);
+  };
+
+  const toggleShortlist = (c: CandidateRecord) => {
+    setShortlist((prev) => {
+      if (prev.some((p) => p.id === c.id)) return prev.filter((p) => p.id !== c.id);
+      if (prev.length >= 3) return prev;
+      return [...prev, c];
+    });
+  };
 
   // Signature element: the shade under consideration tints the interface.
   const shadeStyle = { '--shade': lost?.hex ?? '#a96a73' } as CSSProperties;
@@ -63,16 +117,11 @@ export default function App() {
           What are we replacing?
         </h2>
         <div className="two-col">
-          <LostShadePicker selected={lost} onSelect={setLost} />
+          <LostShadePicker selected={lost} onSelect={selectLost} />
           <SelfiePanel />
         </div>
         <div className="cta-row">
-          <button
-            type="button"
-            className="btn"
-            disabled={lost === null}
-            onClick={() => setHunting(true)}
-          >
+          <button type="button" className="btn" disabled={lost === null} onClick={startHunt}>
             Find living replacements
           </button>
           {lost === null && (
@@ -87,12 +136,27 @@ export default function App() {
           <h2 className="act-title" id="act2-title">
             Current, purchasable candidates
           </h2>
-          <div className="card">
-            <p className="field-note">
-              Candidate discovery wiring lands in the next build packet — the SerpApi client and
-              its live proof are already in place (see proofs/serpapi/).
+          <EvidencePanel
+            result={search}
+            searching={searching}
+            query={query}
+            dataSource={dataSource}
+            shortlist={shortlist}
+            onQueryChange={setQuery}
+            onDataSourceChange={(s) => {
+              setDataSource(s);
+              void runSearch(query, s);
+            }}
+            onRerun={() => void runSearch(query, dataSource)}
+            onToggleShortlist={toggleShortlist}
+          />
+          {shortlist.length > 0 && (
+            <p className="field-note" style={{ marginTop: 12 }}>
+              {shortlist.length} candidate{shortlist.length > 1 ? 's' : ''} shortlisted — the
+              on-face comparison stage lands in the next build packet (the Perfect Corp client and
+              its live proof are already in place, see proofs/perfectcorp/).
             </p>
-          </div>
+          )}
         </section>
       )}
 
