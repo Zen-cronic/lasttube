@@ -4,7 +4,7 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { getPerfectCorpConfig, getSerpApiConfig } from './env.ts';
-import { fixtureSearchResultSet, fixtureVtoRender } from './fixtures.ts';
+import { demoComparisonBundle, fixtureSearchResultSet, fixtureVtoRender } from './fixtures.ts';
 import { runMakeupVto } from './providers/perfectcorp.ts';
 import { searchShopping } from './providers/serpapi.ts';
 import { estimateShadeFromUrl } from './shadeEstimate.ts';
@@ -47,6 +47,15 @@ app.get('/api/search', async (c) => {
   }
   const result = await searchShopping(q, config);
   return c.json(result, result.providerStatus === 'failed' ? 502 : 200);
+});
+
+// Deterministic demo replay: recorded real lifecycles, always labeled fixture.
+app.get('/api/demo/comparison-bundle', (c) => {
+  try {
+    return c.json(demoComparisonBundle());
+  } catch {
+    return c.json({ error: 'demo bundle is not recorded in this checkout' }, 404);
+  }
 });
 
 // Evidence-derived shade estimation from a merchant product image.

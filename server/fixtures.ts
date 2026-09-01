@@ -46,6 +46,78 @@ interface PerfectCorpFixtureFile {
   localImagePath: string;
 }
 
+export interface DemoComparisonBundleFile {
+  fixture: true;
+  label: string;
+  recordedAt: string;
+  lost: { hex: string; note: string; localImagePath: string };
+  comparisons: Array<{
+    candidateId: string;
+    title: string;
+    estimate: { hex: string; coverage: number; method: string };
+    render: { taskId: string; pollCount: number; localImagePath: string };
+  }>;
+}
+
+export interface DemoComparisonBundle {
+  fixture: true;
+  label: string;
+  recordedAt: string;
+  lost: { hex: string; note: string; render: VtoRender };
+  comparisons: Array<{
+    candidateId: string;
+    title: string;
+    estimateHex: string;
+    estimateMethod: string;
+    render: VtoRender;
+  }>;
+}
+
+function fixtureRender(
+  recordedAt: string,
+  taskId: string | null,
+  pollCount: number,
+  localImagePath: string,
+): VtoRender {
+  return {
+    providerStatus: 'fixture',
+    provider: 'perfectcorp',
+    taskId,
+    imageUrl: localImagePath,
+    startedAt: recordedAt,
+    completedAt: recordedAt,
+    pollCount,
+    expiryNote: `${FIXTURE_LABEL} ${RESULT_EXPIRY_NOTE}`,
+  };
+}
+
+/** Deterministic demo replay: recorded real lifecycles, stamped fixture. */
+export function demoComparisonBundle(): DemoComparisonBundle {
+  const fix = readFixture<DemoComparisonBundleFile>('demo-comparisons.json');
+  return {
+    fixture: true,
+    label: fix.label,
+    recordedAt: fix.recordedAt,
+    lost: {
+      hex: fix.lost.hex,
+      note: fix.lost.note,
+      render: fixtureRender(fix.recordedAt, null, 0, fix.lost.localImagePath),
+    },
+    comparisons: fix.comparisons.map((c) => ({
+      candidateId: c.candidateId,
+      title: c.title,
+      estimateHex: c.estimate.hex,
+      estimateMethod: c.estimate.method,
+      render: fixtureRender(
+        fix.recordedAt,
+        c.render.taskId,
+        c.render.pollCount,
+        c.render.localImagePath,
+      ),
+    })),
+  };
+}
+
 /** VTO render pointing at the locally stored, clearly-labeled sample render. */
 export function fixtureVtoRender(): VtoRender {
   const fix = readFixture<PerfectCorpFixtureFile>('perfectcorp-makeup-vto.json');

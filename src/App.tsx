@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
+import type { DemoComparisonBundle } from '../server/fixtures.ts';
 import { SAMPLE_FACE_URL, foundationEffect, lipColorEffect } from '../shared/effects.ts';
 import type { CandidateRecord, SearchResultSet, VtoRender } from '../shared/types.ts';
 import { EvidencePanel, type DataSource } from './components/EvidencePanel.tsx';
@@ -96,7 +97,8 @@ export default function App() {
     if (!lost || shortlist.length === 0) return;
     setComparing(true);
     setActiveId(null);
-    const initial: CandidateComparison[] = shortlist.map((c) => ({
+
+    const base = (c: CandidateRecord): CandidateComparison => ({
       id: c.id,
       title: c.title,
       merchant: c.merchant,
@@ -108,8 +110,38 @@ export default function App() {
       estimateError: null,
       render: null,
       rendering: false,
-    }));
-    setComparisons(initial);
+    });
+
+    if (dataSource === 'fixture') {
+      // Deterministic demo replay: recorded REAL lifecycles, labeled fixture.
+      setLostRendering(false);
+      try {
+        const res = await fetch('/api/demo/comparison-bundle');
+        if (!res.ok) throw new Error('demo bundle not recorded');
+        const bundle = (await res.json()) as DemoComparisonBundle;
+        setLostRender(bundle.lost.render);
+        const byId = new Map(bundle.comparisons.map((b) => [b.candidateId, b]));
+        const mapped = shortlist.map((c) => {
+          const rec = byId.get(c.id);
+          if (!rec) {
+            return {
+              ...base(c),
+              estimateError: 'not in the demo recording — switch to live mode for this one',
+            };
+          }
+          return { ...base(c), estimateHex: rec.estimateHex, render: rec.render };
+        });
+        setComparisons(mapped);
+        setActiveId(mapped.find((m) => m.render !== null)?.id ?? null);
+      } catch (err) {
+        setComparisons(
+          shortlist.map((c) => ({ ...base(c), estimateError: (err as Error).message })),
+        );
+      }
+      return;
+    }
+
+    setComparisons(shortlist.map(base));
 
     // Render what they remember: the lost shade on the sample face.
     setLostRendering(true);

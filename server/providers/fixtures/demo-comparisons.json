@@ -1,0 +1,54 @@
+{
+  "fixture": true,
+  "label": "FIXTURE — recordings of real, receipted Perfect Corp makeup-vto lifecycles and merchant-image shade estimates; replayed by demo mode with visible labels.",
+  "recordedAt": "2026-09-01T02:13:21.230Z",
+  "lost": {
+    "hex": "#A96A73",
+    "note": "Lost-shade render recorded during the packet-1 live proof.",
+    "localImagePath": "/fixtures/vto-sample-render.jpg"
+  },
+  "comparisons": [
+    {
+      "candidateId": "3718473068890078758",
+      "title": "Anastasia Beverly Hills Lip Velvet",
+      "estimate": {
+        "hex": "#bb727a",
+        "coverage": 0.3971354166666667,
+        "method": "Dominant saturated color of the merchant product image (background pixels excluded); an estimate, not a lab match."
+      },
+      "render": {
+        "taskId": "vPA7a4e_rXpKox2m2ZFsoOZrK39TKnT8oM3s1t8PvSj498tLIshwV3DLBd5qzgZ0",
+        "pollCount": 4,
+        "localImagePath": "/fixtures/vto-demo-3718473068890078758.jpg"
+      }
+    },
+    {
+      "candidateId": "11875537339122911206",
+      "title": "Ngozi Mauve Rose Matte Lipstick",
+      "estimate": {
+        "hex": "#974d47",
+        "coverage": 0.02488425925925926,
+        "method": "Dominant saturated color of the merchant product image (background pixels excluded); an estimate, not a lab match."
+      },
+      "render": {
+        "taskId": "I4mq9aJbZQryvTYPeear1i4RLyKDJMeSC4zpPkloaWYht5EyVxjXgsYSy71xA_3o",
+        "pollCount": 5,
+        "localImagePath": "/fixtures/vto-demo-11875537339122911206.jpg"
+      }
+    },
+    {
+      "candidateId": "5488601639792751465",
+      "title": "NYX Professional Makeup Fat Matte Lipstick",
+      "estimate": {
+        "hex": "#a23e40",
+        "coverage": 0.35199175824175827,
+        "method": "Dominant saturated color of the merchant product image (background pixels excluded); an estimate, not a lab match."
+      },
+      "render": {
+        "taskId": "VdQOdFPr-bOA-C8JSLHEfE-R2ZKC_2gWSStrP5i1YLlV0ozKJVaUlPuk61Xr-f95",
+        "pollCount": 4,
+        "localImagePath": "/fixtures/vto-demo-5488601639792751465.jpg"
+      }
+    }
+  ]
+}
