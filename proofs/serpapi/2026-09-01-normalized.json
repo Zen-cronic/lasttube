@@ -1,0 +1,849 @@
+{
+  "providerStatus": "live",
+  "provider": "serpapi",
+  "query": "mauve rose matte lipstick",
+  "observedAt": "2026-09-01T01:52:38.961Z",
+  "candidates": [
+    {
+      "id": "3718473068890078758",
+      "title": "Anastasia Beverly Hills Lip Velvet",
+      "merchant": "Sephora",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:3718473068890078758,productid:16469277566828417655,headlineOfferDocid:14037340483897598926,imageDocid:12542202147392333398,rds:PC_6883051569397126677|PROD_PC_6883051569397126677,gpcid:6883051569397126677,mid:576462770259146320,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:3718473068890078758,productid:16469277566828417655,headlineOfferDocid:14037340483897598926,imageDocid:12542202147392333398,rds:PC_6883051569397126677|PROD_PC_6883051569397126677,gpcid:6883051569397126677,mid:576462770259146320,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$28.00",
+        "value": 28,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $50+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSOwMiHqiRfFZof8k9izD96k2OYT9G0Dg0_4a39vHlPyrMhTQAyBp1ckbYBb0hhmqrTxHtlAfVHWdpaqomyq51a3fwWPUDPWw",
+      "position": 1,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "11875537339122911206",
+      "title": "Ngozi Mauve Rose Matte Lipstick",
+      "merchant": "nnennacosmetics.com",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:11875537339122911206,productid:8496946285149361067,headlineOfferDocid:4833376213035798560,imageDocid:2072819593498776152,gpcid:11195417079246274164,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:11875537339122911206,productid:8496946285149361067,headlineOfferDocid:4833376213035798560,imageDocid:2072819593498776152,gpcid:11195417079246274164,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$30.00",
+        "value": 30,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRsB7oWI5paUe-dD6rtgUsSECcIJNUJ7rCbRSrpPQ0xP9relvrFMEi9a4PpDmEqpyPeKaSfUXKdbsI8GhqD-KIM2WIsA8qIrmnAP20i4LnxRIHXCF8zSU_2PQ",
+      "position": 2,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "5488601639792751465",
+      "title": "NYX Professional Makeup Fat Matte Lipstick",
+      "merchant": "NYX Professional Makeup",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5488601639792751465,productid:8080224082283226962,headlineOfferDocid:11699592081473296849,imageDocid:7249042900344916876,rds:PC_12995633304376156534|PROD_PC_12995633304376156534,gpcid:12995633304376156534,mid:576462543211623971,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5488601639792751465,productid:8080224082283226962,headlineOfferDocid:11699592081473296849,imageDocid:7249042900344916876,rds:PC_12995633304376156534|PROD_PC_12995633304376156534,gpcid:12995633304376156534,mid:576462543211623971,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$12.00",
+        "value": 12,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $30+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRQHJotNjxVqUCfmpE419YpVN_0c1D8sFzNydyRaKArbL8mO8xbqZvhI1iUixAuDQfQd-74kFCv5j9o74yEeehUoM-C_gsKStMUj1nFEfqrjgYfU9ypeq4jBQ",
+      "position": 3,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "199600543141469530",
+      "title": "Bobbi Brown Luxe Cashmere Matte Lipstick",
+      "merchant": "Bobbi Brown Cosmetics",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:199600543141469530,productid:13685583712418037836,headlineOfferDocid:2334001138281566554,imageDocid:13600674539488690621,rds:PC_8572654415537195379|PROD_PC_8572654415537195379,gpcid:8572654415537195379,mid:576462839504115647,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:199600543141469530,productid:13685583712418037836,headlineOfferDocid:2334001138281566554,imageDocid:13600674539488690621,rds:PC_8572654415537195379|PROD_PC_8572654415537195379,gpcid:8572654415537195379,mid:576462839504115647,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$33.75",
+        "value": 33.75,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "25% OFF · Free delivery on $65+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTpmyKsWAyiKBAu0r82cdzSuGqCOY-KWmbnoVjydvcsRP-iuF85JgZtBi5bym9HElbSdiYQhjykL9YX4jrQajDp8yyO62kz2mKbpCCMNRw1rUeXrJEhVBgdyg",
+      "position": 4,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "12506356431716689955",
+      "title": "Laura Mercier Caviar Smoothing Matte Lipstick",
+      "merchant": "Selfridges",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:12506356431716689955,productid:2725032677625342801,headlineOfferDocid:16984195953254265998,imageDocid:5506285919497702525,rds:PC_14894430969502639541|PROD_PC_14894430969502639541,gpcid:14894430969502639541,mid:576462783329494186,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:12506356431716689955,productid:2725032677625342801,headlineOfferDocid:16984195953254265998,imageDocid:5506285919497702525,rds:PC_14894430969502639541|PROD_PC_14894430969502639541,gpcid:14894430969502639541,mid:576462783329494186,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$43.50",
+        "value": 43.5,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTtwoNyLUY_8C7x5dWATgzngogbsXCoh56GzMcLpntwNF5GumXiRJqn9xOrTUako9PF-4jyDCeyy8t3vOEZynvm1nJ1JLirxbtNiqEnqbgsUh3PhIN6EG4souA",
+      "position": 5,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "5911382422757647952",
+      "title": "Farmasi Matte Liquid Lipstick",
+      "merchant": "farmasius.com",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5911382422757647952,productid:8683667927780154693,headlineOfferDocid:1611745711536984767,imageDocid:14046310853253106176,rds:PC_5309339247507585785|PROD_PC_5309339247507585785,gpcid:5309339247507585785,mid:576462781682978361,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5911382422757647952,productid:8683667927780154693,headlineOfferDocid:1611745711536984767,imageDocid:14046310853253106176,rds:PC_5309339247507585785|PROD_PC_5309339247507585785,gpcid:5309339247507585785,mid:576462781682978361,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$21.90",
+        "value": 21.9,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQcCavssAQGSBxhEJbjM6AhZHx2c4EIVgPQIYwk0Aktc5eu9XBP57BNdhQSxTqkPstFN9MmEQYCGF3Tag9HeYNZonwMTX-J",
+      "position": 6,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "9377385914028853515",
+      "title": "Elizabeth Arden Lip Color Lipstick",
+      "merchant": "Elizabeth Arden",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:9377385914028853515,productid:3261805431919012979,headlineOfferDocid:14018828637004113693,imageDocid:7234581022782200052,rds:PC_942745804186249827|PROD_PC_942745804186249827,gpcid:942745804186249827,mid:576462670198903827,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:9377385914028853515,productid:3261805431919012979,headlineOfferDocid:14018828637004113693,imageDocid:7234581022782200052,rds:PC_942745804186249827|PROD_PC_942745804186249827,gpcid:942745804186249827,mid:576462670198903827,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$32.00",
+        "value": 32,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $50+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcR9Z0EaBRPYuBj13NmoliFZ2gtRvHcHuybEAJ6QO9saQDppnycJKBmjJcSREgVBgF7sY3yUnfWSBeIMgFMNQR4hmFP0r9-B4Pi6BJDbsF00HmeKLGLQfxIWjQ",
+      "position": 7,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "16338744813169669368",
+      "title": "Wet n Wild Mega Last Lip Matte",
+      "merchant": "CVS Pharmacy",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:16338744813169669368,productid:9530269805656386932,headlineOfferDocid:7216530768584523573,imageDocid:5784763455235994698,rds:PC_15067770444105471798|PROD_PC_15067770444105471798,gpcid:15067770444105471798,mid:576462823129451638,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:16338744813169669368,productid:9530269805656386932,headlineOfferDocid:7216530768584523573,imageDocid:5784763455235994698,rds:PC_15067770444105471798|PROD_PC_15067770444105471798,gpcid:15067770444105471798,mid:576462823129451638,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$3.49",
+        "value": 3.49,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $35+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTopUVH3aa-hwWQxhFLv1vsOukLZRjLB36PpshOmDizp4epBagVP5kPhYXY2blIQIxuQzTzxFEBSyqidih7OLzN98EFRYwCy4Ifv7wiG_Kfp3PffZc0sdYiPg",
+      "position": 8,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "15253832371434769985",
+      "title": "Milani Color Statement Lipstick Matte",
+      "merchant": "Target",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:15253832371434769985,productid:6729677485263347710,headlineOfferDocid:14761577441469596026,imageDocid:10817855124615440312,rds:PC_11981916189330632065|PROD_PC_11981916189330632065,gpcid:11981916189330632065,mid:576462789323453932,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:15253832371434769985,productid:6729677485263347710,headlineOfferDocid:14761577441469596026,imageDocid:10817855124615440312,rds:PC_11981916189330632065|PROD_PC_11981916189330632065,gpcid:11981916189330632065,mid:576462789323453932,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$6.49",
+        "value": 6.49,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $100+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQHTU7Ct1JeAs9vi7CV6KRwiEtX3xo2O8i8ozIYVBT_1M4ibcUqaWH5wp3zbeCAlOxUEc9yC-4LUMO6AzZ99Q40IJWfgvM1zg",
+      "position": 9,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "6556297424593341510",
+      "title": "Anastasia Beverly Hills Matte & Satin Lipstick",
+      "merchant": "Beautylish",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:6556297424593341510,productid:14602899207057933028,headlineOfferDocid:4329295793376731666,imageDocid:3108508044342016875,rds:PC_310462711961308400|PROD_PC_310462711961308400,gpcid:310462711961308400,mid:576462343408001096,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:6556297424593341510,productid:14602899207057933028,headlineOfferDocid:4329295793376731666,imageDocid:3108508044342016875,rds:PC_310462711961308400|PROD_PC_310462711961308400,gpcid:310462711961308400,mid:576462343408001096,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$26.00",
+        "value": 26,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $35+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSrNXFv2EKa2ifitxSlztpvark2OaR4SjnUSAf_Fmliz0Eo4qSNL7J0RWtF6KCzlrrHKmH4K5JTsJhtztxvq5t8eUWVU4rQzQ",
+      "position": 10,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "2758308699958914403",
+      "title": "Pink Rosette Matte Liquid Lipstick | Rosy Mauve Lip Color for Women, Long-Lasting, Waterproof, Long Wear, Vegan, Gluten Free, Velvety Finish",
+      "merchant": "Etsy - Aromi",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:2758308699958914403,headlineOfferDocid:2758308699958914403,imageDocid:2086736661955385871,rds:LO_2758308699958914403|PROD_LO_2758308699958914403,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:2758308699958914403,headlineOfferDocid:2758308699958914403,imageDocid:2086736661955385871,rds:LO_2758308699958914403|PROD_LO_2758308699958914403,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$17.00",
+        "value": 17,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQAYElYm7FRq4RzPOs4kR0UDNFZpj7xRyplKNvOg7d6xtbbmuOjkKa4Cl4j0RJ60ff8o4506GKOqi2iptMDuoU-3zAK-bOeC66k9WeFP8EvOdvd15Hyuacx",
+      "position": 11,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "4977975232393785568",
+      "title": "L'Oreal Paris Colour Riche Intense Volume Matte Lipstick",
+      "merchant": "Walmart",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4977975232393785568,productid:4144062475484553897,headlineOfferDocid:15091864103889969857,imageDocid:4021841003146859377,rds:PC_4724610203857309666|PROD_PC_4724610203857309666,gpcid:4724610203857309666,mid:576462401970804900,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4977975232393785568,productid:4144062475484553897,headlineOfferDocid:15091864103889969857,imageDocid:4021841003146859377,rds:PC_4724610203857309666|PROD_PC_4724610203857309666,gpcid:4724610203857309666,mid:576462401970804900,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$9.97",
+        "value": 9.97,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSv8Bv8K8JupdpW2T4rwhLPrj3S89FyMiVqVKBUhyf75qBg74z4wyntpi0UYmOBsYIaYpZup64BTsV11C4jSW7i76ymqOuGFmAc6PcKF4-Y2Tx0nEE7GspU",
+      "position": 12,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "14894134836902635571",
+      "title": "PAT McGRATH LABS LiquiLUST Legendary Wear Matte Lipstick",
+      "merchant": "Pat McGrath Labs",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:14894134836902635571,productid:8735968257751372310,headlineOfferDocid:12561864687561235638,imageDocid:10582369941654069586,rds:PC_306080110093607871|PROD_PC_306080110093607871,gpcid:306080110093607871,mid:576462704966384110,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:14894134836902635571,productid:8735968257751372310,headlineOfferDocid:12561864687561235638,imageDocid:10582369941654069586,rds:PC_306080110093607871|PROD_PC_306080110093607871,gpcid:306080110093607871,mid:576462704966384110,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$34.00",
+        "value": 34,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRQNtdzODTiRp3wwlESQAI_ArTfIzJHTLraTwh0rQcTvUhYBQusjiAwkmrJXRKDA1aaHvhzl-kUqfen307udS2Ez5a3pdDbmwCM3pDgMKP5EJtxMOdmWc6e0mM",
+      "position": 13,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "15679304116072736108",
+      "title": "Thrive Causemetics Makeup Thrive Causemetics Empowermatte Precision Lipstick Crayon",
+      "merchant": "thrivecausemetics.com",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:15679304116072736108,productid:3942039517093320590,headlineOfferDocid:5406657609813585423,imageDocid:12529218418581951144,rds:PC_14629933187863074397|PROD_PC_14629933187863074397,gpcid:14629933187863074397,mid:576462484140354015,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:15679304116072736108,productid:3942039517093320590,headlineOfferDocid:5406657609813585423,imageDocid:12529218418581951144,rds:PC_14629933187863074397|PROD_PC_14629933187863074397,gpcid:14629933187863074397,mid:576462484140354015,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$28.00",
+        "value": 28,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $35+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcT4MDy7IQbFOu31_18A30G6aT_ZY3hLMpR5bUjIp100o8mlcJcgLrdhdP93om0ULx9TIUYdxeSTNB0_yjsHFGdIrQEFgLRfmt34d3ZKsrtwniTkzdA6hZiA",
+      "position": 14,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "349068732969567728",
+      "title": "Lauren Brooke Cosmetiques Lip Colour",
+      "merchant": "Lauren Brooke Co.",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:349068732969567728,productid:2866062752805161873,headlineOfferDocid:366478831690450030,imageDocid:6207553781167974494,rds:PC_16306311884167363613|PROD_PC_16306311884167363613,gpcid:16306311884167363613,mid:576462401398304176,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:349068732969567728,productid:2866062752805161873,headlineOfferDocid:366478831690450030,imageDocid:6207553781167974494,rds:PC_16306311884167363613|PROD_PC_16306311884167363613,gpcid:16306311884167363613,mid:576462401398304176,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$17.50",
+        "value": 17.5,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcT-JVMNIYbCvo4olzQLz_LNpxOaAt-3jX3NfHAhqBC5xb8fTHZFvK8QxfBAQFj3VwjicT-LRc7029VMTcQQX6GQPeNT2Kp1s7K_dnOMctfmXn0ft7bxApcLaA",
+      "position": 15,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "3458064770094394752",
+      "title": "Senna Cosmetics Matte Fixation Lipstick",
+      "merchant": "LovelySkin.com",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:3458064770094394752,productid:13823443936553365363,headlineOfferDocid:8368100648389911300,imageDocid:8156100346614054219,rds:PC_1595114462102942421|PROD_PC_1595114462102942421,gpcid:1595114462102942421,mid:576462327315762426,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:3458064770094394752,productid:13823443936553365363,headlineOfferDocid:8368100648389911300,imageDocid:8156100346614054219,rds:PC_1595114462102942421|PROD_PC_1595114462102942421,gpcid:1595114462102942421,mid:576462327315762426,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$20.80",
+        "value": 20.8,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTWOgpAg7YOFPO2myjfnCWCuZkQoqwrRv4SPDFpBO1TVYRaH4iQabNuD7VXuNxN4CWghKOd3WwQifhwQ9QeGKRGFu-77Omy74u9DKvu__rksfuBOQL2lIy5",
+      "position": 16,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "4891653863256496342",
+      "title": "Juvia's Place The Nude Velvety Matte Lipstick",
+      "merchant": "Ulta Beauty",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4891653863256496342,productid:5693642740948766541,headlineOfferDocid:10956278689753987632,imageDocid:12269854630710123206,rds:PC_8062588864199018580|PROD_PC_8062588864199018580,gpcid:8062588864199018580,mid:576462466815132776,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4891653863256496342,productid:5693642740948766541,headlineOfferDocid:10956278689753987632,imageDocid:12269854630710123206,rds:PC_8062588864199018580|PROD_PC_8062588864199018580,gpcid:8062588864199018580,mid:576462466815132776,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$15.00",
+        "value": 15,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $35+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcR_VCBjQG15Mij7rcOK0IoE8fGGA9y6ghMqXkIEpGpuwSVqS8Pkqw9CnrZdcWgSDxClmpSOmRp1do3aGmRWi-9f7EMkqQGRYiphEB2CVmQp4FFfmc0ahmPe",
+      "position": 17,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "4662088263619595072",
+      "title": "Nars Powermatte Lipstick",
+      "merchant": "Saks Fifth Avenue",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4662088263619595072,productid:14505284834082488716,headlineOfferDocid:8190922182816382307,imageDocid:15491389572041513482,rds:PC_2692610319325206233|PROD_PC_2692610319325206233,gpcid:2692610319325206233,mid:576462852820774030,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4662088263619595072,productid:14505284834082488716,headlineOfferDocid:8190922182816382307,imageDocid:15491389572041513482,rds:PC_2692610319325206233|PROD_PC_2692610319325206233,gpcid:2692610319325206233,mid:576462852820774030,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$36.00",
+        "value": 36,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcT6pZDZf_jbrYVPkfk0vl4cL-BuEnuuyzzFCLxlvFNYHCS0hIc3rBkv5xL2tgqvfhzGjxKBOv7Snek_yYSntEhif6-VNKB7yMrUwZu0r7tjsfqnlDHjuSRm",
+      "position": 18,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "7266605766023117794",
+      "title": "fmg Glimmer Matte Lipstick",
+      "merchant": "Avon",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:7266605766023117794,productid:2991629297583485058,headlineOfferDocid:17584736485693103731,imageDocid:6102091754977847169,gpcid:14270276654158181469,mid:576462879575309760,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:7266605766023117794,productid:2991629297583485058,headlineOfferDocid:17584736485693103731,imageDocid:6102091754977847169,gpcid:14270276654158181469,mid:576462879575309760,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$11.50",
+        "value": 11.5,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "23% OFF · Free delivery on $60+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTxfMfHcSq-XYwVsDLO2VaAQ6Qwti56sxzWG74KWZphp5LK3tk16DAstMdfuNwLZcw_fyLrB1qqQ9njkXCbEmgpqgzWlHaCpeZqSDTdTrA5mE0vW7_qi_YfGQ",
+      "position": 19,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "6417161676081155765",
+      "title": "Liquid Matte Lips - Rose Mauve - LL126",
+      "merchant": "houseofcolour.com",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:6417161676081155765,headlineOfferDocid:6417161676081155765,imageDocid:890740759763608080,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:6417161676081155765,headlineOfferDocid:6417161676081155765,imageDocid:890740759763608080,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$38.57",
+        "value": 38.57,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSSEHv7_XzqhF5m-E6DKtWUEAKFchr_SoxQIpNo8ZXtrir0xyPy4C_yFB8pyhZSNJb-iJqL7tHbuSqkJTn5mP0aqoQqqUeW-PVLfhRyzPdVikSEbGuMXlSs",
+      "position": 20,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "18309499036116947732",
+      "title": "Maybelline Color Sensational Ultimatte Lipstick",
+      "merchant": "Walmart - iTrade Plus",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:18309499036116947732,productid:11587937024129768784,headlineOfferDocid:2581158952857211538,imageDocid:6458069184064732018,rds:PC_1180472722523443380|PROD_PC_1180472722523443380,gpcid:1180472722523443380,mid:576462554128219851,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:18309499036116947732,productid:11587937024129768784,headlineOfferDocid:2581158952857211538,imageDocid:6458069184064732018,rds:PC_1180472722523443380|PROD_PC_1180472722523443380,gpcid:1180472722523443380,mid:576462554128219851,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$14.98",
+        "value": 14.98,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRtxSdR1Y2u9Kd8RaoLbtDi-TPfAS__f5nicTZeGR5WBTuv-SsY5yCQVYB6VNCjfEWuLhbny8RNI5luLBdz0_C4bxCe-wNJ0M_cul5KOJPc",
+      "position": 21,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "14958134733746244255",
+      "title": "Sephora COLLECTION Cream Lip Stain Liquid Lipstick",
+      "merchant": "Sephora",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:14958134733746244255,productid:1364208114135272268,headlineOfferDocid:6967891281101100145,imageDocid:9352763709927773055,rds:PC_6636776256629773893|PROD_PC_6636776256629773893,gpcid:6636776256629773893,mid:576462224801906042,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:14958134733746244255,productid:1364208114135272268,headlineOfferDocid:6967891281101100145,imageDocid:9352763709927773055,rds:PC_6636776256629773893|PROD_PC_6636776256629773893,gpcid:6636776256629773893,mid:576462224801906042,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$16.00",
+        "value": 16,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $50+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTvnLTiNacJzUTxX31OFnURDsqhIQzSEZhjc31zAhWcA7W8HMZJtiUhpCmx1uBllDim23luKOyQzlAWKOVhhJ_tI143mnqr",
+      "position": 22,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "5737833288130296589",
+      "title": "Matte Lipstick - ALPHA RED - lsmt03",
+      "merchant": "Nicka K New York",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5737833288130296589,productid:6366533589446052241,headlineOfferDocid:516290128125173324,imageDocid:13933744854817678607,rds:PC_8844427944528836132|PROD_PC_8844427944528836132,gpcid:13957027447280086878,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5737833288130296589,productid:6366533589446052241,headlineOfferDocid:516290128125173324,imageDocid:13933744854817678607,rds:PC_8844427944528836132|PROD_PC_8844427944528836132,gpcid:13957027447280086878,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$2.99",
+        "value": 2.99,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $25+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSC3fpTfOfHBt1wCQq9ObOF_ka8SPJp6aQ5iFP7ZZJE-xlTnE7QjOfWTNtAO2dbkAYDegTbYQS3rwhyw34Pzu9C8n5G_-m4Y27-MVrMUX57fbLOg7D0D8BX90k",
+      "position": 23,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "9463229953519189140",
+      "title": "BLK/OPL COLORSPLURGE Liquid Matte Lipstick",
+      "merchant": "Black Opal Beauty",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:9463229953519189140,productid:15942555302037391339,headlineOfferDocid:17546529846224877692,imageDocid:649007751363607583,rds:PC_4370259563563510427|PROD_PC_4370259563563510427,gpcid:4370259563563510427,mid:576462402073631237,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:9463229953519189140,productid:15942555302037391339,headlineOfferDocid:17546529846224877692,imageDocid:649007751363607583,rds:PC_4370259563563510427|PROD_PC_4370259563563510427,gpcid:4370259563563510427,mid:576462402073631237,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$12.75",
+        "value": 12.75,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $35+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcS7sFMddIqytoQVP1uAVmZmC9rk9bWJbZp1i0Orc1lHSy9zGXhg2nzaZJxDJVwtxgpphVdRfJaeP2ughwzrpPJw7XyyIoP0PUO0CPSIJWjx0VlNy1xDttfS",
+      "position": 24,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "6520941181136134235",
+      "title": "Lancome L'Absolu Rouge Drama Matte Lipstick",
+      "merchant": "Nordstrom",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:6520941181136134235,productid:11567488627032211888,headlineOfferDocid:13102224295255476853,imageDocid:11653813387301712415,rds:PC_18259833981259339760|PROD_PC_18259833981259339760,gpcid:18259833981259339760,mid:576462778369027503,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:6520941181136134235,productid:11567488627032211888,headlineOfferDocid:13102224295255476853,imageDocid:11653813387301712415,rds:PC_18259833981259339760|PROD_PC_18259833981259339760,gpcid:18259833981259339760,mid:576462778369027503,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$35.00",
+        "value": 35,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcT94nhkvQcXmlHMofQngTS2xHeFl-dFyNWXKma-gXTAtpyMrc94mqMR3Ty71BeEEh4ShrdMUt9WMjUJF_Vg78UwVVgKBehyoZj2SThMw-ITUwBEdQZ240aG",
+      "position": 25,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "7724355597597804241",
+      "title": "VIOLETTE_FR Bisou Balm",
+      "merchant": "VIOLETTE_FR",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:7724355597597804241,productid:4776920895377011539,headlineOfferDocid:9578828355251261593,imageDocid:6929282476850856822,rds:PC_14946155305262625131|PROD_PC_14946155305262625131,gpcid:14946155305262625131,mid:576462434423145348,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:7724355597597804241,productid:4776920895377011539,headlineOfferDocid:9578828355251261593,imageDocid:6929282476850856822,rds:PC_14946155305262625131|PROD_PC_14946155305262625131,gpcid:14946155305262625131,mid:576462434423145348,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$30.00",
+        "value": 30,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSltjLB-FD3_uYk8tfTtSb8Fi6R2P1_0o33HR7igWMF68qHgfCSTlnbD1KfsRZky0Png-i4NfUW4c0EK9g6yV7n7jjjgRUNb8wGuw3uJdfUeFjM-gPnsR_1DVnx",
+      "position": 26,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "484954341982715702",
+      "title": "Estée Lauder Estee Lauder Pure Color Matte Lipstick",
+      "merchant": "Estée Lauder Official Site",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:484954341982715702,productid:518349502459478808,headlineOfferDocid:15079690424858522849,imageDocid:12612067554729394169,rds:PC_8095230373791697245|PROD_PC_8095230373791697245,gpcid:8095230373791697245,mid:576462852223798410,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:484954341982715702,productid:518349502459478808,headlineOfferDocid:15079690424858522849,imageDocid:12612067554729394169,rds:PC_8095230373791697245|PROD_PC_8095230373791697245,gpcid:8095230373791697245,mid:576462852223798410,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$44.00",
+        "value": 44,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $50+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcR9g8lchW-jqeEZD2YsTM-Fe00_XtgUmbHZC27upLRjlWki146Non5aX1XxEbczJJxDCnaH_EWjoAG9cf_sc5iBf2NMbvNZ",
+      "position": 27,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "8168417448261271274",
+      "title": "MAUVE MATTE LIPSTICK",
+      "merchant": "Elia Parfum",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:8168417448261271274,headlineOfferDocid:8168417448261271274,imageDocid:10075141512841044832,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:8168417448261271274,headlineOfferDocid:8168417448261271274,imageDocid:10075141512841044832,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$44.00",
+        "value": 44,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQith5U445MgRJ6vOt1TIds7KwxK89JBW9Iundn93NPcwYiTC5d2KC-s4kX94mSRHgcnNwOkxwrZcfFW5pLCgNCQ14E_8WOdm3sEDeXzKafvy9XT4zn063WZM4",
+      "position": 28,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "161249285289664305",
+      "title": "Clinique Pop Longwear Lipstick",
+      "merchant": "Macy's",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:161249285289664305,productid:15457757281344645713,headlineOfferDocid:14301887416615405545,imageDocid:10866080369776361143,rds:PC_2338260718290258402|PROD_PC_2338260718290258402,gpcid:2338260718290258402,mid:576462778240398707,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:161249285289664305,productid:15457757281344645713,headlineOfferDocid:14301887416615405545,imageDocid:10866080369776361143,rds:PC_2338260718290258402|PROD_PC_2338260718290258402,gpcid:2338260718290258402,mid:576462778240398707,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$22.95",
+        "value": 22.95,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "15% OFF",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRE7ElFYdMgUPpZuKgX6ZnDfWYgy4oZqX0Nr_HAFKTknG9GqkhnKYPFnmnzlSam1k0DQgfRrHRnQABYwCqGbsF-EYE5LwZ33M-00z5qym7eX46iNrfYG_Ib",
+      "position": 29,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "2140836896735655253",
+      "title": "Bath & Body Works Makeup Bath & Body Works Violet Matte Lip Cream",
+      "merchant": "Walmart - ILLUSION DECK",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:2140836896735655253,productid:12223075190985401395,headlineOfferDocid:5050434970088335581,imageDocid:3872640734639577178,gpcid:12150643465131113402,mid:576462499369218810,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:2140836896735655253,productid:12223075190985401395,headlineOfferDocid:5050434970088335581,imageDocid:3872640734639577178,gpcid:12150643465131113402,mid:576462499369218810,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$15.88",
+        "value": 15.88,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSmMJMYXQEaSus4sdIIoKJZrWcf3LWm6Dt4g7zi9Nw9HOFiEpa0wUX_oOiJOup1Tb4nQDm5PZtMXNpMQzPWyOi8KvuAEVGn",
+      "position": 30,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "2299093899905962790",
+      "title": "Mamaearth Creamy Matte Long Stay Lipstick",
+      "merchant": "eBay - whitearcade",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:2299093899905962790,productid:235345609404311870,headlineOfferDocid:12512063600454107676,imageDocid:4469472188131793472,rds:PC_17872711555538641331|PROD_PC_17872711555538641331,gpcid:9369689561535035853,mid:576462770131599499,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:2299093899905962790,productid:235345609404311870,headlineOfferDocid:12512063600454107676,imageDocid:4469472188131793472,rds:PC_17872711555538641331|PROD_PC_17872711555538641331,gpcid:9369689561535035853,mid:576462770131599499,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$16.40",
+        "value": 16.4,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTsLL1HbdFCjbY-CuZ5VVciDMiMYKU89BpmZqKmth2fC7yFhRq6H5REIJhamd3sLKEK6cKOW82Ka304MZytehyqfEX2_eIh",
+      "position": 31,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "13877057134958949621",
+      "title": "Miss Mauve Matte Liquid Lipstick. Liquid to Matte Lipstick. Mauve Lipstick. Pink Lipstick",
+      "merchant": "Etsy - Aromi",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:13877057134958949621,headlineOfferDocid:13877057134958949621,imageDocid:7308580630226892938,rds:PC_7969102952577657705|PROD_PC_7969102952577657705,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=productid:13877057134958949621,headlineOfferDocid:13877057134958949621,imageDocid:7308580630226892938,rds:PC_7969102952577657705|PROD_PC_7969102952577657705,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$17.00",
+        "value": 17,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRwrGnZpXnS3Np-Gvqi4-uj8cqOygYt4Ap2ksgIGEVNVZCBqS23e3yNNOYr6-MBK4L67M-bEHOa-vpBKzoEZeiVHAxQawqDZSzG2GHPPI5Sc_Gb9UdnBfDm5w",
+      "position": 32,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "12612882153192922821",
+      "title": "MAC Powder Kiss Hazy Matte Lipstick",
+      "merchant": "MAC Cosmetics",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:12612882153192922821,productid:18075426325132055307,headlineOfferDocid:2798064174061721471,imageDocid:10051889457083484250,rds:PC_11154254652557226658|PROD_PC_11154254652557226658,gpcid:11154254652557226658,mid:576462867750862340,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:12612882153192922821,productid:18075426325132055307,headlineOfferDocid:2798064174061721471,imageDocid:10051889457083484250,rds:PC_11154254652557226658|PROD_PC_11154254652557226658,gpcid:11154254652557226658,mid:576462867750862340,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$27.00",
+        "value": 27,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $60+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRJR0xDDawGU9jR9f6CcSjwkAmdtrfo40lAhJOpS7JiI8kOU2lC251DtJ8uMnJwDCRo-_vCCS32xzc2ufXhLiAnwzNvLMFKsxS1o2litW4RxFbwtgXR5c7i",
+      "position": 33,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "11180644669668777492",
+      "title": "Huda Beauty Liquid Matte Mousse",
+      "merchant": "Sephora",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:11180644669668777492,productid:4646449730380697397,headlineOfferDocid:9247209319018998253,imageDocid:5585100979033570507,rds:PC_4891841166361936840|PROD_PC_4891841166361936840,gpcid:4891841166361936840,mid:576462898612392207,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:11180644669668777492,productid:4646449730380697397,headlineOfferDocid:9247209319018998253,imageDocid:5585100979033570507,rds:PC_4891841166361936840|PROD_PC_4891841166361936840,gpcid:4891841166361936840,mid:576462898612392207,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$25.00",
+        "value": 25,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $50+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcT9Utqo14h6GoTUz3LLKL90QoiKz4B2usAJS59XY5Gf3ikebgeDcLL4BndTpbG2CUxiIhBgEwP-sKMdUvltWGLFUtF3AQCJFA",
+      "position": 34,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "8903345010238482641",
+      "title": "Dasique Cream de Rose Tint",
+      "merchant": "Dasique",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:8903345010238482641,productid:6373669361696963732,headlineOfferDocid:5323494905377571432,imageDocid:1458424859524841013,rds:PC_1030613272612247848|PROD_PC_1030613272612247848,gpcid:1030613272612247848,mid:576462768079162177,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:8903345010238482641,productid:6373669361696963732,headlineOfferDocid:5323494905377571432,imageDocid:1458424859524841013,rds:PC_1030613272612247848|PROD_PC_1030613272612247848,gpcid:1030613272612247848,mid:576462768079162177,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$14.90",
+        "value": 14.9,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": null,
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRsXvZOR19iPCem4RqzMUnsQKLqzdn40xyE6tsu8Kz4a0VwGbAs91CS-EL9FAyJ74xANrMA7J_yOfCoI6qXFGYLnzRhjGKgQK5OhHq1KiSWx8_YDoBEr4oRYw",
+      "position": 35,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "4228959613354937698",
+      "title": "KIKO Milano Velvet Passion Matte Lipstick",
+      "merchant": "Macy's",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4228959613354937698,productid:18357619076432877975,headlineOfferDocid:1276542850878565039,imageDocid:1137162248899030337,rds:PC_15554658687663845800|PROD_PC_15554658687663845800,gpcid:15554658687663845800,mid:576462484270870753,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:4228959613354937698,productid:18357619076432877975,headlineOfferDocid:1276542850878565039,imageDocid:1137162248899030337,rds:PC_15554658687663845800|PROD_PC_15554658687663845800,gpcid:15554658687663845800,mid:576462484270870753,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$12.75",
+        "value": 12.75,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "15% OFF",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQZAygw3mpjKgNPpK_2_zK1oQPG_1w4evM6snS3kaEn9EW2CGql2AXUZnO_w-606Vzb7nVuAIURep9kPOb6orzrS1SA5OG25l1-tFwgvuXkcDjAK8rvNMqz49g",
+      "position": 36,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "9840070214033216154",
+      "title": "MACQUEEN MQNY Powder Matte Lipstick",
+      "merchant": "YesStyle.com",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:9840070214033216154,productid:13946148611687262312,headlineOfferDocid:3118430870149817797,imageDocid:15011787312925636294,rds:PC_6385379118558124596|PROD_PC_6385379118558124596,gpcid:6385379118558124596,mid:576462566990954780,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:9840070214033216154,productid:13946148611687262312,headlineOfferDocid:3118430870149817797,imageDocid:15011787312925636294,rds:PC_6385379118558124596|PROD_PC_6385379118558124596,gpcid:6385379118558124596,mid:576462566990954780,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$5.92",
+        "value": 5.92,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "20% OFF · Free delivery on $35+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQiX7oKxsXPf46lar2sPnLALOHIfI0Pk_UWUStrUzfKZ2jRcCPCRkFuaPVj3ScrNSvMULEz5dm1p_gDOU8Jaq6PZT2Vo5UQl8b006FgxjjwhWZ853MZ5CMs",
+      "position": 37,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "239944288332992070",
+      "title": "Swiss Beauty HD Matte Lipstick",
+      "merchant": "eBay - hcala4",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:239944288332992070,productid:2765032788443561478,headlineOfferDocid:17170187895965452705,imageDocid:9761473791072725824,rds:PC_2562454661848514420|PROD_PC_2562454661848514420,gpcid:2562454661848514420,mid:576462541294552163,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:239944288332992070,productid:2765032788443561478,headlineOfferDocid:17170187895965452705,imageDocid:9761473791072725824,rds:PC_2562454661848514420|PROD_PC_2562454661848514420,gpcid:2562454661848514420,mid:576462541294552163,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$12.46",
+        "value": 12.46,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "9% OFF · Free delivery",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcT1H4BO2wONQ_FYVuLs_cQ70JDfLHuP1-sQeP-Bd3FPMga14QOKuEocO9RfNtUWNhGfczRtpI_nAJ0v7051PLyqcmbh_YlkPhttma7zP04bJTrB2z8SingZNw",
+      "position": 38,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "6500144173187722818",
+      "title": "Lakme Cushion Matte Lipstick",
+      "merchant": "Silkrute",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:6500144173187722818,productid:4204592316318563906,headlineOfferDocid:2195918458798431175,imageDocid:9145574432217050267,rds:PC_13390806673464446407|PROD_PC_13390806673464446407,gpcid:13390806673464446407,mid:576462461504689811,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:6500144173187722818,productid:4204592316318563906,headlineOfferDocid:2195918458798431175,imageDocid:9145574432217050267,rds:PC_13390806673464446407|PROD_PC_13390806673464446407,gpcid:13390806673464446407,mid:576462461504689811,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$4.99",
+        "value": 4.99,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "23% OFF",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQHGoQhp159jd4-8zhWvVkm44JHno5QX39PKe-IpJtaqDyHBrnPCZqpf6dGUOmVPa_1jbaicUPKDG8XEbj3b41plpzjLPD2ab7t6qFlhTrfS0XkOzoWF3gd",
+      "position": 39,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    },
+    {
+      "id": "14598856922287025480",
+      "title": "Milani Color Fetish LIP Matte",
+      "merchant": "Ulta Beauty",
+      "productUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:14598856922287025480,productid:14905784992638251773,headlineOfferDocid:17775887397441780353,imageDocid:5386739883672502092,rds:PC_13756595025517768147|PROD_PC_13756595025517768147,gpcid:13756595025517768147,mid:576462777664695696,pvt:hg&hl=en&gl=us&udm=28",
+      "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:14598856922287025480,productid:14905784992638251773,headlineOfferDocid:17775887397441780353,imageDocid:5386739883672502092,rds:PC_13756595025517768147|PROD_PC_13756595025517768147,gpcid:13756595025517768147,mid:576462777664695696,pvt:hg&hl=en&gl=us&udm=28",
+      "price": {
+        "display": "$11.99",
+        "value": 11.99,
+        "currency": "USD"
+      },
+      "availability": {
+        "observed": "Free delivery on $35+",
+        "caveat": "Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check."
+      },
+      "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQ7l9i92_qKDen-0Fz6_i9g0xqexR50ZlCbGR_BFVfRxU2yTgRwQJEpY3YTneKgfXVwVC_qiFdiaKoqku9kjkOa92xNVbIlN3pepC7LmvD17Q0IFRZ6OLlR9Q",
+      "position": 40,
+      "query": "mauve rose matte lipstick",
+      "observedAt": "2026-09-01T01:52:38.961Z",
+      "provider": "serpapi"
+    }
+  ],
+  "warnings": []
+}

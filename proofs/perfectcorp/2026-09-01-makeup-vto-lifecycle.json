@@ -1,0 +1,46 @@
+{
+  "proof": "perfectcorp-makeup-vto-lifecycle",
+  "sanitized": true,
+  "recordedAt": "2026-09-01T01:52:46.761Z",
+  "request": {
+    "endpoint": "POST /s2s/v2.0/task/makeup-vto",
+    "srcFileUrl": "https://plugins-media.makeupar.com/strapi/assets/sample_Image_1_202b6bf6e6.jpg",
+    "srcFileNote": "Perfect Corp's own public docs sample image; no real person's selfie.",
+    "effects": [
+      {
+        "category": "lip_color",
+        "shape": {
+          "name": "original"
+        },
+        "palettes": [
+          {
+            "color": "#A96A73",
+            "texture": "matte",
+            "colorIntensity": 80
+          }
+        ],
+        "style": {
+          "type": "full"
+        }
+      }
+    ],
+    "version": "1.0"
+  },
+  "taskId": "koo9wt0Z-mk-cOOd_DUvv0hjWMkL8cxH27I53vzCAqUljuTb-UxtDDcvMVvazt6a",
+  "poll": {
+    "endpoint": "GET /s2s/v2.0/task/makeup-vto/<task_id>",
+    "intervalMs": 2000,
+    "budgetMs": 120000,
+    "pollCount": 19,
+    "finalStatus": "success",
+    "errorDetail": null
+  },
+  "resultUrlSanitized": "https://yce-us.s3-accelerate.amazonaws.com/ttl30/487723612904622906/118633967376/v2/aeMNNB0KmUIP8rnQ996tC5Q/0d9433d8-8792-4361-b99b-0b9d00abd46f.jpg?[SIGNED-QUERY-REDACTED]",
+  "resultUrlNote": "Signed query removed; live result URLs expire (~2h).",
+  "renderDownloadedTo": "/home/zin-kg/code/hackathons/dev-network-aug-2026/lasttube/proofs/perfectcorp/2026-09-01-makeup-vto-render.jpg",
+  "credits": {
+    "before": 1351,
+    "after": 1350,
+    "spentUnits": 1
+  }
+}

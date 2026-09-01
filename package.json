@@ -1,0 +1,39 @@
+{
+  "name": "lasttube",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Your favorite shade vanished. LastTube finds replacements that are actually purchasable, shows them on your face, and explains the closest match.",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "tsx watch server/index.ts",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "proof:serpapi": "tsx scripts/proof-serpapi.ts",
+    "proof:perfectcorp": "tsx scripts/proof-perfectcorp.ts",
+    "scan:secrets": "tsx scripts/scan-secrets.ts",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run scan:secrets"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.0",
+    "hono": "^4.9.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.33.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.40.0",
+    "vite": "^7.1.0",
+    "vitest": "^3.2.0"
+  }
+}
