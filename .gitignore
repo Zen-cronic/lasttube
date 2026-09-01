@@ -19,3 +19,7 @@ __pycache__/
 .DS_Store
 *.log
 
+
+# Central agent tooling copied in for the build agent; never publish
+.claude/
+.codex/
