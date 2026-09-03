@@ -4,6 +4,7 @@
 BUILD_CHECKPOINT.md
 .playwright-mcp/
 submission/
+docs/design-brief.md
 
 node_modules/
 .next/
