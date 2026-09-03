@@ -5,8 +5,9 @@ This directory records exactly what the repository can prove without a provider 
 ## Evidence states
 
 - `present`: the tracked artifact contains the field and its required provenance.
-- `absent`: the exact preserved listing text does not contain that field.
-- `unknown`: the available artifact cannot distinguish present from absent; LastTube does not infer.
+- `absent`: a trusted structured source explicitly records that the field is absent.
+- `unknown`: the available artifact cannot distinguish present from absent; listing-title presence
+  or silence never changes this state.
 
 ## Proof levels
 

@@ -215,12 +215,53 @@ export class RuntimeEvidenceStore {
     effects: MakeupEffect[],
   ): Promise<RuntimeCandidateEvidenceManifest> {
     const manifest = this.getManifest(runId, candidateId);
+    const run = this.run(runId);
+    const candidate = this.candidate(run, candidateId);
     if (
       manifest.integrity.state !== 'collecting' ||
       manifest.evidence.sourceImage.state !== 'present' ||
       !manifest.evidence.sourceImage.estimatedHex
     ) {
       throw new ProviderError('Candidate has no retained shade input ready for VTO.');
+    }
+    try {
+      const persistedManifest = JSON.parse(
+        await fs.promises.readFile(
+          path.join(this.candidateDir(runId, candidateId), 'manifest.json'),
+          'utf8',
+        ),
+      ) as RuntimeCandidateEvidenceManifest;
+      if (!exactMatch(persistedManifest, manifest)) {
+        throw new Error('persisted manifest mismatch');
+      }
+      const searchBytes = await fs.promises.readFile(
+        path.join(this.runDir(runId), 'serp-response.json'),
+      );
+      if (
+        sha256(searchBytes) !== manifest.artifacts.searchResponse.sha256 ||
+        searchBytes.length !== manifest.artifacts.searchResponse.byteLength
+      ) {
+        throw new Error('persisted search response mismatch');
+      }
+      const normalized = normalizeShoppingResponse(
+        JSON.parse(searchBytes.toString('utf8')) as unknown,
+        run.result.query,
+        run.result.observedAt,
+        'live',
+      );
+      if (!exactMatch(normalized.candidates.find((item) => item.id === candidateId), candidate)) {
+        throw new Error('candidate cannot be re-derived from persisted search response');
+      }
+      const enriched = applyStructuredEnrichment(manifest.evidence, manifest.structuredEnrichment);
+      if (
+        !exactMatch(enriched.exactVariant, manifest.evidence.exactVariant) ||
+        !exactMatch(enriched.exactShade, manifest.evidence.exactShade) ||
+        !exactMatch(enriched.finish, manifest.evidence.finish)
+      ) {
+        throw new Error('persisted structured enrichment mismatch');
+      }
+    } catch (err) {
+      throw new ProviderError(`Pre-VTO evidence bundle validation failed: ${(err as Error).message}`);
     }
     const estimatedHex = manifest.evidence.sourceImage.estimatedHex.toLowerCase();
     const requestedColors = effects.flatMap((effect) =>
@@ -675,6 +716,31 @@ export class RuntimeEvidenceStore {
       const createTaskId = (
         reparsed[0]?.data as Record<string, unknown> | undefined
       )?.task_id;
+      const expectedCreatePath = '/s2s/v2.0/task/makeup-vto';
+      const expectedPollPath = `${expectedCreatePath}/${encodeURIComponent(String(createTaskId))}`;
+      const lifecycleTimes = [
+        lifecycle.startedAt,
+        ...allResponses.flatMap((response) => [response.requestedAt, response.receivedAt]),
+        lifecycle.completedAt,
+      ].map(Date.parse);
+      if (
+        typeof createTaskId !== 'string' ||
+        new URL(lifecycle.create.requestUrl).pathname !== expectedCreatePath ||
+        lifecycle.polls.some(
+          (response) =>
+            new URL(response.requestUrl).pathname !== expectedPollPath ||
+            response.redirected ||
+            response.finalResponseUrl !== response.requestUrl,
+        ) ||
+        lifecycle.create.redirected ||
+        lifecycle.create.finalResponseUrl !== lifecycle.create.requestUrl ||
+        lifecycleTimes.some((time) => !Number.isFinite(time)) ||
+        lifecycleTimes.some((time, index) => index > 0 && time < lifecycleTimes[index - 1]!) ||
+        lifecycle.startedAt !== manifest.vtoLifecycle.outcome.startedAt ||
+        lifecycle.completedAt !== manifest.vtoLifecycle.outcome.completedAt
+      ) {
+        throw new Error('Perfect task, chronology, or endpoint lineage mismatch');
+      }
       const selectedIndex = allResponses.findIndex(
         (response) =>
           response.phase === 'poll' &&
@@ -730,6 +796,8 @@ export class RuntimeEvidenceStore {
         outputDownload.requestedSignedUrlSha256 !==
           lifecycle.resultUrlLineage.signedUrlSha256 ||
         outputDownload.requestedUrl !== lifecycle.resultUrlLineage.sanitizedUrl ||
+        new URL(outputDownload.requestedUrl).protocol !== 'https:' ||
+        new URL(outputDownload.finalResponseUrl).protocol !== 'https:' ||
         !exactMatch(outputDownload, manifest.vtoLifecycle.outputDownload)
       ) {
         throw new Error('output bytes or download URL lineage mismatch');

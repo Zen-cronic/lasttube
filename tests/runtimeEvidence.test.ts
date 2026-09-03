@@ -343,6 +343,61 @@ describe('RuntimeEvidenceStore', () => {
     }
   });
 
+  it('revalidates persisted manifest and search bytes before provider execution', async () => {
+    for (const tamper of ['manifest', 'search'] as const) {
+      const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), `lasttube-pre-vto-${tamper}-`));
+      temporaryRoots.push(rootDir);
+      const runId = `run-pre-${tamper}`;
+      const store = new RuntimeEvidenceStore({ rootDir, idFactory: () => runId });
+      await store.openSearchRun(searchResult(), searchEvidence());
+      const captured = capturedShade();
+      await store.recordSourceImage({
+        runId,
+        candidateId,
+        requestedUrl: captured.estimate.sourceImage.url,
+        captured,
+      });
+      const target =
+        tamper === 'manifest'
+          ? path.join(rootDir, runId, candidatePathKey(candidateId), 'manifest.json')
+          : path.join(rootDir, runId, 'serp-response.json');
+      fs.appendFileSync(target, '\ntampered');
+      await expect(
+        store.assertCandidateReadyForVto(runId, candidateId, [lipColorEffect('#a96a73')]),
+      ).rejects.toThrow(/Pre-VTO evidence bundle validation failed/);
+    }
+  });
+
+  it('rejects Perfect endpoint or chronology lineage that does not match the task', async () => {
+    const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lasttube-lineage-'));
+    temporaryRoots.push(rootDir);
+    const store = new RuntimeEvidenceStore({ rootDir, idFactory: () => 'run-lineage' });
+    const runId = await store.openSearchRun(searchResult(), searchEvidence());
+    const captured = capturedShade();
+    await store.recordSourceImage({
+      runId,
+      candidateId,
+      requestedUrl: captured.estimate.sourceImage.url,
+      captured,
+    });
+    const lifecycle = await successfulLifecycle();
+    lifecycle.lifecycleReceipt!.polls[0]!.requestUrl =
+      'https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/wrong-task';
+    const manifest = await store.recordVtoOutput({
+      runId,
+      candidateId,
+      srcFileUrl: sourceFaceUrl,
+      effects: [lipColorEffect('#a96a73')],
+      render: lifecycle.render,
+      lifecycleReceipt: lifecycle.lifecycleReceipt!,
+      outputBytes: lifecycle.outputBytes,
+      outputMediaType: lifecycle.downloaded.mediaType,
+      outputDownload: lifecycle.downloaded.receipt,
+    });
+    expect(manifest.integrity.state).toBe('invalid');
+    expect(manifest.integrity.error).toMatch(/endpoint lineage/);
+  });
+
   it('rejects an unbound candidate before provider configuration or execution', async () => {
     const response = await app.request('/api/vto', {
       method: 'POST',

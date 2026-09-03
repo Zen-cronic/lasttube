@@ -109,7 +109,7 @@ room. Rehearse against the actions and shorten pauses before changing the script
 | Perfect Corp baseline is mandatory | remembered shade plus candidate render; baseline-required copy | capture injects a failed baseline and asserts zero decision/outcome UI |
 | Human judgment changes the result | ABH rejected despite lower ΔE; NYX accepted/preferred | `shared/reviewDecision.ts`; capture asserts the preferred title and `CIE76 did not choose` |
 | Missing structured evidence stops action | no-actionable card, present/absent/unknown ledger, refined-search handoff | `shared/evidence.ts`; positive and fail-closed policy tests; no new provider calls |
-| Failure does not become a fake result | search error/empty states and recorded exclusion rows | typed provider status plus 56 offline tests |
+| Failure does not become a fake result | search error/empty states and recorded exclusion rows | typed provider status plus 60 offline tests |
 | Mobile judge can read the verdict | wrapped 350 px verdict capture | capture fails on horizontal overflow |
 
 ## Compliance checklist

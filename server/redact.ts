@@ -9,10 +9,8 @@ const SECRET_ENV_KEYS = [
   'FEATHERLESS_API_KEY',
 ] as const;
 
-const SENSITIVE_JSON_KEY =
-  /^(?:api[_-]?key|apikey|access[_-]?token|auth(?:orization)?|bearer|client[_-]?secret|credential|password|query[_-]?token|refresh[_-]?token|secret|signature|security[_-]?token)$/i;
-const SENSITIVE_QUERY_KEY =
-  /^(?:api[_-]?key|apikey|key|token|access[_-]?token|auth|authorization|credential|password|secret|signature|x-amz-.+)$/i;
+const CREDENTIAL_LIKE_KEY =
+  /(?:^|[_-])(?:api[_-]?key|apikey|auth(?:orization)?|bearer|code|cred(?:ential)?|jwt|key|page[_-]?token|pass(?:word)?|policy|secret|security[_-]?token|session|sig(?:nature)?|token)(?:$|[_-])/i;
 
 /** Replace any known secret value and common credential-bearing URL params. */
 export function redactSecrets(input: string): string {
@@ -68,10 +66,14 @@ export function sanitizeProviderString(
     const url = new URL(redacted);
     let changed = false;
     for (const key of [...url.searchParams.keys()]) {
-      if (SENSITIVE_QUERY_KEY.test(key)) {
+      if (CREDENTIAL_LIKE_KEY.test(key) || /^x-amz-/i.test(key)) {
         url.searchParams.set(key, '[REDACTED]');
         changed = true;
       }
+    }
+    if (url.hash) {
+      url.hash = '';
+      changed = true;
     }
     if (/^https?:$/.test(url.protocol)) {
       if ([...url.searchParams.keys()].some((key) => /^x-amz-/i.test(key))) {
@@ -93,7 +95,7 @@ function sanitizeProviderValue(value: unknown, secretValues: readonly string[]):
     return Object.fromEntries(
       Object.entries(value as Record<string, unknown>).map(([key, item]) => [
         key,
-        SENSITIVE_JSON_KEY.test(key)
+        CREDENTIAL_LIKE_KEY.test(key)
           ? '[REDACTED]'
           : sanitizeProviderValue(item, secretValues),
       ]),

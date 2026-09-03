@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import type {
   CandidateEvidence,
   EvidenceField,
@@ -32,6 +33,7 @@ export class NoStructuredEnrichmentAdapter implements StructuredEnrichmentAdapte
         recordId: null,
         sourceUrl: null,
         receiptSha256: null,
+        receipt: null,
       },
       exactVariant: unknownField(),
       exactShade: unknownField(),
@@ -77,7 +79,8 @@ export function applyStructuredEnrichment(
     (enrichment.source.kind !== 'trusted_structured_record' ||
       !enrichment.source.recordId ||
       !enrichment.source.sourceUrl ||
-      !isSha256(enrichment.source.receiptSha256))
+      !isSha256(enrichment.source.receiptSha256) ||
+      !enrichment.source.receipt)
   ) {
     throw new ProviderError(
       'Structured attributes require a trusted record id, source URL, and receipt SHA-256.',
@@ -85,6 +88,37 @@ export function applyStructuredEnrichment(
   }
   if (enrichment.source.kind === 'none' && promotesAny) {
     throw new ProviderError('The no-source enrichment adapter cannot promote exact attributes.');
+  }
+  if (enrichment.source.kind === 'trusted_structured_record') {
+    const receipt = enrichment.source.receipt;
+    if (!receipt || receipt.mediaType !== 'application/json' || receipt.encoding !== 'utf-8') {
+      throw new ProviderError('Trusted structured enrichment has no retained JSON receipt bytes.');
+    }
+    if (
+      Buffer.byteLength(receipt.bodyText) !== receipt.byteLength ||
+      createHash('sha256').update(receipt.bodyText).digest('hex') !==
+        enrichment.source.receiptSha256
+    ) {
+      throw new ProviderError('Trusted structured enrichment receipt digest does not match its bytes.');
+    }
+    let record: Record<string, unknown>;
+    try {
+      record = JSON.parse(receipt.bodyText) as Record<string, unknown>;
+    } catch {
+      throw new ProviderError('Trusted structured enrichment receipt is not JSON.');
+    }
+    if (
+      record.candidateId !== enrichment.candidateId ||
+      record.recordId !== enrichment.source.recordId ||
+      record.sourceUrl !== enrichment.source.sourceUrl ||
+      record.exactVariant !== enrichment.exactVariant.value ||
+      record.exactShade !== enrichment.exactShade.value ||
+      record.finish !== enrichment.finish.value
+    ) {
+      throw new ProviderError('Trusted structured enrichment receipt fields do not match promotion.');
+    }
+  } else if (enrichment.source.receipt || enrichment.source.receiptSha256) {
+    throw new ProviderError('No-source enrichment cannot carry receipt evidence.');
   }
 
   return {

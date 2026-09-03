@@ -15,17 +15,17 @@
   "exactVariant": {
     "state": "unknown",
     "value": null,
-    "basis": "Mauve Rose appears in the title, but the receipt does not distinguish a product name from an exact variant."
+    "basis": "No trusted structured variant record was retained; title prose is not promoted."
   },
   "exactShade": {
     "state": "unknown",
     "value": null,
-    "basis": "Mauve Rose is shade-like prose, but no structured shade field or code was retained."
+    "basis": "No trusted structured shade record was retained; title prose is not promoted."
   },
   "finish": {
-    "state": "present",
-    "value": "matte",
-    "basis": "The exact preserved title explicitly says Matte Lipstick; formulation quality remains unverified."
+    "state": "unknown",
+    "value": null,
+    "basis": "No trusted structured finish record was retained; title prose is not promoted."
   },
   "sourceImage": {
     "state": "unknown",

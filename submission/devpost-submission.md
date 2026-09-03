@@ -45,7 +45,7 @@ becomes actionable only when all required fields, the baseline, and human prefer
 In the recorded path, `Ngozi Mauve Rose Matte Lipstick` is system-excluded at 2.5% usable coverage;
 the human rejects lower-ΔE `Anastasia Beverly Hills Lip Velvet`, accepts and prefers `NYX
 Professional Makeup Fat Matte Lipstick`, and therefore visibly overrides the metric. The preferred
-title has no exact shade or variant, its source-image bytes/hash were not retained, and its candidate
+has no retained trusted shade or variant record, its source-image bytes/hash were not retained, and its candidate
 VTO has task/poll metadata rather than a lifecycle receipt. LastTube displays those gaps, ends with
 `No actionable lead yet`, offers a refined-search handoff, and exposes no Buy action or formulation
 claim.
@@ -135,7 +135,7 @@ the data limits, and added a request-sequence guard so stale responses cannot cr
   has stored image bytes needed for a truthful coverage/hash check, so we made zero new VTO calls.
 - A deterministic judge-demo route that fails its capture check if it attempts any live provider
   request or loses its `FIXTURE` labels.
-- 56 offline tests, type checking, linting, production build, secret scan, responsive capture, and
+- 60 offline tests, type checking, linting, production build, secret scan, responsive capture, and
   a container-ready one-process runtime.
 
 ## What we learned

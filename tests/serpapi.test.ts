@@ -12,6 +12,7 @@ import {
   searchShopping,
   searchShoppingWithEvidence,
 } from '../server/providers/serpapi.ts';
+import { sanitizeProviderResponseBody, sanitizeProviderString } from '../server/redact.ts';
 
 const fixtureFile = path.resolve('server/providers/fixtures/serpapi-google-shopping.json');
 const fixture = JSON.parse(fs.readFileSync(fixtureFile, 'utf8')) as {
@@ -66,6 +67,25 @@ describe('fixtureSearchResultSet', () => {
 });
 
 describe('searchShopping failure paths', () => {
+  it('redacts credential-like query fields and removes URL fragments fail closed', () => {
+    const hostileUrl =
+      'https://merchant.invalid/item?page_token=page-secret&sig=sig-secret&Policy=policy-secret&color=rose#access_token=fragment-secret';
+    const sanitizedUrl = sanitizeProviderString(hostileUrl);
+    expect(sanitizedUrl).not.toContain('page-secret');
+    expect(sanitizedUrl).not.toContain('sig-secret');
+    expect(sanitizedUrl).not.toContain('policy-secret');
+    expect(sanitizedUrl).not.toContain('fragment-secret');
+    expect(sanitizedUrl).toContain('color=rose');
+    expect(sanitizedUrl).not.toContain('#');
+
+    const body = sanitizeProviderResponseBody(
+      JSON.stringify({ page_token: 'body-secret', nested: { Policy: 'policy-body-secret' }, hostileUrl }),
+    );
+    expect(body).not.toContain('body-secret');
+    expect(body).not.toContain('policy-body-secret');
+    expect(body).not.toContain('fragment-secret');
+  });
+
   it('binds a successful result to the exact response body digest', async () => {
     const body = JSON.stringify({
       ...(fixture.raw as Record<string, unknown>),

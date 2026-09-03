@@ -2,7 +2,7 @@
 
 Date: 2026-09-03 EDT
 
-Base commit: `614389a`
+Base commit: `1c5c7dc`
 
 Scope: the runtime-proof repair commit containing this receipt; resolve it with
 `git log -1 --oneline`.
@@ -29,12 +29,18 @@ Scope: the runtime-proof repair commit containing this receipt; resolve it with
   redeploy. This repair does not claim durable storage.
 - Exact variant, shade, and finish remain `unknown` on the new live path because no trusted structured
   source is configured. A typed enrichment interface defaults to no source, has no title parser, and
-  requires a record id, source URL, and receipt digest before any structured field can become present.
+  requires retained JSON receipt bytes whose digest, candidate, record, source, and field values all
+  cross-match before any structured field can become present.
   Its positive contract test is synthetic policy-fixture proof, not genuine product evidence.
+- Credential-like response fields including page tokens, signatures, policy/session values, and URL
+  fragments are removed or redacted recursively. Adversarial fixtures prove those values do not survive.
+- Pre-VTO validation re-reads the persisted manifest, sanitized search artifact, structured receipt,
+  re-derived listing, and source image before provider execution. Final validation enforces task id,
+  endpoint lineage, response order, lifecycle chronology, and output-download lineage.
 - The all-fields-present test is now explicitly a **synthetic policy fixture**, using `.invalid`
   URLs. It proves gate behavior only and is not called genuine action evidence.
 - The current hero stays honest. NYX is accepted/preferred as a visual direction, but exact variant
-  and shade are absent, source-image bytes/hash are unknown, and its candidate render has metadata
+  and shade are unknown, source-image bytes/hash are unknown, and its candidate render has metadata
   only. The UI therefore says **No actionable lead yet**, preserves the observed listing/offer as
   evidence, blocks purchase language, and offers a refined-search handoff without a provider call.
 - Every shortlisted candidate is accounted for: Ngozi is system-excluded at 2.5% coverage, ABH is
@@ -53,13 +59,13 @@ Run from the repository root with no new provider calls:
 
 | Command | Result |
 |---|---|
-| `npm run verify` | exit 0: TypeScript, ESLint, 10 Vitest files / 56 offline tests, Vite production build, and exact 93-file staged-tree secret scan; zero provider calls |
+| `npm run verify` | exit 0: TypeScript, ESLint, 10 Vitest files / 60 offline tests, Vite production build, and secret scan; zero provider calls |
 | production build inside `npm run verify` | exit 0: 43 modules; `dist/index.html` 1.03 kB, CSS 17.18 kB, JS 230.26 kB |
 | `npm run capture:demo` | exit 0 twice: successful baseline required; all 3 candidates resolved as 1 system exclusion + 2 human decisions; preference overrides CIE76; incomplete provenance blocks action; 3+ fixture badges; zero live-provider requests; zero non-local image requests; zero browser errors |
 | controlled baseline-failure path inside `capture:demo` | injected failed fixture baseline; zero decision-panel and zero outcome-card elements; pass |
-| runtime-evidence tests | pass: versioned bundle; retained/redacted Serp and every Perfect response; listing re-derivation; fetched/output bytes; URL lineage; four artifact routes; pre-provider rejection; search/lifecycle/output tamper rejection |
+| runtime-evidence tests | pass: versioned bundle; retained/redacted Serp and every Perfect response; listing re-derivation; fetched/output bytes; four artifact routes; pre-provider persisted-manifest/search checks; task/chronology/endpoint lineage; tamper rejection |
 | action-policy tests | pass: validated synthetic all-fields-present fixture opens; the same fields without manifest validation stop; current fixture and unknown-field branch stop |
-| structured-enrichment tests | pass: title prose stays unknown; receipt-bound synthetic structured data is accepted by policy; missing trust metadata and candidate mismatch fail closed |
+| structured-enrichment tests | pass: title prose stays unknown; retained receipt bytes/digest/fields must cross-match; missing trust metadata, candidate mismatch, and receipt tampering fail closed |
 | first staged secret scan | correctly rejected a literal synthetic signed-URL parameter in two tests; one bounded fixture repair constructs that parameter from safe fragments; final exact 93-file scan passed |
 
 The two consecutive final captures produced identical SHA-256 values:
@@ -67,11 +73,11 @@ The two consecutive final captures produced identical SHA-256 values:
 | Artifact | SHA-256 |
 |---|---|
 | `judge-demo-opening.png` | `e4900b2f99cff73e480034fcc27936bdfe8bd14c08e913fab8caa94dcfc79630` |
-| `judge-demo-verdict.png` | `371e729901bdc25ee5d63242246c1847e684e6baa1e216f418f0298fbb66b150` |
-| `judge-demo-mobile-verdict.png` | `fa736719958239380e1806439e763cbff23382c805278adb5d300a94dfce1f1b` |
+| `judge-demo-verdict.png` | `8bf89b1bc1532993add85da4f5fafd732b2b2ea7bee7a7d795a92080009013d1` |
+| `judge-demo-mobile-verdict.png` | `18357a958c8a78c5f6ce7c520d9ca8661a6526ab4b8894cbd8cf808334f5ee19` |
 | `judge-devpost-thumbnail.png` | `e2db1a14aa1b98bf6321885d8136f4aac2786281dbd506c13f66888d5c03bbe9` |
 | `judge-devpost-hunt.png` | `b37850be3ee9920a0a0eeb27ff7281c95e35adfd90ae459f4486b1db43564792` |
-| `judge-devpost-verdict.png` | `58a289be226581543d4b5f11c090503698898ee4c639915f8795ea432d184650` |
+| `judge-devpost-verdict.png` | `f599ac2202e4784d67875b0ad1a27cc5973bb9a83ee4a603cd62a3f179136336` |
 
 ## Visual inspection
 

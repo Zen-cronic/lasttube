@@ -109,7 +109,7 @@ npm run dev       # web client on http://localhost:5173 (proxies /api)
 ## Verify (no network needed)
 
 ```bash
-npm run verify    # typecheck + lint + 56 offline tests + build + secret scan
+npm run verify    # typecheck + lint + 60 offline tests + build + secret scan
 ```
 
 ## Rehearse the judge demo (no network or provider spend)
@@ -179,9 +179,9 @@ unlocks the offer/action branch.
 - Candidate images below **10% usable saturated foreground coverage are rejected**. Passing estimates can still be skewed by packaging.
 - Every shortlisted candidate ends in a visible `system excluded`, `human rejected`, or `human
   accepted` state; unresolved rows block the outcome.
-- The exact listing title and observed offer URL are preserved. If the receipt does not name a
-  shade/variant, the UI says `exact shade / variant: not present`, returns no actionable lead, and
-  never presents a Buy action.
+- The exact listing title and observed offer URL are preserved, but title presence or silence never
+  establishes shade, variant, or finish. Without a retained trusted structured record those fields
+  stay `unknown`, the UI returns no actionable lead, and no Buy action appears.
 - `present`, `absent`, and `unknown` are separate evidence states. Marketing prose is not silently
   promoted into a structured shade or variant. The default structured-enrichment adapter returns
   unknown, and a synthetic contract test proves only a receipt-bound trusted record may promote it.

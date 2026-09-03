@@ -1,5 +1,6 @@
 // Synthetic policy-fixture tests only. No catalog is configured or called.
 
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
   applyStructuredEnrichment,
@@ -41,6 +42,14 @@ describe('structured enrichment policy', () => {
   });
 
   it('accepts explicit fields only from a receipt-bound trusted synthetic policy fixture', () => {
+    const receiptBody = JSON.stringify({
+      candidateId: candidate.id,
+      recordId: 'synthetic-sku-42',
+      sourceUrl: 'https://synthetic-policy-fixture.invalid/catalog/42',
+      exactVariant: 'SKU-42',
+      exactShade: 'Shade 42',
+      finish: 'matte',
+    });
     const enrichment: StructuredCandidateEnrichment = {
       schemaVersion: 1,
       candidateId: candidate.id,
@@ -49,7 +58,13 @@ describe('structured enrichment policy', () => {
         kind: 'trusted_structured_record',
         recordId: 'synthetic-sku-42',
         sourceUrl: 'https://synthetic-policy-fixture.invalid/catalog/42',
-        receiptSha256: 'a'.repeat(64),
+        receiptSha256: createHash('sha256').update(receiptBody).digest('hex'),
+        receipt: {
+          mediaType: 'application/json',
+          encoding: 'utf-8',
+          bodyText: receiptBody,
+          byteLength: Buffer.byteLength(receiptBody),
+        },
       },
       exactVariant: { state: 'present', value: 'SKU-42', basis: 'Synthetic structured field.' },
       exactShade: { state: 'present', value: 'Shade 42', basis: 'Synthetic structured field.' },
@@ -66,7 +81,13 @@ describe('structured enrichment policy', () => {
       schemaVersion: 1,
       candidateId: candidate.id,
       adapterId: 'none',
-      source: { kind: 'none', recordId: null, sourceUrl: null, receiptSha256: null },
+      source: {
+        kind: 'none',
+        recordId: null,
+        sourceUrl: null,
+        receiptSha256: null,
+        receipt: null,
+      },
       exactVariant: { state: 'present', value: 'invented', basis: 'Untrusted.' },
       exactShade: { state: 'unknown', value: null, basis: 'Unknown.' },
       finish: { state: 'unknown', value: null, basis: 'Unknown.' },
@@ -75,5 +96,37 @@ describe('structured enrichment policy', () => {
     expect(() =>
       applyStructuredEnrichment(baseEvidence(), { ...enrichment, candidateId: 'wrong-candidate' }),
     ).toThrow(/candidate id/);
+  });
+
+  it('rejects a trusted promotion when retained receipt bytes are tampered', () => {
+    const bodyText = JSON.stringify({
+      candidateId: candidate.id,
+      recordId: 'record-1',
+      sourceUrl: 'https://synthetic-policy-fixture.invalid/catalog/1',
+      exactVariant: 'SKU-1',
+      exactShade: 'Rose 1',
+      finish: 'satin',
+    });
+    const enrichment: StructuredCandidateEnrichment = {
+      schemaVersion: 1,
+      candidateId: candidate.id,
+      adapterId: 'synthetic-policy-fixture-adapter',
+      source: {
+        kind: 'trusted_structured_record',
+        recordId: 'record-1',
+        sourceUrl: 'https://synthetic-policy-fixture.invalid/catalog/1',
+        receiptSha256: createHash('sha256').update(bodyText).digest('hex'),
+        receipt: {
+          mediaType: 'application/json',
+          encoding: 'utf-8',
+          bodyText: `${bodyText}tampered`,
+          byteLength: Buffer.byteLength(`${bodyText}tampered`),
+        },
+      },
+      exactVariant: { state: 'present', value: 'SKU-1', basis: 'Synthetic structured field.' },
+      exactShade: { state: 'present', value: 'Rose 1', basis: 'Synthetic structured field.' },
+      finish: { state: 'present', value: 'satin', basis: 'Synthetic structured field.' },
+    };
+    expect(() => applyStructuredEnrichment(baseEvidence(), enrichment)).toThrow(/digest/);
   });
 });

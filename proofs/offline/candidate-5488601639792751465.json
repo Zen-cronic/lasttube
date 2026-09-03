@@ -13,19 +13,19 @@
     "basis": "Candidate id, exact title, merchant, offer and source are present in the tracked normalized SerpApi receipt."
   },
   "exactVariant": {
-    "state": "absent",
+    "state": "unknown",
     "value": null,
-    "basis": "The preserved exact listing title names the product family but no variant identifier."
+    "basis": "No trusted structured variant record was retained; title presence or silence is not evidence."
   },
   "exactShade": {
-    "state": "absent",
+    "state": "unknown",
     "value": null,
-    "basis": "The preserved exact listing title contains no shade name or shade code."
+    "basis": "No trusted structured shade record was retained; title presence or silence is not evidence."
   },
   "finish": {
-    "state": "present",
-    "value": "matte",
-    "basis": "The exact preserved title explicitly says Matte Lipstick; formulation quality remains unverified."
+    "state": "unknown",
+    "value": null,
+    "basis": "No trusted structured finish record was retained; title prose is not promoted."
   },
   "sourceImage": {
     "state": "unknown",

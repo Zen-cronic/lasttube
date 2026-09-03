@@ -150,6 +150,12 @@ export interface StructuredCandidateEnrichment {
     recordId: string | null;
     sourceUrl: string | null;
     receiptSha256: string | null;
+    receipt: {
+      mediaType: 'application/json';
+      encoding: 'utf-8';
+      bodyText: string;
+      byteLength: number;
+    } | null;
   };
   exactVariant: EvidenceField;
   exactShade: EvidenceField;

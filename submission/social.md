@@ -22,7 +22,7 @@ accepted-only and CIE76 does not decide.
 
 In the recorded path, Ngozi is system-excluded at 2.5% coverage; the human rejects lower-ΔE ABH,
 accepts and prefers NYX, and visibly overrides the metric. The three-candidate ledger is complete,
-but variant and shade are absent while source-image and candidate-lifecycle evidence are missing.
+but variant and shade are unknown while source-image and candidate-lifecycle evidence are missing.
 The final card says `No actionable lead yet` and never presents a Buy action or formulation claim.
 
 The build is deliberately honest about its boundaries: listings are observed evidence rather than
