@@ -60,12 +60,16 @@ async function main(): Promise<void> {
       const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
       const browserErrors: string[] = [];
       const forbiddenRequests: string[] = [];
+      const externalImageRequests: string[] = [];
       page.on('console', (message) => {
         if (message.type() === 'error') browserErrors.push(message.text());
       });
       page.on('pageerror', (error) => browserErrors.push(error.message));
       page.on('request', (request) => {
         const url = new URL(request.url());
+        if (request.resourceType() === 'image' && url.origin !== new URL(baseUrl).origin) {
+          externalImageRequests.push(request.url());
+        }
         if (url.pathname === '/api/search' && url.searchParams.get('mode') !== 'fixture') {
           forbiddenRequests.push(request.url());
         }
@@ -75,6 +79,13 @@ async function main(): Promise<void> {
       });
 
       await page.goto(`${baseUrl}/?mode=demo`, { waitUntil: 'networkidle' });
+      // Judge screenshots are evidence stills, not motion proof. Freeze CSS timing
+      // so the same fixture state produces byte-stable PNGs across rehearsals;
+      // the real app retains its shade/reveal motion for the recorded demo.
+      await page.addStyleTag({
+        content:
+          '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}.shade-bridge-wipe{display:none!important}',
+      });
       await page.getByText('Demo recording armed').waitFor();
       await page.screenshot({ path: path.join(screenshotDir, 'judge-demo-opening.png') });
       await page.setViewportSize({ width: 1500, height: 1000 });
@@ -86,6 +97,12 @@ async function main(): Promise<void> {
         .click();
       await page.getByRole('button', { name: 'Find living replacements' }).click();
       await page.getByText('SERPAPI: FIXTURE').waitFor();
+      const remoteFixtureThumbnails = await page.locator('.candidate-row img[src^="http"]').count();
+      if (remoteFixtureThumbnails > 0) {
+        throw new Error(
+          `fixture hunt rendered ${remoteFixtureThumbnails} remote product thumbnails`,
+        );
+      }
       await page.setViewportSize({ width: 1500, height: 1000 });
       await page.locator('[aria-labelledby="act2-title"]').scrollIntoViewIfNeeded();
       await page.screenshot({ path: path.join(screenshotDir, 'judge-devpost-hunt.png') });
@@ -106,6 +123,11 @@ async function main(): Promise<void> {
       }
       if (browserErrors.length > 0) {
         throw new Error(`browser console errors: ${browserErrors.join(' | ')}`);
+      }
+      if (externalImageRequests.length > 0) {
+        throw new Error(
+          `demo capture requested non-local image assets: ${externalImageRequests.join(', ')}`,
+        );
       }
       await page.getByText('The fixture has a paper trail.').waitFor();
 
@@ -135,7 +157,7 @@ async function main(): Promise<void> {
       });
 
       console.log(
-        '[capture:demo] PASS — production artifact, 2-candidate FIXTURE flow, 3+ fixture badges, zero live provider requests, zero browser errors',
+        '[capture:demo] PASS — production artifact, 2-candidate FIXTURE flow, 3+ fixture badges, zero live provider or non-local image requests, zero browser errors',
       );
     } finally {
       await browser.close();

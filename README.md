@@ -78,8 +78,11 @@ npm run capture:demo
 The capture command starts the production-built app, opens `/?mode=demo` in the installed Chrome,
 drives Backtalk through a two-candidate verdict, and writes six screenshots under
 `docs/screenshots/`. It fails if the browser attempts a live SerpApi, Perfect Corp, or merchant-image
-request, if fewer than three `FIXTURE` badges render, if the browser reports an error, or if the
-mobile verdict overflows horizontally. Set `CHROME_PATH` only when Chrome is installed elsewhere.
+request, if fixture rows render remote product thumbnails, if any non-local image is requested, if
+fewer than three `FIXTURE` badges render, if the browser reports an error, or if the mobile verdict
+overflows horizontally. Fixture listing thumbnails are deliberately replaced by local `REC`
+placeholders; the merchant image URLs remain in the sanitized receipt, but the judge-demo pixels do
+not depend on them. Set `CHROME_PATH` only when Chrome is installed elsewhere.
 
 ## Deployment shape (human gate)
 

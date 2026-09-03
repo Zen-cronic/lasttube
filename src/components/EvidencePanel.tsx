@@ -111,7 +111,14 @@ export function EvidencePanel({
               const capReached = !selected && shortlist.length >= SHORTLIST_CAP;
               return (
                 <li key={c.id} className="candidate-row" data-selected={selected}>
-                  {c.thumbnailUrl ? (
+                  {dataSource === 'fixture' ? (
+                    <div
+                      className="thumb-fallback thumb-fixture"
+                      aria-hidden="true"
+                    >
+                      rec
+                    </div>
+                  ) : c.thumbnailUrl ? (
                     <img className="thumb" src={c.thumbnailUrl} alt="" loading="lazy" />
                   ) : (
                     <div className="thumb-fallback" aria-hidden="true" />
