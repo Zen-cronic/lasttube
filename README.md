@@ -13,10 +13,14 @@ Built for the DevNetwork [API + Cloud + AI] Hackathon 2026 with both sponsor tec
 - **SerpApi** (Google Shopping engine) discovers observed replacement candidates with merchant, price, availability text, source links, and observation timestamps.
 - **Perfect Corp Makeup VTO** renders every comparison through the real async lifecycle: `POST /s2s/v2.0/task/makeup-vto` → bounded polling → signed result download.
 
+The primary demo artifact is an **installable mobile PWA** designed for a 350–430px beauty-shopping
+workflow. It launches in standalone display mode on Android and can be added to the Home Screen on
+iOS; the same build expands into the secondary desktop website. A native iOS build is not claimed
+because it requires macOS/Xcode, and this Linux host has `adb` but no Android SDK/Gradle toolchain.
+
 Public user reports support the narrow problem framing: one person described a
 [ten-year search and several poor matches](https://www.reddit.com/r/makeupdupes/comments/1w4h7mw/10_year_search_for_discontinued_lip_color/),
-another described [stale local-availability results](https://www.reddit.com/r/MakeupAddiction/comments/1w2pxh2/urban_decay_1993/),
-and a third weighed [shade similarity against formula](https://www.reddit.com/r/PaleMUA/comments/1w3pj43/old_mac_blankety_dupe_or_alternate_colors/).
+while another described [stale local-availability results](https://www.reddit.com/r/MakeupAddiction/comments/1w2pxh2/urban_decay_1993/).
 Those anecdotes do **not** establish LastTube's accuracy, validation, market size, or willingness to pay.
 
 ![Act 3 — human preference with action blocked](docs/screenshots/judge-devpost-verdict.png)
@@ -37,7 +41,9 @@ Those anecdotes do **not** establish LastTube's accuracy, validation, market siz
    preference are all present. The tracked hero evidence is incomplete, so it ends with **No
    actionable lead yet** and a refined-search handoff.
 
-The interface itself is tinted by the shade under consideration (`--shade`), so the product's subject — the color — is the one bold element on the page.
+The mobile-first interface carries the real shade under consideration through one luminous
+**Shade Signal** progress rail and the lost→candidate bridge. Motion explains progress and color
+change; reduced-motion users get the same states without the sweep.
 
 ## Provider honesty
 
@@ -75,7 +81,8 @@ enrichment source is configured or claimed.
 
 ```
 Vite + React client (src/)
-  Act 1 input → Act 2 evidence panel → Act 3 baseline + human decisions + stop/handoff
+  Installable mobile PWA → Step 1 input → Step 2 evidence → Step 3 decision/stop
+  manifest + app icons + service worker (provider API routes always network-only)
         │  /api/* only — no secrets in the browser
         ▼
 Hono on Node (server/)
@@ -108,7 +115,7 @@ Without keys the API reports providers as `unavailable` — it never fakes live 
 
 ```bash
 npm run dev:api   # API on http://localhost:8787
-npm run dev       # web client on http://localhost:5173 (proxies /api)
+npm run dev       # mobile-first PWA on http://localhost:4317 (proxies /api)
 ```
 
 ## Verify (no network needed)
@@ -125,13 +132,14 @@ npm run capture:demo
 ```
 
 The capture command starts the production-built app, opens `/?mode=demo` in the installed Chrome,
-drives Backtalk through three shortlisted candidates, records one system exclusion, verifies the
-lost-shade baseline, rejects the lower-ΔE candidate, accepts and prefers the other, proves CIE76 did
-not choose, confirms the structured action gate stays locked, and writes six screenshots under
+validates the standalone manifest and both install icons, drives Backtalk through three shortlisted
+candidates, records one system exclusion, verifies the lost-shade baseline, rejects the lower-ΔE
+candidate, accepts and prefers the other, proves CIE76 did not choose, confirms the structured action
+gate stays locked, and writes seven screenshots under
 `docs/screenshots/`. It fails if the browser attempts a live SerpApi, Perfect Corp, or merchant-image
 request, if fixture rows render remote product thumbnails, if any non-local image is requested, if
-fewer than three `FIXTURE` badges render, if the browser reports an error, or if the mobile verdict
-overflows horizontally. Fixture listing thumbnails are deliberately replaced by local `REC`
+fewer than three `FIXTURE` badges render, if the browser reports an error, or if the 350px mobile
+opening or verdict overflows horizontally. Fixture listing thumbnails are deliberately replaced by local `REC`
 placeholders; the merchant image URLs remain in the sanitized receipt, but the judge-demo pixels do
 not depend on them. Set `CHROME_PATH` only when Chrome is installed elsewhere.
 
