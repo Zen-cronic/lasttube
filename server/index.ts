@@ -6,7 +6,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono, type Context } from 'hono';
 import { getPerfectCorpConfig, getSerpApiConfig } from './env.ts';
 import { demoComparisonBundle, fixtureSearchResultSet, fixtureVtoRender } from './fixtures.ts';
-import { runMakeupVto } from './providers/perfectcorp.ts';
+import { runMakeupVtoWithEvidence } from './providers/perfectcorp.ts';
 import { searchShoppingWithEvidence } from './providers/serpapi.ts';
 import {
   downloadVtoOutput,
@@ -52,8 +52,11 @@ app.get('/api/search', async (c) => {
   }
   const search = await searchShoppingWithEvidence(q, config);
   const result = search.result;
-  if (result.providerStatus === 'live' && search.responseDigest) {
-    result.evidenceRunId = runtimeEvidenceStore.openSearchRun(result, search.responseDigest);
+  if (result.providerStatus === 'live' && search.responseEvidence) {
+    result.evidenceRunId = await runtimeEvidenceStore.openSearchRun(
+      result,
+      search.responseEvidence,
+    );
   }
   return c.json(result, result.providerStatus === 'failed' ? 502 : 200);
 });
@@ -144,12 +147,14 @@ app.post('/api/vto', async (c) => {
     };
     return c.json(unavailable, 503);
   }
-  const render = await runMakeupVto(body.srcFileUrl, body.effects, config);
+  const vtoRun = await runMakeupVtoWithEvidence(body.srcFileUrl, body.effects, config);
+  const render = vtoRun.render;
   if (
     render.providerStatus === 'live' &&
     render.imageUrl &&
     body.evidenceRunId &&
-    body.candidateId
+    body.candidateId &&
+    vtoRun.lifecycleReceipt
   ) {
     try {
       const output = await downloadVtoOutput(render.imageUrl);
@@ -159,8 +164,10 @@ app.post('/api/vto', async (c) => {
         srcFileUrl: body.srcFileUrl,
         effects: body.effects,
         render,
+        lifecycleReceipt: vtoRun.lifecycleReceipt,
         outputBytes: output.bytes,
         outputMediaType: output.mediaType,
+        outputDownload: output.receipt,
       });
       if (evidenceManifest.integrity.state !== 'validated') {
         throw new Error(`candidate evidence manifest ${evidenceManifest.integrity.state}`);
@@ -185,9 +192,9 @@ app.post('/api/vto', async (c) => {
   return c.json(render, render.providerStatus === 'failed' ? 502 : 200);
 });
 
-app.get('/api/evidence/runs/:runId/candidates/:candidateId/manifest', (c) => {
+app.get('/api/evidence/runs/:runId/candidates/:candidateId/manifest', async (c) => {
   try {
-    const manifest = runtimeEvidenceStore.getManifest(
+    const manifest = await runtimeEvidenceStore.getValidatedManifest(
       c.req.param('runId') ?? '',
       c.req.param('candidateId') ?? '',
     );
@@ -196,13 +203,13 @@ app.get('/api/evidence/runs/:runId/candidates/:candidateId/manifest', (c) => {
     c.header('Cache-Control', 'no-store');
     return c.json(manifest);
   } catch (err) {
-    return c.json({ error: (err as Error).message }, 404);
+    return c.json({ error: (err as Error).message }, 409);
   }
 });
 
 async function evidenceArtifact(
   c: Context,
-  kind: 'source' | 'output',
+  kind: 'search' | 'source' | 'lifecycle' | 'output',
 ) {
   try {
     const artifact = await runtimeEvidenceStore.readArtifact(
@@ -224,6 +231,12 @@ async function evidenceArtifact(
 
 app.get('/api/evidence/runs/:runId/candidates/:candidateId/source-image', (c) =>
   evidenceArtifact(c, 'source'),
+);
+app.get('/api/evidence/runs/:runId/candidates/:candidateId/search-response', (c) =>
+  evidenceArtifact(c, 'search'),
+);
+app.get('/api/evidence/runs/:runId/candidates/:candidateId/perfect-lifecycle', (c) =>
+  evidenceArtifact(c, 'lifecycle'),
 );
 app.get('/api/evidence/runs/:runId/candidates/:candidateId/output-image', (c) =>
   evidenceArtifact(c, 'output'),

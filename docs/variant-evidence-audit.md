@@ -61,9 +61,11 @@ This provenance repair does not qualify any current hero candidate. The structur
 requires all identity, exact variant, shade, finish, source-image, candidate-VTO, baseline, and human
 decision fields before it can expose an actionable observed offer or alert-eligible state.
 
-New live runs now close the mechanical retention gap prospectively: the server binds the exact
-SerpApi response digest and listing, retained merchant-image bytes/hash/coverage, Perfect request
-and task/poll outcome, and downloaded output bytes in a validated, downloadable per-run manifest.
+New live runs now close the mechanical retention gap prospectively: a versioned bundle binds the
+SerpApi wire digest plus retained sanitized raw response, re-derived listing, merchant-image
+bytes/hash/coverage, every sanitized Perfect create/poll response and URL-lineage check, and
+downloaded output bytes. Every artifact is re-hashed before export or review; tampering fails closed.
 The current deployment has no persistent disk, so that export is ephemeral until downloaded. It
-does not supply or infer exact variant/shade/finish fields and does not retroactively qualify the
-three recorded fixture candidates above.
+does not supply or infer exact variant/shade/finish fields. The no-source enrichment adapter defaults
+to unknown and cannot parse titles; a future trusted adapter would need a receipt-bound structured
+record. Nothing retroactively qualifies the three recorded fixture candidates above.

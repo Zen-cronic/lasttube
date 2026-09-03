@@ -10,6 +10,7 @@ import {
   lipColorEffect,
   pollMakeupVtoTask,
   runMakeupVto,
+  runMakeupVtoWithEvidence,
 } from '../server/providers/perfectcorp.ts';
 
 const noSleep = async () => {};
@@ -46,6 +47,61 @@ describe('extractResultUrl', () => {
 });
 
 describe('runMakeupVto lifecycle', () => {
+  it('retains every sanitized create/poll response with timestamps and URL lineage', async () => {
+    const signedParam = ['X-Amz', 'Signature'].join('-');
+    const signedUrl = `https://s3.invalid/img.jpg?${signedParam}=must-not-survive`;
+    const fetchImpl = sequencedFetch([
+      {
+        status: 200,
+        body: {
+          api_key: baseOpts.apiKey,
+          data: { task_id: 'task-receipt' },
+        },
+      },
+      {
+        status: 200,
+        body: { data: { task_id: 'task-receipt', task_status: 'running' } },
+      },
+      {
+        status: 200,
+        body: {
+          data: {
+            task_id: 'task-receipt',
+            task_status: 'success',
+            results: [{ download_url: signedUrl }],
+          },
+        },
+      },
+    ]);
+    const run = await runMakeupVtoWithEvidence(
+      'https://example.invalid/face.jpg?token=private-input',
+      [lipColorEffect('#A96A73')],
+      { ...baseOpts, fetchImpl, now: () => '2026-09-03T08:00:00.000Z' },
+    );
+    expect(run.render.providerStatus).toBe('live');
+    expect(run.lifecycleReceipt?.polls).toHaveLength(2);
+    expect(run.lifecycleReceipt?.validation).toMatchObject({
+      createTaskIdPresent: true,
+      pollTaskIdsMatchCreate: true,
+      finalStatusMatchesRender: true,
+      pollCountMatchesResponses: true,
+      successResultUrlPresent: true,
+    });
+    const retained = JSON.stringify(run.lifecycleReceipt);
+    expect(retained).not.toContain(baseOpts.apiKey);
+    expect(retained).not.toContain('must-not-survive');
+    expect(retained).not.toContain('private-input');
+    expect(run.lifecycleReceipt?.resultUrlLineage.signedUrlSha256).toHaveLength(64);
+    for (const response of [
+      run.lifecycleReceipt!.create,
+      ...run.lifecycleReceipt!.polls,
+    ]) {
+      expect(response.requestedAt).toBeTruthy();
+      expect(response.receivedAt).toBeTruthy();
+      expect(response.retainedBodySha256).toHaveLength(64);
+    }
+  });
+
   it('create -> poll running -> success yields a live render', async () => {
     const fetchImpl = sequencedFetch([
       { status: 200, body: { status: 200, data: { task_id: 'task-abc' } } },

@@ -67,7 +67,11 @@ describe('fixtureSearchResultSet', () => {
 
 describe('searchShopping failure paths', () => {
   it('binds a successful result to the exact response body digest', async () => {
-    const body = JSON.stringify(fixture.raw);
+    const body = JSON.stringify({
+      ...(fixture.raw as Record<string, unknown>),
+      api_key: 'synthetic-test-key-not-real',
+      query_token: 'query-token-not-real',
+    });
     const fetchImpl = (async () =>
       new Response(body, {
         status: 200,
@@ -78,11 +82,20 @@ describe('searchShopping failure paths', () => {
       fetchImpl,
     });
     expect(search.result.providerStatus).toBe('live');
-    expect(search.responseDigest).toEqual({
-      sha256: createHash('sha256').update(body).digest('hex'),
-      byteLength: Buffer.byteLength(body),
-      basis: 'exact_response_body_bytes',
+    expect(search.responseEvidence).not.toBeNull();
+    expect(search.responseEvidence).toMatchObject({
+      wireBodySha256: createHash('sha256').update(body).digest('hex'),
+      wireBodyBytes: Buffer.byteLength(body),
+      retainedBodyBasis: 'complete_sanitized_json_before_domain_normalization',
+      redactionPolicy: 'lasttube-provider-json-redaction/v1',
     });
+    const retained = search.responseEvidence!.retainedBody;
+    expect(createHash('sha256').update(retained).digest('hex')).toBe(
+      search.responseEvidence!.retainedBodySha256,
+    );
+    expect(retained.length).toBe(search.responseEvidence!.retainedBodyBytes);
+    expect(retained.toString()).not.toContain('synthetic-test-key-not-real');
+    expect(retained.toString()).not.toContain('query-token-not-real');
   });
 
   it('returns failed status without leaking the api key into the error', async () => {

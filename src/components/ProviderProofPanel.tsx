@@ -43,10 +43,10 @@ export function ProviderProofPanel() {
         </div>
       </div>
       <p className="field-note proof-runtime-note">
-        New LIVE candidate runs fail closed unless the server binds the exact SerpApi response
-        digest, listing, fetched source bytes, Perfect request/task/polls, and downloaded output in
-        a validated manifest. The current host has ephemeral storage, so that proof is downloadable
-        per run—not claimed as durable across a restart.
+        New LIVE candidate runs fail closed unless a versioned bundle re-hashes the sanitized raw
+        SerpApi response, listing, fetched source bytes, every sanitized Perfect response, URL
+        lineage, and downloaded output. Its four bound artifacts are exportable per run; current-host
+        storage is ephemeral, not durable across restart.
       </p>
     </aside>
   );

@@ -5,8 +5,20 @@
 // whole lifecycle is bounded and failure-safe: a stuck task returns 'failed',
 // it never spins forever.
 
+import { createHash } from 'node:crypto';
+import {
+  PROVIDER_BODY_REDACTION_POLICY,
+  type PerfectCorpLifecycleReceipt,
+  type RetainedProviderResponse,
+} from '../../shared/evidence.ts';
 import type { MakeupEffect, VtoRender } from '../../shared/types.ts';
-import { ProviderError, redactSecrets } from '../redact.ts';
+import {
+  ProviderError,
+  redactSecrets,
+  sanitizeProviderResponseBody,
+  sanitizeProviderString,
+  stripSignedQuery,
+} from '../redact.ts';
 
 // Effect constructors live in shared/effects.ts (used by client and server);
 // re-exported here so provider consumers and tests have one import surface.
@@ -25,6 +37,8 @@ export interface PerfectCorpClientOptions {
   pollBudgetMs?: number;
   /** Injectable sleeper so tests run without real waiting. */
   sleep?: (ms: number) => Promise<void>;
+  /** Injectable clock for deterministic receipt tests. */
+  now?: () => string;
 }
 
 const defaultSleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -44,7 +58,19 @@ async function requestJson(
   url: string,
   init: RequestInit,
   fetchImpl: typeof fetch,
-): Promise<{ status: number; json: unknown; bodyText: string }> {
+  receipt: {
+    phase: 'create' | 'poll';
+    sequence: number;
+    now: () => string;
+    secretValues: readonly string[];
+  },
+): Promise<{
+  status: number;
+  json: unknown;
+  bodyText: string;
+  responseReceipt: RetainedProviderResponse;
+}> {
+  const requestedAt = receipt.now();
   let res: Response;
   try {
     res = await fetchImpl(url, init);
@@ -52,17 +78,69 @@ async function requestJson(
     throw new ProviderError(`Perfect Corp request did not complete: ${(err as Error).message}`);
   }
   const bodyText = await res.text();
+  const receivedAt = receipt.now();
+  const retainedBodyText = sanitizeProviderResponseBody(bodyText, receipt.secretValues);
+  const retainedBodyBytes = Buffer.byteLength(retainedBodyText);
+  const responseReceipt: RetainedProviderResponse = {
+    sequence: receipt.sequence,
+    phase: receipt.phase,
+    requestedAt,
+    receivedAt,
+    requestUrl: sanitizeProviderString(stripSignedQuery(url), receipt.secretValues),
+    finalResponseUrl: sanitizeProviderString(stripSignedQuery(res.url || url), receipt.secretValues),
+    redirected: res.redirected,
+    httpStatus: res.status,
+    retainedBodySha256: createHash('sha256').update(retainedBodyText).digest('hex'),
+    retainedBodyBytes,
+    retainedBody: {
+      mediaType: 'application/json',
+      encoding: 'utf-8',
+      redactionPolicy: PROVIDER_BODY_REDACTION_POLICY,
+      bodyText: retainedBodyText,
+    },
+  };
   let json: unknown = null;
   try {
     json = JSON.parse(bodyText) as unknown;
   } catch {
     // leave json null; callers decide
   }
-  return { status: res.status, json, bodyText };
+  return { status: res.status, json, bodyText, responseReceipt };
 }
 
 interface TaskCreateData {
   task_id?: string;
+}
+
+async function createMakeupVtoTaskObserved(
+  srcFileUrl: string,
+  effects: MakeupEffect[],
+  opts: PerfectCorpClientOptions,
+): Promise<{ taskId: string; response: RetainedProviderResponse }> {
+  const fetchImpl = opts.fetchImpl ?? fetch;
+  const now = opts.now ?? (() => new Date().toISOString());
+  const url = `${base(opts)}/s2s/v2.0/task/makeup-vto`;
+  const { status, json, bodyText, responseReceipt } = await requestJson(
+    url,
+    {
+      method: 'POST',
+      headers: headers(opts.apiKey),
+      body: JSON.stringify({ src_file_url: srcFileUrl, effects, version: '1.0' }),
+    },
+    fetchImpl,
+    { phase: 'create', sequence: 0, now, secretValues: [opts.apiKey] },
+  );
+  if (status !== 200) {
+    throw new ProviderError(
+      `Perfect Corp task create HTTP ${status}: ${sanitizeProviderString(bodyText.slice(0, 300), [opts.apiKey])}`,
+    );
+  }
+  const data = (json as { data?: TaskCreateData } | null)?.data;
+  const taskId = data?.task_id;
+  if (typeof taskId !== 'string' || taskId.length === 0) {
+    throw new ProviderError('Perfect Corp task create succeeded but returned no task_id.');
+  }
+  return { taskId, response: responseReceipt };
 }
 
 /** Create a makeup-vto task from a publicly accessible selfie URL. */
@@ -71,26 +149,7 @@ export async function createMakeupVtoTask(
   effects: MakeupEffect[],
   opts: PerfectCorpClientOptions,
 ): Promise<string> {
-  const fetchImpl = opts.fetchImpl ?? fetch;
-  const url = `${base(opts)}/s2s/v2.0/task/makeup-vto`;
-  const { status, json, bodyText } = await requestJson(
-    url,
-    {
-      method: 'POST',
-      headers: headers(opts.apiKey),
-      body: JSON.stringify({ src_file_url: srcFileUrl, effects, version: '1.0' }),
-    },
-    fetchImpl,
-  );
-  if (status !== 200) {
-    throw new ProviderError(`Perfect Corp task create HTTP ${status}: ${bodyText.slice(0, 300)}`);
-  }
-  const data = (json as { data?: TaskCreateData } | null)?.data;
-  const taskId = data?.task_id;
-  if (typeof taskId !== 'string' || taskId.length === 0) {
-    throw new ProviderError('Perfect Corp task create succeeded but returned no task_id.');
-  }
-  return taskId;
+  return (await createMakeupVtoTaskObserved(srcFileUrl, effects, opts)).taskId;
 }
 
 export interface PollOutcome {
@@ -102,12 +161,20 @@ export interface PollOutcome {
 }
 
 interface TaskPollData {
+  task_id?: string;
   task_status?: string;
   results?: Array<{ download_url?: string; url?: string }> | { url?: string; download_url?: string };
   failure_reason?: string;
   error?: string;
   error_message?: string;
   polling_interval?: number;
+}
+
+interface ObservedPollOutcome {
+  outcome: PollOutcome;
+  responses: RetainedProviderResponse[];
+  selectedPollSequence: number | null;
+  mismatchedTaskIdSequences: number[];
 }
 
 /** The docs show two success shapes; accept both. */
@@ -126,41 +193,60 @@ export function extractResultUrl(data: TaskPollData): string | null {
 }
 
 /** Bounded poll loop. Never exceeds the budget; never gaps past 10s. */
-export async function pollMakeupVtoTask(
+async function pollMakeupVtoTaskObserved(
   taskId: string,
   opts: PerfectCorpClientOptions,
-): Promise<PollOutcome> {
+): Promise<ObservedPollOutcome> {
   const fetchImpl = opts.fetchImpl ?? fetch;
   const sleep = opts.sleep ?? defaultSleep;
+  const now = opts.now ?? (() => new Date().toISOString());
   const intervalMs = Math.min(opts.pollIntervalMs ?? 2000, 9000);
   const budgetMs = opts.pollBudgetMs ?? 120_000;
   const maxPolls = Math.max(1, Math.ceil(budgetMs / intervalMs));
   const url = `${base(opts)}/s2s/v2.0/task/makeup-vto/${encodeURIComponent(taskId)}`;
 
   let pollCount = 0;
+  const responses: RetainedProviderResponse[] = [];
+  const mismatchedTaskIdSequences: number[] = [];
   for (let i = 0; i < maxPolls; i += 1) {
-    const { status, json, bodyText } = await requestJson(
+    const sequence = i + 1;
+    const { status, json, bodyText, responseReceipt } = await requestJson(
       url,
       { method: 'GET', headers: headers(opts.apiKey) },
       fetchImpl,
+      { phase: 'poll', sequence, now, secretValues: [opts.apiKey] },
     );
+    responses.push(responseReceipt);
     pollCount += 1;
     if (status !== 200) {
       return {
-        taskStatus: 'error',
-        imageUrl: null,
-        pollCount,
-        errorDetail: redactSecrets(`HTTP ${status}: ${bodyText.slice(0, 300)}`),
+        outcome: {
+          taskStatus: 'error',
+          imageUrl: null,
+          pollCount,
+          errorDetail: sanitizeProviderString(`HTTP ${status}: ${bodyText.slice(0, 300)}`, [opts.apiKey]),
+        },
+        responses,
+        selectedPollSequence: null,
+        mismatchedTaskIdSequences,
       };
     }
     const data = ((json as { data?: TaskPollData } | null)?.data ?? {}) as TaskPollData;
+    if (typeof data.task_id === 'string' && data.task_id !== taskId) {
+      mismatchedTaskIdSequences.push(sequence);
+    }
     const taskStatus = data.task_status;
     if (taskStatus === 'success') {
       return {
-        taskStatus: 'success',
-        imageUrl: extractResultUrl(data),
-        pollCount,
-        errorDetail: null,
+        outcome: {
+          taskStatus: 'success',
+          imageUrl: extractResultUrl(data),
+          pollCount,
+          errorDetail: null,
+        },
+        responses,
+        selectedPollSequence: sequence,
+        mismatchedTaskIdSequences,
       };
     }
     if (taskStatus === 'error') {
@@ -168,73 +254,152 @@ export async function pollMakeupVtoTask(
         .filter((s): s is string => typeof s === 'string' && s.length > 0)
         .join(' — ');
       return {
-        taskStatus: 'error',
-        imageUrl: null,
-        pollCount,
-        errorDetail: redactSecrets(detail || 'engine error with no detail'),
+        outcome: {
+          taskStatus: 'error',
+          imageUrl: null,
+          pollCount,
+          errorDetail: redactSecrets(detail || 'engine error with no detail'),
+        },
+        responses,
+        selectedPollSequence: sequence,
+        mismatchedTaskIdSequences,
       };
     }
     // running / queued / processing — wait and try again, within budget.
     if (i < maxPolls - 1) await sleep(intervalMs);
   }
   return {
-    taskStatus: 'timeout',
-    imageUrl: null,
-    pollCount,
-    errorDetail: `polling budget (${budgetMs}ms) exhausted before the task finished`,
+    outcome: {
+      taskStatus: 'timeout',
+      imageUrl: null,
+      pollCount,
+      errorDetail: `polling budget (${budgetMs}ms) exhausted before the task finished`,
+    },
+    responses,
+    selectedPollSequence: null,
+    mismatchedTaskIdSequences,
   };
 }
 
-/** Full lifecycle: create -> poll -> typed VtoRender. Never throws. */
-export async function runMakeupVto(
+/** Bounded poll loop. Public compatibility wrapper omits receipt internals. */
+export async function pollMakeupVtoTask(
+  taskId: string,
+  opts: PerfectCorpClientOptions,
+): Promise<PollOutcome> {
+  return (await pollMakeupVtoTaskObserved(taskId, opts)).outcome;
+}
+
+export interface MakeupVtoRunWithEvidence {
+  render: VtoRender;
+  /** Present only for a successful lifecycle whose complete responses were retained. */
+  lifecycleReceipt: PerfectCorpLifecycleReceipt | null;
+}
+
+/** Full lifecycle plus sanitized create/poll response evidence. Never throws. */
+export async function runMakeupVtoWithEvidence(
   srcFileUrl: string,
   effects: MakeupEffect[],
   opts: PerfectCorpClientOptions,
-): Promise<VtoRender> {
-  const startedAt = new Date().toISOString();
+): Promise<MakeupVtoRunWithEvidence> {
+  const now = opts.now ?? (() => new Date().toISOString());
+  const startedAt = now();
   let taskId: string | null = null;
   try {
-    taskId = await createMakeupVtoTask(srcFileUrl, effects, opts);
-    const outcome = await pollMakeupVtoTask(taskId, opts);
+    const created = await createMakeupVtoTaskObserved(srcFileUrl, effects, opts);
+    taskId = created.taskId;
+    const observedPoll = await pollMakeupVtoTaskObserved(taskId, opts);
+    const outcome = observedPoll.outcome;
+    const completedAt = now();
     if (outcome.taskStatus === 'success' && outcome.imageUrl) {
-      return {
+      const selectedPollSequence = observedPoll.selectedPollSequence;
+      if (selectedPollSequence === null) {
+        throw new ProviderError('Perfect Corp success had no selected poll response.');
+      }
+      const sanitizedSourceUrl = stripSignedQuery(srcFileUrl);
+      const sanitizedResultUrl = stripSignedQuery(outcome.imageUrl);
+      const render: VtoRender = {
         providerStatus: 'live',
         provider: 'perfectcorp',
         taskId,
         imageUrl: outcome.imageUrl,
         startedAt,
-        completedAt: new Date().toISOString(),
+        completedAt,
         pollCount: outcome.pollCount,
         expiryNote: RESULT_EXPIRY_NOTE,
       };
+      return {
+        render,
+        lifecycleReceipt: {
+          schemaVersion: 1,
+          kind: 'perfectcorp-makeup-vto-lifecycle',
+          provider: 'perfectcorp',
+          startedAt,
+          completedAt,
+          request: {
+            srcFileUrl: sanitizedSourceUrl,
+            srcFileUrlSha256: createHash('sha256').update(srcFileUrl).digest('hex'),
+            effects,
+          },
+          create: created.response,
+          polls: observedPoll.responses,
+          resultUrlLineage: {
+            selectedFromPollSequence: selectedPollSequence,
+            signedUrlSha256: createHash('sha256').update(outcome.imageUrl).digest('hex'),
+            sanitizedUrl: sanitizedResultUrl,
+          },
+          validation: {
+            createTaskIdPresent: true,
+            pollTaskIdsMatchCreate: observedPoll.mismatchedTaskIdSequences.length === 0,
+            mismatchedPollSequences: observedPoll.mismatchedTaskIdSequences,
+            finalStatusMatchesRender: true,
+            pollCountMatchesResponses: outcome.pollCount === observedPoll.responses.length,
+            successResultUrlPresent: true,
+          },
+        },
+      };
     }
     return {
-      providerStatus: 'failed',
-      provider: 'perfectcorp',
-      taskId,
-      imageUrl: null,
-      startedAt,
-      completedAt: new Date().toISOString(),
-      pollCount: outcome.pollCount,
-      expiryNote: RESULT_EXPIRY_NOTE,
-      error:
-        outcome.taskStatus === 'timeout'
-          ? outcome.errorDetail ?? 'timeout'
-          : `Perfect Corp engine error: ${outcome.errorDetail ?? 'unknown'}`,
+      render: {
+        providerStatus: 'failed',
+        provider: 'perfectcorp',
+        taskId,
+        imageUrl: null,
+        startedAt,
+        completedAt,
+        pollCount: outcome.pollCount,
+        expiryNote: RESULT_EXPIRY_NOTE,
+        error:
+          outcome.taskStatus === 'timeout'
+            ? outcome.errorDetail ?? 'timeout'
+            : `Perfect Corp engine error: ${outcome.errorDetail ?? 'unknown'}`,
+      },
+      lifecycleReceipt: null,
     };
   } catch (err) {
     return {
-      providerStatus: 'failed',
-      provider: 'perfectcorp',
-      taskId,
-      imageUrl: null,
-      startedAt,
-      completedAt: new Date().toISOString(),
-      pollCount: 0,
-      expiryNote: RESULT_EXPIRY_NOTE,
-      error: redactSecrets((err as Error).message),
+      render: {
+        providerStatus: 'failed',
+        provider: 'perfectcorp',
+        taskId,
+        imageUrl: null,
+        startedAt,
+        completedAt: now(),
+        pollCount: 0,
+        expiryNote: RESULT_EXPIRY_NOTE,
+        error: redactSecrets((err as Error).message),
+      },
+      lifecycleReceipt: null,
     };
   }
+}
+
+/** Full lifecycle compatibility wrapper used by existing proof scripts. */
+export async function runMakeupVto(
+  srcFileUrl: string,
+  effects: MakeupEffect[],
+  opts: PerfectCorpClientOptions,
+): Promise<VtoRender> {
+  return (await runMakeupVtoWithEvidence(srcFileUrl, effects, opts)).render;
 }
 
 /** Current credit balance — used by proof scripts to receipt actual spend. */
@@ -246,6 +411,12 @@ export async function getCreditBalance(
     `${base(opts)}/s2s/v1.0/client/credit`,
     { method: 'GET', headers: headers(opts.apiKey) },
     fetchImpl,
+    {
+      phase: 'create',
+      sequence: 0,
+      now: opts.now ?? (() => new Date().toISOString()),
+      secretValues: [opts.apiKey],
+    },
   );
   return { status, json };
 }

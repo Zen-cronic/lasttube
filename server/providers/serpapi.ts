@@ -3,7 +3,13 @@
 
 import { createHash } from 'node:crypto';
 import type { CandidateRecord, ProviderStatus, SearchResultSet } from '../../shared/types.ts';
-import { ProviderError, redactSecrets } from '../redact.ts';
+import { PROVIDER_BODY_REDACTION_POLICY } from '../../shared/evidence.ts';
+import {
+  ProviderError,
+  redactSecrets,
+  sanitizeProviderResponseBody,
+  sanitizeProviderString,
+} from '../redact.ts';
 
 export const AVAILABILITY_CAVEAT =
   'Observed on a Google Shopping listing via SerpApi at the stated time; listings are not a real-time stock check.';
@@ -123,15 +129,19 @@ export interface SerpApiClientOptions {
   num?: number;
 }
 
-export interface SerpApiResponseDigest {
-  sha256: string;
-  byteLength: number;
-  basis: 'exact_response_body_bytes';
+export interface SerpApiResponseEvidence {
+  wireBodySha256: string;
+  wireBodyBytes: number;
+  retainedBodySha256: string;
+  retainedBodyBytes: number;
+  retainedBody: Buffer;
+  retainedBodyBasis: 'complete_sanitized_json_before_domain_normalization';
+  redactionPolicy: typeof PROVIDER_BODY_REDACTION_POLICY;
 }
 
 interface RawShoppingFetch {
   raw: unknown;
-  digest: SerpApiResponseDigest;
+  evidence: SerpApiResponseEvidence;
 }
 
 async function fetchShoppingRaw(
@@ -156,15 +166,23 @@ async function fetchShoppingRaw(
   }
   const body = await res.text();
   if (!res.ok) {
-    throw new ProviderError(`SerpApi HTTP ${res.status}: ${body.slice(0, 300)}`);
+    throw new ProviderError(
+      `SerpApi HTTP ${res.status}: ${sanitizeProviderString(body.slice(0, 300), [opts.apiKey])}`,
+    );
   }
   try {
+    const raw = JSON.parse(body) as unknown;
+    const retainedBody = Buffer.from(sanitizeProviderResponseBody(body, [opts.apiKey]), 'utf8');
     return {
-      raw: JSON.parse(body) as unknown,
-      digest: {
-        sha256: createHash('sha256').update(body).digest('hex'),
-        byteLength: Buffer.byteLength(body),
-        basis: 'exact_response_body_bytes',
+      raw,
+      evidence: {
+        wireBodySha256: createHash('sha256').update(body).digest('hex'),
+        wireBodyBytes: Buffer.byteLength(body),
+        retainedBodySha256: createHash('sha256').update(retainedBody).digest('hex'),
+        retainedBodyBytes: retainedBody.length,
+        retainedBody,
+        retainedBodyBasis: 'complete_sanitized_json_before_domain_normalization',
+        redactionPolicy: PROVIDER_BODY_REDACTION_POLICY,
       },
     };
   } catch {
@@ -182,10 +200,10 @@ export async function searchShoppingRaw(
 
 export interface ShoppingSearchWithEvidence {
   result: SearchResultSet;
-  responseDigest: SerpApiResponseDigest | null;
+  responseEvidence: SerpApiResponseEvidence | null;
 }
 
-/** Live search with an exact wire-body digest for a server-side evidence run. */
+/** Live search with exact wire digest plus a retained, sanitized raw JSON artifact. */
 export async function searchShoppingWithEvidence(
   query: string,
   opts: SerpApiClientOptions,
@@ -195,7 +213,7 @@ export async function searchShoppingWithEvidence(
     const fetched = await fetchShoppingRaw(query, opts);
     return {
       result: normalizeShoppingResponse(fetched.raw, query, observedAt, 'live'),
-      responseDigest: fetched.digest,
+      responseEvidence: fetched.evidence,
     };
   } catch (err) {
     return {
@@ -208,7 +226,7 @@ export async function searchShoppingWithEvidence(
         warnings: [],
         error: redactSecrets((err as Error).message),
       },
-      responseDigest: null,
+      responseEvidence: null,
     };
   }
 }

@@ -28,8 +28,8 @@ Those anecdotes do **not** establish LastTube's accuracy, validation, market siz
 3. **Resolve every candidate** — merchant-image estimation fails closed below 10% usable saturated
    foreground coverage. Each shortlisted row becomes either a recorded system exclusion or an
    explicit human accept/reject after Perfect Corp successfully renders the remembered baseline.
-   On the live path, the server first binds the exact search-response digest and fetched image bytes,
-   then downloads the Perfect output and validates an exportable per-run manifest. A missing or
+   On the live path, the server first retains a sanitized raw search response and fetched image bytes,
+   then downloads the Perfect output and validates a versioned exportable bundle. A missing or
    invalid manifest system-excludes the candidate before review. Preference is accepted-only;
    CIE76 is context, never the chooser.
 4. **Action gate** — an observed offer unlocks only when listing identity, exact variant, shade,
@@ -47,12 +47,22 @@ receipted lost-shade Perfect Corp lifecycle. Candidate fixtures are narrower: th
 with task/poll metadata, but no retained request or lifecycle responses. Their per-candidate
 manifests say so, and every replay remains visibly `FIXTURE`.
 
-New live candidate runs use a stricter proof path. The search response's exact body digest opens an
-evidence run; shade estimation retains and hashes the exact fetched merchant-image bytes; Perfect
-request inputs plus task/poll outcome are bound to the locally downloaded output bytes. Only a
-re-hashed `validated` manifest reaches the UI policy, where it is downloadable beside the candidate.
+New live candidate runs use a stricter proof path. The search response's wire digest opens an
+evidence run, while a complete recursively redacted JSON copy is retained and separately hashed
+before normalization. Shade estimation retains and hashes the exact fetched merchant-image bytes.
+The versioned `2.0.0` bundle also retains every sanitized Perfect create/poll response with its own
+digest and timestamps, safe request/final-redirect URL lineage, request inputs, and the locally
+downloaded output bytes. Validation re-parses the retained search and lifecycle artifacts, re-derives
+the candidate, and re-hashes all four artifacts; any tamper makes export and review fail closed.
+Only a `validated` manifest reaches the UI policy, where its artifact index is downloadable.
 The current Render shape has no persistent disk, so this is truthfully an **exportable per-run
-manifest**, not durable storage: download the JSON and its two bound images before restart/redeploy.
+bundle**, not durable storage: download the manifest, sanitized search response, source image,
+sanitized Perfect lifecycle, and output image before restart/redeploy.
+
+An explicit structured-enrichment interface is ready for a future trusted SKU/catalog source. Its
+default adapter returns `unknown`; it has no title parser and cannot promote variant-looking prose.
+Present variant/shade/finish fields require a receipt-bound trusted structured record. No live
+enrichment source is configured or claimed.
 
 ![Demo mode — visibly labeled fixtures](docs/screenshots/demo-mode.png)
 
@@ -64,17 +74,19 @@ Vite + React client (src/)
         │  /api/* only — no secrets in the browser
         ▼
 Hono on Node (server/)
-  /api/search                → SerpApi result + exact response-body digest → evidence run
+  /api/search                → SerpApi result + wire digest + retained sanitized raw JSON
   /api/shade-estimate        → sharp: dominant saturated color of merchant image
                                + exact fetched bytes/hash retained per run
   /api/vto                   → Perfect Corp makeup-vto: create → bounded poll
-                               → download/hash output → validate manifest or fail closed
-  /api/evidence/runs/...     → downloadable manifest + bound source/output images
+                               → retain response digests/timestamps + safe URL lineage
+                               → download/hash output → validate bundle or fail closed
+  /api/evidence/runs/...     → manifest + sanitized search/lifecycle + source/output images
   /api/demo/comparison-bundle→ labeled replay with proof level per artifact
         │
         ▼
 shared/ (types.ts, evidence.ts, reviewDecision.ts, shadeEvidence.ts, color.ts)
   structured evidence state · candidate disposition · action derivation · CIE76 context
+server/structuredEnrichment.ts → no-source default + trusted-record contract (no live adapter)
 proofs/ — sanitized live receipts + per-candidate offline provenance manifests
 ```
 
@@ -97,7 +109,7 @@ npm run dev       # web client on http://localhost:5173 (proxies /api)
 ## Verify (no network needed)
 
 ```bash
-npm run verify    # typecheck + lint + 51 offline tests + build + secret scan
+npm run verify    # typecheck + lint + 56 offline tests + build + secret scan
 ```
 
 ## Rehearse the judge demo (no network or provider spend)
@@ -133,7 +145,7 @@ Creating the Render service, entering secrets, and making the URL public are int
 the operator. See Render's official [Blueprint specification](https://render.com/docs/blueprint-spec)
 and [health-check contract](https://render.com/docs/health-checks).
 
-The Blueprint provisions no persistent disk. Runtime evidence files therefore live in the server's
+The Blueprint provisions no persistent disk. Runtime evidence bundle files therefore live in the server's
 ephemeral temporary directory and are explicitly labeled exportable per-run. Production durability
 would require an operator-approved object store or persistent disk plus retention/deletion policy;
 neither is claimed or provisioned by this prototype.
@@ -171,7 +183,8 @@ unlocks the offer/action branch.
   shade/variant, the UI says `exact shade / variant: not present`, returns no actionable lead, and
   never presents a Buy action.
 - `present`, `absent`, and `unknown` are separate evidence states. Marketing prose is not silently
-  promoted into a structured shade or variant.
+  promoted into a structured shade or variant. The default structured-enrichment adapter returns
+  unknown, and a synthetic contract test proves only a receipt-bound trusted record may promote it.
 - Complete fields in unit tests are labeled **synthetic policy fixtures**. They prove only that the
   gate can open when a server-validated manifest and every required field are present; they are not
   evidence of a real actionable product lead.

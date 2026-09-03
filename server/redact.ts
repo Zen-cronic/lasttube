@@ -9,6 +9,11 @@ const SECRET_ENV_KEYS = [
   'FEATHERLESS_API_KEY',
 ] as const;
 
+const SENSITIVE_JSON_KEY =
+  /^(?:api[_-]?key|apikey|access[_-]?token|auth(?:orization)?|bearer|client[_-]?secret|credential|password|query[_-]?token|refresh[_-]?token|secret|signature|security[_-]?token)$/i;
+const SENSITIVE_QUERY_KEY =
+  /^(?:api[_-]?key|apikey|key|token|access[_-]?token|auth|authorization|credential|password|secret|signature|x-amz-.+)$/i;
+
 /** Replace any known secret value and common credential-bearing URL params. */
 export function redactSecrets(input: string): string {
   let out = input;
@@ -40,6 +45,79 @@ export function stripSignedQuery(url: string): string {
   } catch {
     return redactSecrets(url);
   }
+}
+
+function redactExplicitValues(input: string, secretValues: readonly string[]): string {
+  let output = input;
+  for (const value of secretValues) {
+    if (value.length >= 8) output = output.split(value).join('[EXPLICIT SECRET REDACTED]');
+  }
+  return output;
+}
+
+/**
+ * Sanitize a provider-returned string without assuming credentials only use
+ * the environment variable values known to this process.
+ */
+export function sanitizeProviderString(
+  input: string,
+  secretValues: readonly string[] = [],
+): string {
+  const redacted = redactSecrets(redactExplicitValues(input, secretValues));
+  try {
+    const url = new URL(redacted);
+    let changed = false;
+    for (const key of [...url.searchParams.keys()]) {
+      if (SENSITIVE_QUERY_KEY.test(key)) {
+        url.searchParams.set(key, '[REDACTED]');
+        changed = true;
+      }
+    }
+    if (/^https?:$/.test(url.protocol)) {
+      if ([...url.searchParams.keys()].some((key) => /^x-amz-/i.test(key))) {
+        return `${url.origin}${url.pathname}?[SIGNED-QUERY-REDACTED]`;
+      }
+      return changed ? url.toString() : redacted;
+    }
+  } catch {
+    // Non-URL strings still receive the explicit and environment redaction above.
+  }
+  return redacted;
+}
+
+function sanitizeProviderValue(value: unknown, secretValues: readonly string[]): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeProviderValue(item, secretValues));
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+        key,
+        SENSITIVE_JSON_KEY.test(key)
+          ? '[REDACTED]'
+          : sanitizeProviderValue(item, secretValues),
+      ]),
+    );
+  }
+  return typeof value === 'string' ? sanitizeProviderString(value, secretValues) : value;
+}
+
+/**
+ * Preserve the complete JSON response object before domain normalization while
+ * recursively redacting credential-shaped fields and URL query tokens. The
+ * returned UTF-8 text is the exact retained artifact that callers hash.
+ */
+export function sanitizeProviderResponseBody(
+  bodyText: string,
+  secretValues: readonly string[] = [],
+): string {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(bodyText) as unknown;
+  } catch {
+    return sanitizeProviderString(bodyText, secretValues);
+  }
+  return JSON.stringify(sanitizeProviderValue(parsed, secretValues));
 }
 
 /** Deep-sanitize any JSON-serializable value for receipts/fixtures. */

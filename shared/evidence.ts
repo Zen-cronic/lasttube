@@ -75,9 +75,96 @@ export interface CandidateEvidence {
   systemExclusionReason: string | null;
 }
 
-export interface RuntimeCandidateEvidenceManifest {
+export const RUNTIME_EVIDENCE_BUNDLE_VERSION = '2.0.0' as const;
+export const PROVIDER_BODY_REDACTION_POLICY = 'lasttube-provider-json-redaction/v1' as const;
+
+export interface ProviderResponseDigest {
+  sequence: number;
+  phase: 'create' | 'poll';
+  requestedAt: string;
+  receivedAt: string;
+  requestUrl: string;
+  finalResponseUrl: string;
+  redirected: boolean;
+  httpStatus: number;
+  retainedBodySha256: string;
+  retainedBodyBytes: number;
+}
+
+export interface RetainedProviderResponse extends ProviderResponseDigest {
+  retainedBody: {
+    mediaType: 'application/json';
+    encoding: 'utf-8';
+    redactionPolicy: typeof PROVIDER_BODY_REDACTION_POLICY;
+    bodyText: string;
+  };
+}
+
+export interface PerfectCorpLifecycleReceipt {
   schemaVersion: 1;
+  kind: 'perfectcorp-makeup-vto-lifecycle';
+  provider: 'perfectcorp';
+  startedAt: string;
+  completedAt: string;
+  request: {
+    srcFileUrl: string;
+    srcFileUrlSha256: string;
+    effects: unknown[];
+  };
+  create: RetainedProviderResponse;
+  polls: RetainedProviderResponse[];
+  resultUrlLineage: {
+    selectedFromPollSequence: number;
+    signedUrlSha256: string;
+    sanitizedUrl: string;
+  };
+  validation: {
+    createTaskIdPresent: boolean;
+    pollTaskIdsMatchCreate: boolean;
+    mismatchedPollSequences: number[];
+    finalStatusMatchesRender: boolean;
+    pollCountMatchesResponses: boolean;
+    successResultUrlPresent: boolean;
+  };
+}
+
+export interface VtoOutputDownloadReceipt {
+  requestedAt: string;
+  receivedAt: string;
+  requestedSignedUrlSha256: string;
+  requestedUrl: string;
+  finalResponseUrl: string;
+  redirected: boolean;
+  httpStatus: number;
+  mediaType: string;
+  outputSha256: string;
+  outputBytes: number;
+}
+
+export interface StructuredCandidateEnrichment {
+  schemaVersion: 1;
+  candidateId: string;
+  adapterId: string;
+  source: {
+    kind: 'none' | 'trusted_structured_record';
+    recordId: string | null;
+    sourceUrl: string | null;
+    receiptSha256: string | null;
+  };
+  exactVariant: EvidenceField;
+  exactShade: EvidenceField;
+  finish: EvidenceField;
+}
+
+export interface RuntimeCandidateEvidenceManifest {
+  schemaVersion: 2;
   kind: 'candidate-evidence-manifest';
+  bundle: {
+    format: 'lasttube-candidate-evidence';
+    version: typeof RUNTIME_EVIDENCE_BUNDLE_VERSION;
+    validationProfile: 'lasttube-evidence-integrity/v2';
+    requiredArtifacts: ['searchResponse', 'sourceImage', 'perfectLifecycle', 'outputImage'];
+  };
   runId: string;
   candidateId: string;
   createdAt: string;
@@ -92,14 +179,19 @@ export interface RuntimeCandidateEvidenceManifest {
     providerStatus: 'live';
     query: string;
     observedAt: string;
-    rawBodySha256: string;
-    rawBodyBytes: number;
-    digestBasis: 'exact_response_body_bytes';
+    wireBodySha256: string;
+    wireBodyBytes: number;
+    retainedBodySha256: string;
+    retainedBodyBytes: number;
+    retainedBodyBasis: 'complete_sanitized_json_before_domain_normalization';
+    redactionPolicy: typeof PROVIDER_BODY_REDACTION_POLICY;
   };
+  structuredEnrichment: StructuredCandidateEnrichment;
   vtoLifecycle: {
     provider: 'perfectcorp';
     request: {
       srcFileUrl: string;
+      srcFileUrlSha256: string;
       effects: unknown[];
     };
     outcome: {
@@ -109,12 +201,43 @@ export interface RuntimeCandidateEvidenceManifest {
       startedAt: string;
       completedAt: string;
     };
+    responseDigests: ProviderResponseDigest[];
+    resultUrlLineage: PerfectCorpLifecycleReceipt['resultUrlLineage'];
+    outputDownload: VtoOutputDownloadReceipt;
+    crossFieldValidation: PerfectCorpLifecycleReceipt['validation'] & {
+      requestSourceMatchesLifecycle: boolean;
+      requestEffectsMatchLifecycle: boolean;
+      downloadRequestMatchesResultUrl: boolean;
+      outputDigestMatchesManifest: boolean;
+    };
   } | null;
   evidence: CandidateEvidence;
   artifacts: {
     manifestUrl: string;
-    sourceImage: { downloadUrl: string; mediaType: string } | null;
-    outputImage: { downloadUrl: string; mediaType: string } | null;
+    searchResponse: {
+      downloadUrl: string;
+      mediaType: 'application/json';
+      sha256: string;
+      byteLength: number;
+    };
+    sourceImage: {
+      downloadUrl: string;
+      mediaType: string;
+      sha256: string;
+      byteLength: number;
+    } | null;
+    perfectLifecycle: {
+      downloadUrl: string;
+      mediaType: 'application/json';
+      sha256: string;
+      byteLength: number;
+    } | null;
+    outputImage: {
+      downloadUrl: string;
+      mediaType: string;
+      sha256: string;
+      byteLength: number;
+    } | null;
   };
   integrity: {
     state: 'collecting' | 'validated' | 'invalid';

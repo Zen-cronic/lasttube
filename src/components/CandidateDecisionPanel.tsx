@@ -87,7 +87,7 @@ export function CandidateDecisionPanel({
                     target="_blank"
                     rel="noreferrer noopener"
                   >
-                    Download validated per-run manifest
+                    Download validated bundle index
                   </a>
                 )}
               </div>
