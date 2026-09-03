@@ -37,6 +37,11 @@ interface ShadeEstimateResponse {
   error?: string;
 }
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 function providerBadge(value: string | undefined): BadgeStatus {
   return value === 'configured' ? 'configured' : 'unavailable';
 }
@@ -63,6 +68,7 @@ function failedVtoRender(error: string): VtoRender {
 export default function App() {
   const [health, setHealth] = useState<Health | null>(null);
   const [lost, setLost] = useState<LostShade | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   // Act 2 state
   const [hunting, setHunting] = useState(false);
@@ -91,6 +97,15 @@ export default function App() {
       .then((r) => r.json() as Promise<Health>)
       .then(setHealth)
       .catch(() => setHealth(null));
+  }, []);
+
+  useEffect(() => {
+    const handleInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as BeforeInstallPromptEvent);
+    };
+    window.addEventListener('beforeinstallprompt', handleInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
   }, []);
 
   // Sequence guard so a slow earlier hunt (e.g. a live search still in flight
@@ -405,6 +420,13 @@ export default function App() {
     });
   };
 
+  const installMobileApp = async () => {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  };
+
   // Signature element: the shade under consideration tints the interface.
   const activeComparison = comparisons.find((c) => c.id === activeId);
   const activeHex = activeComparison?.estimateHex ?? lost?.hex ?? '#a96a73';
@@ -428,22 +450,33 @@ export default function App() {
     reviewDecisions,
     preferredId,
   );
+  const currentStep = comparing ? 3 : hunting ? 2 : 1;
+  const signalSteps = ['Pick your shade', 'Check options', 'Make your call'];
 
   return (
     <div className="page" style={shadeStyle}>
       <header className="site-header">
-        <div>
+        <div className="brand-lockup">
           <p className="wordmark">
             Last<span className="tube">Tube</span>
           </p>
-          <p className="tagline">Your favorite shade vanished. Account for every candidate before you act.</p>
+          <p className="tagline">A mobile shade-recovery app</p>
         </div>
-        <div className="provider-strip">
-          <ProviderStatusBadge name="SerpApi" status={providerBadge(health?.providers.serpapi)} />
-          <ProviderStatusBadge
-            name="Perfect Corp"
-            status={providerBadge(health?.providers.perfectcorp)}
-          />
+        <div className="header-actions">
+          {installPrompt ? (
+            <button type="button" className="install-button" onClick={() => void installMobileApp()}>
+              Install app
+            </button>
+          ) : (
+            <span className="pwa-chip">Mobile ready</span>
+          )}
+          <div className="provider-strip">
+            <ProviderStatusBadge name="SerpApi" status={providerBadge(health?.providers.serpapi)} />
+            <ProviderStatusBadge
+              name="Perfect Corp"
+              status={providerBadge(health?.providers.perfectcorp)}
+            />
+          </div>
         </div>
       </header>
 
@@ -454,9 +487,17 @@ export default function App() {
           </p>
           <p className="proof-mode-copy" aria-live="polite">
             {dataSource === 'fixture'
-              ? 'A receipted SerpApi search and lost-shade baseline replay locally. Candidate outputs retain metadata only; every replay stays labeled FIXTURE.'
-              : 'The next hunt and comparison call the configured sponsor APIs and may consume event credits.'}
+              ? 'Recorded provider evidence. Every replay stays labeled FIXTURE.'
+              : 'Calls the configured sponsor APIs and may use event credits.'}
           </p>
+          <details className="micro-details proof-mode-details">
+            <summary>Proof details</summary>
+            <p>
+              {dataSource === 'fixture'
+                ? 'The SerpApi search and lost-shade baseline are receipted. Candidate outputs retain metadata-only proof.'
+                : 'Live search and comparison retain provider status and fail closed when evidence is incomplete.'}
+            </p>
+          </details>
         </div>
         <div className="mode-switch" role="group" aria-label="Choose live or demo provider data">
           <button
@@ -477,21 +518,40 @@ export default function App() {
       </aside>
 
       <section className="hero">
+        <p className="eyebrow">Your shade recovery starts here</p>
         <h1>
-          They discontinued <em>your</em> shade.
+          Your favorite vanished. <em>Find what comes next.</em>
         </h1>
         <p>
-          Name the one you lost. LastTube gathers timestamped listing evidence, rejects images with
-          too little usable shade signal, and records every shortlist row as system-excluded or
-          human-decided after a successful Perfect Corp baseline. Only an evidence-complete exact
-          variant can unlock an observed offer; missing fields produce an explicit stop.
+          Pick it. Check current options. Compare on one demo model. You make the call—and
+          incomplete evidence stops the action.
         </p>
+        <div className="hero-proof-pills" aria-label="How LastTube protects the decision">
+          <span>Timestamped evidence</span>
+          <span>Same-face preview</span>
+          <span>Human decision</span>
+        </div>
       </section>
 
+      <nav className="shade-signal" aria-label="Shade recovery progress">
+        <ol>
+          {signalSteps.map((label, index) => {
+            const step = index + 1;
+            const state = step < currentStep ? 'complete' : step === currentStep ? 'active' : 'next';
+            return (
+              <li key={label} data-state={state} aria-current={state === 'active' ? 'step' : undefined}>
+                <span className="signal-number">0{step}</span>
+                <span>{label}</span>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
       <section className="act" aria-labelledby="act1-title">
-        <p className="act-label">Act 1 · The loss</p>
+        <p className="act-label">Step 1 · Start with the one you loved</p>
         <h2 className="act-title" id="act1-title">
-          What are we replacing?
+          Pick the shade you miss
         </h2>
         <div className="two-col">
           <LostShadePicker selected={lost} onSelect={selectLost} />
@@ -499,7 +559,7 @@ export default function App() {
         </div>
         <div className="cta-row">
           <button type="button" className="btn" disabled={lost === null} onClick={startHunt}>
-            Find living replacements
+            Find current options
           </button>
           {lost === null && (
             <span className="field-note">Pick a lost shade to start the hunt.</span>
@@ -509,9 +569,9 @@ export default function App() {
 
       {hunting && lost && (
         <section className="act" aria-labelledby="act2-title">
-          <p className="act-label">Act 2 · The hunt</p>
+          <p className="act-label">Step 2 · Check what exists now</p>
           <h2 className="act-title" id="act2-title">
-            Observed listing candidates
+            Choose up to three options
           </h2>
           <EvidencePanel
             result={search}
@@ -527,11 +587,10 @@ export default function App() {
           {shortlist.length > 0 && (
             <div className="cta-row">
               <button type="button" className="btn" onClick={() => void startComparison()}>
-                Compare {shortlist.length} on-face
+                Compare {shortlist.length} shade{shortlist.length === 1 ? '' : 's'}
               </button>
               <span className="field-note">
-                Each candidate&apos;s shade is estimated from its merchant image, then rendered by
-                Perfect Corp on the sample face.
+                Perfect Corp previews each usable estimate on the same disclosed demo model.
               </span>
             </div>
           )}
@@ -540,9 +599,9 @@ export default function App() {
 
       {comparing && lost && (
         <section className="act" aria-labelledby="act3-title">
-          <p className="act-label">Act 3 · Human review</p>
+          <p className="act-label">Step 3 · Your call</p>
           <h2 className="act-title" id="act3-title">
-            Same face, same light — inspect before any lead
+            Compare on one demo model
           </h2>
           <VtoStage
             lost={lost}
@@ -608,9 +667,7 @@ export default function App() {
       )}
 
       <p className="footer-note">
-        LastTube · DevNetwork [API + Cloud + AI] Hackathon 2026 entry. Sponsor integrations:
-        SerpApi (candidate evidence) and Perfect Corp Makeup VTO (on-face rendering). Shopping
-        listings are shown as observed evidence with timestamps — not a real-time stock check.
+        LastTube · SerpApi evidence + Perfect Corp Makeup VTO · observed listings are not live stock.
       </p>
     </div>
   );

@@ -45,37 +45,29 @@ export function EvidencePanel({
   return (
     <div>
       <div className="evidence-header">
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="search-controls">
           <input
             id="replacement-query"
             type="text"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             aria-label="Replacement search query"
-            style={{
-              font: 'inherit',
-              padding: '8px 12px',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-badge)',
-              background: 'var(--card)',
-              color: 'inherit',
-              minWidth: 260,
-            }}
+            className="search-query-input"
           />
           <button type="button" className="btn btn-secondary" onClick={onRerun} disabled={searching}>
-            {searching ? 'Hunting…' : 'Re-run hunt'}
+            {searching ? 'Searching…' : 'Search again'}
           </button>
-          <label className="field-note" style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+          <label className="field-note demo-toggle">
             <input
               type="checkbox"
               checked={dataSource === 'fixture'}
               onChange={(e) => onDataSourceChange(e.target.checked ? 'fixture' : 'live')}
             />
-            demo recording (labeled fixture)
+            safe demo recording
           </label>
         </div>
         {result && (
-          <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
+          <div className="result-meta">
             <ProviderStatusBadge name="SerpApi" status={result.providerStatus} />
             <span className="evidence-query">observed {observedTime(result.observedAt)}</span>
           </div>
@@ -152,7 +144,7 @@ export function EvidencePanel({
                       disabled={capReached}
                       aria-pressed={selected}
                     >
-                      {selected ? 'Shortlisted ✓' : capReached ? 'Max 3' : 'Try on-face'}
+                      {selected ? 'Added ✓' : capReached ? '3 picked' : 'Add to preview'}
                     </button>
                   </div>
                 </li>
@@ -160,15 +152,17 @@ export function EvidencePanel({
             })}
           </ol>
           {result.warnings.length > 0 && (
-            <div className="warning-strip">
-              {result.warnings.map((w) => (
-                <span key={w}>{w}</span>
-              ))}
-            </div>
+            <details className="warning-strip micro-details">
+              <summary>{result.warnings.length} evidence note{result.warnings.length === 1 ? '' : 's'}</summary>
+              <div>
+                {result.warnings.map((w) => (
+                  <span key={w}>{w}</span>
+                ))}
+              </div>
+            </details>
           )}
           <p className="caveat">
-            Listings and prices are what Google Shopping reported via SerpApi at the stated
-            observation time — evidence from that recorded search, not a real-time stock check.
+            Observed listing evidence—not a live stock check.
           </p>
         </>
       )}

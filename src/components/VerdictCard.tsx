@@ -25,6 +25,22 @@ function observedTime(iso: string): string {
   }
 }
 
+function friendlyMissingLabel(value: string): string {
+  const labels: Record<string, string> = {
+    'validated per-run evidence manifest': 'Runtime proof',
+    'successful lost-shade baseline': 'Baseline',
+    'human acceptance': 'Your review',
+    'human preference': 'Your pick',
+    'source-backed listing identity and observed offer': 'Listing source',
+    'exact variant': 'Exact variant',
+    'exact shade': 'Exact shade',
+    finish: 'Finish',
+    'hashed source image with usable coverage': 'Source image',
+    'verified candidate VTO input/lifecycle/output': 'VTO lifecycle',
+  };
+  return labels[value] ?? value;
+}
+
 export function DecisionOutcomeCard({
   lost,
   comparisons,
@@ -99,9 +115,8 @@ export function DecisionOutcomeCard({
       <p className="act-label">Visual preference saved · action blocked</p>
       <h3>No actionable lead yet.</h3>
       <p>
-        Your visual preference is <strong>{preferred.title}</strong>: {tradeoff}. That human choice
-        overrides color-distance ordering, but structured evidence remains incomplete. LastTube
-        keeps it as a visual reference and blocks purchase language.
+        Your pick is <strong>{preferred.title}</strong>: {tradeoff}. Keep it as a visual reference;
+        structured evidence is still incomplete.
       </p>
       <div className="exact-listing">
         <strong>Preferred observed listing text (verbatim)</strong>
@@ -113,42 +128,52 @@ export function DecisionOutcomeCard({
       </div>
       <div className="evidence-ledger" aria-label="Action evidence ledger">
         <strong>Action gate</strong>
-        <span>Still needed: {outcome.missing.join(' · ')}</span>
-        <span>
-          Source-image input: {preferred.evidence.sourceImage.state}; recorded coverage{' '}
-          {((preferred.evidence.sourceImage.coverage ?? 0) * 100).toFixed(1)}%; hash{' '}
-          {preferred.evidence.sourceImage.sha256 ? 'present' : 'missing'}
-        </span>
-        <span>
-          Candidate VTO: {preferred.evidence.sameFaceRender.proofLevel.replaceAll('_', ' ')};
-          output hash {preferred.evidence.sameFaceRender.outputImageSha256 ? 'present' : 'missing'}
-        </span>
+        <span>Still needed</span>
+        <div className="missing-evidence-chips">
+          {outcome.missing.map((item) => (
+            <span key={item}>{friendlyMissingLabel(item)}</span>
+          ))}
+        </div>
+        <details className="micro-details evidence-ledger-details">
+          <summary>Technical status</summary>
+          <span>{outcome.missing.join(' · ')}</span>
+          <span>
+            Source image: {preferred.evidence.sourceImage.state}; coverage{' '}
+            {((preferred.evidence.sourceImage.coverage ?? 0) * 100).toFixed(1)}%; hash{' '}
+            {preferred.evidence.sourceImage.sha256 ? 'present' : 'missing'}
+          </span>
+          <span>
+            VTO: {preferred.evidence.sameFaceRender.proofLevel.replaceAll('_', ' ')}; output hash{' '}
+            {preferred.evidence.sameFaceRender.outputImageSha256 ? 'present' : 'missing'}
+          </span>
+        </details>
       </div>
-      <div className="receipt-strip">
-        <span>human accepted: {acceptedIds.length}</span>
-        <span>merchant: {preferred.merchant}</span>
-        <span>price observed: {preferred.priceDisplay ?? 'not reported'}</span>
-        <span>observed: {observedTime(preferred.observedAt)}</span>
-        {preferred.productUrl && (
-          <a href={preferred.productUrl} target="_blank" rel="noreferrer noopener">
-            observed offer
-          </a>
-        )}
-        {distinctSource && (
-          <a href={preferred.sourceUrl!} target="_blank" rel="noreferrer noopener">
-            source evidence
-          </a>
-        )}
-        <span>shade est: {preferred.estimateHex}</span>
-        <span>usable pixels: {((preferred.estimateCoverage ?? 0) * 100).toFixed(1)}%</span>
-        <span>ΔE CIE76 context only: {dE?.toFixed(1) ?? 'unavailable'}</span>
-      </div>
-      <p className="caveat">
-        The 10% image-coverage floor is a heuristic. Perfect Corp compares estimated colors on one
-        face; it does not validate the real product, formulation, exact variant, availability, or
-        fit. CIE76 did not choose this preference. An observed offer and any future opt-in alert or
-        disclosed affiliate handoff stay locked until every action-gate field is present.
-      </p>
+      <p className="choice-chip">Your choice wins · CIE76 is context only ({dE?.toFixed(1) ?? 'n/a'})</p>
+      <details className="micro-details verdict-details">
+        <summary>Offer receipt and method limits</summary>
+        <div className="receipt-strip">
+          <span>human accepted: {acceptedIds.length}</span>
+          <span>merchant: {preferred.merchant}</span>
+          <span>price observed: {preferred.priceDisplay ?? 'not reported'}</span>
+          <span>observed: {observedTime(preferred.observedAt)}</span>
+          {preferred.productUrl && (
+            <a href={preferred.productUrl} target="_blank" rel="noreferrer noopener">
+              observed offer
+            </a>
+          )}
+          {distinctSource && (
+            <a href={preferred.sourceUrl!} target="_blank" rel="noreferrer noopener">
+              source evidence
+            </a>
+          )}
+          <span>shade est: {preferred.estimateHex}</span>
+          <span>usable pixels: {((preferred.estimateCoverage ?? 0) * 100).toFixed(1)}%</span>
+        </div>
+        <p className="caveat">
+          The 10% floor is a heuristic. Perfect Corp previews estimated colors; it does not validate
+          the product, formulation, exact variant, availability, or fit.
+        </p>
+      </details>
       <button type="button" className="btn" onClick={onRefine}>
         Refine search with exact shade terms
       </button>

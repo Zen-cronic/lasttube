@@ -31,10 +31,10 @@ export function CandidateDecisionPanel({
     <section className="review-gate decision-panel" aria-labelledby="decision-panel-title">
       <div className="decision-panel-intro">
         <p className="act-label">Required human decisions</p>
-        <h3 id="decision-panel-title">Resolve every shortlisted candidate.</h3>
+        <h3 id="decision-panel-title">Review every option</h3>
         <p>
-          The system records exclusions; you accept or reject every usable same-face render.
-          Preference is a separate human choice among accepted candidates. Nothing disappears.
+          Look at every usable same-face preview. Mark it “looks right” or “not for me,” then choose
+          one favorite. System exclusions stay visible.
         </p>
         <span className="decision-count" aria-live="polite">
           {resolution.resolvedCount} of {candidates.length} candidates resolved ·{' '}
@@ -74,12 +74,15 @@ export function CandidateDecisionPanel({
                         ? 'rejected — excluded from outcome'
                         : 'decision pending'}
                 </span>
-                <span className="evidence-state-line">
-                  variant {candidate.evidence.exactVariant.state} · shade{' '}
-                  {candidate.evidence.exactShade.state} · finish {candidate.evidence.finish.state} ·
-                  source image {candidate.evidence.sourceImage.state} · VTO{' '}
-                  {candidate.evidence.sameFaceRender.proofLevel.replaceAll('_', ' ')}
-                </span>
+                <details className="evidence-details micro-details">
+                  <summary>Evidence details</summary>
+                  <span className="evidence-state-line">
+                    variant {candidate.evidence.exactVariant.state} · shade{' '}
+                    {candidate.evidence.exactShade.state} · finish {candidate.evidence.finish.state} ·
+                    source image {candidate.evidence.sourceImage.state} · VTO{' '}
+                    {candidate.evidence.sameFaceRender.proofLevel.replaceAll('_', ' ')}
+                  </span>
+                </details>
                 {candidate.manifestValidated && candidate.manifestUrl && (
                   <a
                     className="manifest-link"
@@ -100,37 +103,37 @@ export function CandidateDecisionPanel({
                     className="btn btn-secondary"
                     onClick={() => onView(candidate.id)}
                   >
-                    {isActive ? 'Viewing on face' : 'View on face'}
+                    {isActive ? 'Viewing' : 'View'}
                   </button>
                   <button
                     type="button"
                     className="btn btn-secondary decision-accept"
                     aria-pressed={decision === 'accepted'}
-                    aria-label={`Accept visual fit for ${candidate.title}`}
+                    aria-label={`Looks right for ${candidate.title}`}
                     disabled={!isActive}
                     onClick={() => onDecide(candidate.id, 'accepted')}
                   >
-                    Accept visual fit
+                    Looks right
                   </button>
                   <button
                     type="button"
                     className="btn btn-secondary decision-reject"
                     aria-pressed={decision === 'rejected'}
-                    aria-label={`Reject visual fit for ${candidate.title}`}
+                    aria-label={`Not for me for ${candidate.title}`}
                     disabled={!isActive}
                     onClick={() => onDecide(candidate.id, 'rejected')}
                   >
-                    Reject
+                    Not for me
                   </button>
                   <button
                     type="button"
                     className="btn decision-prefer"
                     aria-pressed={isPreferred}
-                    aria-label={`Prefer ${candidate.title}`}
+                    aria-label={`Choose ${candidate.title} as my pick`}
                     disabled={decision !== 'accepted'}
                     onClick={() => onPrefer(candidate.id)}
                   >
-                    {isPreferred ? 'Preferred ✓' : 'Prefer'}
+                    {isPreferred ? 'My pick ✓' : 'My pick'}
                   </button>
                 </div>
               )}
@@ -139,11 +142,13 @@ export function CandidateDecisionPanel({
         })}
       </div>
 
-      <p className="field-note">
-        An actionable offer requires present listing identity, exact variant, shade, finish, hashed
-        source-image coverage, and verified candidate VTO proof. Metadata-only renders remain visual
-        review aids.
-      </p>
+      <details className="micro-details decision-proof-details">
+        <summary>Why action can stay locked</summary>
+        <p className="field-note">
+          Action requires exact variant, shade, finish, source-image coverage, and verified VTO
+          proof. Metadata-only renders are visual review aids.
+        </p>
+      </details>
     </section>
   );
 }

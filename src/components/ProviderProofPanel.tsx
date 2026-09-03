@@ -19,35 +19,27 @@ export function ProviderProofPanel() {
       <div className="proof-receipt-grid">
         <div>
           <p className="proof-receipt-provider">SerpApi · Google Shopping</p>
-          <strong>FRESH LIVE response → 40 candidates</strong>
-          <p>
-            “mauve rose matte lipstick” · observed 2026-09-03 14:00 UTC · receipt-only freshness
-            check; the deterministic Sep 1 replay was not overwritten.
-          </p>
+          <strong>40 live candidates</strong>
+          <p>Fresh receipt · Sep 3, 14:00 UTC · replay unchanged.</p>
         </div>
         <div>
           <p className="proof-receipt-provider">Perfect Corp · Makeup VTO</p>
-          <strong>BASELINE + SECOND-MODEL CHECK</strong>
-          <p>
-            The judged baseline receipt remains preserved. A Sep 3 live check added baseline and
-            candidate lifecycles on a different official sample model, with downloaded output hashes.
-          </p>
+          <strong>Baseline + second-model check</strong>
+          <p>Sanitized lifecycles · official samples · output hashes retained.</p>
         </div>
         <div>
           <p className="proof-receipt-provider">Candidate fixture outputs</p>
-          <strong>3 outputs → task/poll metadata only</strong>
-          <p>
-            Output hashes and byte counts are retained. Candidate source-image bytes, request
-            bodies, and lifecycle responses were not retained and are not claimed as receipts.
-          </p>
+          <strong>3 outputs · metadata only</strong>
+          <p>Hashes retained. Inputs and lifecycles are not claimed.</p>
         </div>
       </div>
-      <p className="field-note proof-runtime-note">
-        New LIVE candidate runs fail closed unless a versioned bundle re-hashes the sanitized raw
-        SerpApi response, listing, fetched source bytes, every sanitized Perfect response, URL
-        lineage, and downloaded output. Its four bound artifacts are exportable per run; current-host
-        storage is ephemeral, not durable across restart.
-      </p>
+      <details className="micro-details proof-runtime-note">
+        <summary>How a new live run proves itself</summary>
+        <p className="field-note">
+          It re-hashes the SerpApi response, fetched source, sanitized Perfect lifecycle, and output.
+          The bundle is exportable per run; current-host storage is ephemeral.
+        </p>
+      </details>
     </aside>
   );
 }

@@ -13,12 +13,13 @@ export function SelfiePanel() {
           selfie.
         </figcaption>
       </figure>
-      <div className="consent-note">
-        <strong>Selfie privacy.</strong> Uploading your own photo requires your explicit consent:
-        the image goes only to Perfect Corp&apos;s try-on API to render results and can be deleted
-        from their servers afterwards. This demo build keeps uploads off and uses the sample face
-        throughout.
-      </div>
+      <details className="consent-note micro-details">
+        <summary>How selfie privacy works</summary>
+        <p>
+          Your own photo would require explicit consent and go only to Perfect Corp for the render.
+          Uploads stay off in this demo.
+        </p>
+      </details>
     </div>
   );
 }

@@ -38,6 +38,29 @@ async function verifyProductionRouting(): Promise<void> {
   }
 }
 
+async function verifyMobileArtifact(): Promise<void> {
+  const manifestResponse = await fetch(`${baseUrl}/manifest.webmanifest`);
+  const manifest = (await manifestResponse.json()) as {
+    display?: string;
+    start_url?: string;
+    icons?: Array<{ sizes?: string }>;
+  };
+  if (
+    !manifestResponse.ok ||
+    manifest.display !== 'standalone' ||
+    manifest.start_url !== '/?mode=demo' ||
+    !manifest.icons?.some((icon) => icon.sizes === '192x192') ||
+    !manifest.icons.some((icon) => icon.sizes === '512x512')
+  ) {
+    throw new Error('mobile web app manifest is missing the standalone demo contract or icons');
+  }
+  const serviceWorker = await fetch(`${baseUrl}/service-worker.js`);
+  const serviceWorkerText = await serviceWorker.text();
+  if (!serviceWorker.ok || !serviceWorkerText.includes("url.pathname.startsWith('/api/')")) {
+    throw new Error('service worker must exist and leave provider API requests network-only');
+  }
+}
+
 async function verifyBaselineFailureBlocksOutcome(browser: Browser): Promise<void> {
   const page = await browser.newPage({ viewport: { width: 1200, height: 800 } });
   const errors: string[] = [];
@@ -69,13 +92,13 @@ async function verifyBaselineFailureBlocksOutcome(browser: Browser): Promise<voi
     await page
       .getByRole('button', { name: /Urban Decay Vice Lipstick — Backtalk/i })
       .click();
-    await page.getByRole('button', { name: 'Find living replacements' }).click();
+    await page.getByRole('button', { name: 'Find current options' }).click();
     await page.getByText('SERPAPI: FIXTURE').waitFor();
     const rows = page.locator('.candidate-row');
-    await rows.nth(0).getByRole('button', { name: 'Try on-face' }).click();
-    await rows.nth(1).getByRole('button', { name: 'Try on-face' }).click();
-    await rows.nth(2).getByRole('button', { name: 'Try on-face' }).click();
-    await page.getByRole('button', { name: 'Compare 3 on-face' }).click();
+    await rows.nth(0).getByRole('button', { name: 'Add to preview' }).click();
+    await rows.nth(1).getByRole('button', { name: 'Add to preview' }).click();
+    await rows.nth(2).getByRole('button', { name: 'Add to preview' }).click();
+    await page.getByRole('button', { name: 'Compare 3 shades' }).click();
     await page
       .getByRole('heading', { name: 'Lost-shade baseline failed. Comparison is blocked.' })
       .waitFor();
@@ -107,6 +130,7 @@ async function main(): Promise<void> {
   try {
     await waitForServer(server, serverErrors);
     await verifyProductionRouting();
+    await verifyMobileArtifact();
     const browser = await chromium.launch({
       executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome',
       headless: true,
@@ -144,6 +168,14 @@ async function main(): Promise<void> {
       });
       await page.getByText('Demo recording armed').waitFor();
       await page.screenshot({ path: path.join(screenshotDir, 'judge-demo-opening.png') });
+      await page.setViewportSize({ width: 350, height: 800 });
+      const openingOverflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      if (openingOverflow > 0) {
+        throw new Error(`mobile opening overflows horizontally by ${openingOverflow}px`);
+      }
+      await page.screenshot({ path: path.join(screenshotDir, 'judge-demo-mobile-opening.png') });
       await page.setViewportSize({ width: 1500, height: 1000 });
       await page.screenshot({ path: path.join(screenshotDir, 'judge-devpost-thumbnail.png') });
       await page.setViewportSize({ width: 1440, height: 900 });
@@ -151,7 +183,7 @@ async function main(): Promise<void> {
       await page
         .getByRole('button', { name: /Urban Decay Vice Lipstick — Backtalk/i })
         .click();
-      await page.getByRole('button', { name: 'Find living replacements' }).click();
+      await page.getByRole('button', { name: 'Find current options' }).click();
       await page.getByText('SERPAPI: FIXTURE').waitFor();
       const remoteFixtureThumbnails = await page.locator('.candidate-row img[src^="http"]').count();
       if (remoteFixtureThumbnails > 0) {
@@ -165,11 +197,11 @@ async function main(): Promise<void> {
       await page.setViewportSize({ width: 1440, height: 900 });
 
       const candidateRows = page.locator('.candidate-row');
-      await candidateRows.nth(0).getByRole('button', { name: 'Try on-face' }).click();
-      await candidateRows.nth(1).getByRole('button', { name: 'Try on-face' }).click();
-      await candidateRows.nth(2).getByRole('button', { name: 'Try on-face' }).click();
-      await page.getByRole('button', { name: 'Compare 3 on-face' }).click();
-      await page.getByRole('heading', { name: 'Resolve every shortlisted candidate.' }).waitFor();
+      await candidateRows.nth(0).getByRole('button', { name: 'Add to preview' }).click();
+      await candidateRows.nth(1).getByRole('button', { name: 'Add to preview' }).click();
+      await candidateRows.nth(2).getByRole('button', { name: 'Add to preview' }).click();
+      await page.getByRole('button', { name: 'Compare 3 shades' }).click();
+      await page.getByRole('heading', { name: 'Review every option' }).waitFor();
 
       if ((await page.locator('.verdict-card').count()) !== 0) {
         throw new Error('outcome appeared before explicit candidate decisions');
@@ -191,26 +223,25 @@ async function main(): Promise<void> {
       // The final state proves human input—not the metric—controls the outcome.
       await usableSwatches.nth(0).click();
       await page
-        .getByRole('button', { name: 'Reject visual fit for Anastasia Beverly Hills Lip Velvet' })
+        .getByRole('button', { name: 'Not for me for Anastasia Beverly Hills Lip Velvet' })
         .click();
       await usableSwatches.nth(1).click();
       await page
         .getByRole('button', {
-          name: 'Accept visual fit for NYX Professional Makeup Fat Matte Lipstick',
+          name: 'Looks right for NYX Professional Makeup Fat Matte Lipstick',
         })
         .click();
       await page
-        .getByRole('button', { name: 'Prefer NYX Professional Makeup Fat Matte Lipstick' })
+        .getByRole('button', { name: 'Choose NYX Professional Makeup Fat Matte Lipstick as my pick' })
         .click();
       await page.getByText(/3 of 3 candidates resolved · 1 system excluded/).waitFor();
       await page.getByRole('heading', { name: 'No actionable lead yet.' }).waitFor();
       await page
-        .getByText(/Your visual preference is NYX Professional Makeup Fat Matte Lipstick/)
+        .getByText(/Your pick is NYX Professional Makeup Fat Matte Lipstick/)
         .waitFor();
-      await page.getByText('CIE76 did not choose this preference.').waitFor();
-      await page
-        .getByText(/Still needed: validated per-run evidence manifest.*exact variant/)
-        .waitFor();
+      await page.getByText(/Your choice wins · CIE76 is context only/).waitFor();
+      await page.getByText('Runtime proof', { exact: true }).waitFor();
+      await page.getByText('Exact variant', { exact: true }).waitFor();
       if ((await page.locator('.actionable-link').count()) !== 0) {
         throw new Error('actionable observed-offer branch unlocked with incomplete evidence');
       }
@@ -248,7 +279,7 @@ async function main(): Promise<void> {
         document.body.style.zoom = '';
         window.scrollTo(0, 0);
       });
-      await page.setViewportSize({ width: 390, height: 844 });
+      await page.setViewportSize({ width: 350, height: 844 });
       await page.waitForTimeout(100);
       await page.locator('.verdict-card').scrollIntoViewIfNeeded();
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

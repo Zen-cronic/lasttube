@@ -27,7 +27,7 @@ export function LostShadePicker({ selected, onSelect }: Props) {
 
   return (
     <div className="card">
-      <h3>Which shade did you lose?</h3>
+      <h3>Choose a remembered shade</h3>
       <p className="field-note">{HEX_NOTE}</p>
       <div className="shade-options">
         {LOST_SHADES.map((shade) => (

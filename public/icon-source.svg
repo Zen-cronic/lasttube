@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">LastTube app icon</title>
+  <desc id="desc">A lipstick tube crossed by a bright shade signal.</desc>
+  <rect width="512" height="512" rx="112" fill="#211823"/>
+  <path d="M0 382C126 332 198 436 322 377C399 341 452 337 512 363V512H0Z" fill="#62d8ee"/>
+  <rect x="179" y="217" width="154" height="183" rx="34" fill="#f8f2fb"/>
+  <path d="M208 216V141c0-42 34-76 76-76h20v151Z" fill="#ef245f"/>
+  <rect x="154" y="256" width="204" height="34" rx="17" fill="#ffcc57"/>
+  <circle cx="356" cy="273" r="12" fill="#211823"/>
+</svg>

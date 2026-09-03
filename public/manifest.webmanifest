@@ -1,0 +1,27 @@
+{
+  "name": "LastTube — Shade Recovery",
+  "short_name": "LastTube",
+  "description": "Compare current beauty-product candidates against a discontinued shade and stop when exact-variant evidence is incomplete.",
+  "id": "/?mode=demo",
+  "start_url": "/?mode=demo",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbf7ff",
+  "theme_color": "#ef245f",
+  "categories": ["beauty", "shopping", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/lasttube-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/lasttube-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

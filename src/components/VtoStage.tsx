@@ -97,10 +97,10 @@ export function VtoStage({ lost, lostRender, lostRendering, comparisons, activeI
 
   return (
     <div className="stage">
-      <p className="act-label">On the same face, same light</p>
+      <p className="act-label">Same face · same light · your decision</p>
       <div className="render-pair">
         <RenderCell
-          label={`The one you lost — ${lost.productName} (${lost.shadeName})`}
+          label={`Remembered — ${lost.productName} (${lost.shadeName})`}
           sublabel="rendered from its approximate hex"
           render={lostRender}
           rendering={lostRendering}
@@ -117,7 +117,7 @@ export function VtoStage({ lost, lostRender, lostRendering, comparisons, activeI
             rendering={active.rendering}
           />
         ) : (
-          <RenderCell label="Pick a candidate" sublabel="from the rail below" render={null} rendering={false} />
+          <RenderCell label="Choose an option" sublabel="from the shade rail below" render={null} rendering={false} />
         )}
       </div>
 

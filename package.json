@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Resolve every discontinued-shade candidate and unlock an observed offer only when structured variant and visual evidence are complete.",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0 --port 4317",
     "dev:api": "tsx watch server/index.ts",
     "build": "vite build",
     "start": "NODE_ENV=production tsx server/index.ts",
@@ -17,6 +17,7 @@
     "proof:serpapi": "tsx scripts/proof-serpapi.ts",
     "proof:perfectcorp": "tsx scripts/proof-perfectcorp.ts",
     "proof:alternate-model": "tsx scripts/record-alternate-model-demo.ts",
+    "generate:icons": "tsx scripts/generate-pwa-icons.ts",
     "scan:secrets": "tsx scripts/scan-secrets.ts",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run scan:secrets",
     "capture:demo": "tsx scripts/capture-demo.ts"
