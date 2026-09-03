@@ -1,6 +1,6 @@
 // Preset discontinued favorites for the hero flow. Facts are conservative and
 // checkable; shade hexes are approximations from published swatches and are
-// labeled as such in the UI. Search queries hunt for currently purchasable
+// labeled as such in the UI. Search queries hunt for currently listed
 // analogs, not the dead product itself.
 
 export interface LostShade {

@@ -10,7 +10,7 @@ import { sanitizeJson } from '../server/redact.ts';
 import { normalizeShoppingResponse, searchShoppingRaw } from '../server/providers/serpapi.ts';
 
 // Hero scenario: Urban Decay's Vice lipstick line (including the cult shade
-// "Backtalk") was discontinued; hunt currently purchasable mauve-rose analogs.
+// "Backtalk") was discontinued; hunt currently listed mauve-rose analogs.
 const QUERY = 'mauve rose matte lipstick';
 
 async function main() {

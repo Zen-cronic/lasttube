@@ -3,11 +3,12 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Your favorite shade vanished. LastTube finds replacements that are actually purchasable, shows them on your face, and explains the closest match.",
+  "description": "Your favorite shade vanished. LastTube finds currently listed replacements, shows them on your face, and explains the closest match.",
   "scripts": {
     "dev": "vite",
     "dev:api": "tsx watch server/index.ts",
     "build": "vite build",
+    "start": "NODE_ENV=production tsx server/index.ts",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -16,7 +17,8 @@
     "proof:serpapi": "tsx scripts/proof-serpapi.ts",
     "proof:perfectcorp": "tsx scripts/proof-perfectcorp.ts",
     "scan:secrets": "tsx scripts/scan-secrets.ts",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run scan:secrets"
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run scan:secrets",
+    "capture:demo": "tsx scripts/capture-demo.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.0",
@@ -31,6 +33,7 @@
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^5.0.0",
     "eslint": "^9.33.0",
+    "playwright-core": "^1.62.1",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.40.0",

@@ -43,7 +43,12 @@ function RenderCell({
   return (
     <figure className="render-cell" style={{ margin: 0 }}>
       {render?.imageUrl ? (
-        <img src={render.imageUrl} alt={label} className={rendering ? 'loading' : ''} />
+        <img
+          key={render.imageUrl}
+          src={render.imageUrl}
+          alt={label}
+          className={`render-image${rendering ? ' loading' : ''}`}
+        />
       ) : (
         <div
           style={{
@@ -124,6 +129,33 @@ export function VtoStage({ lost, lostRender, lostRendering, comparisons, activeI
           />
         ))}
       </div>
+
+      {active?.estimateHex && (
+        <div
+          className="shade-bridge"
+          key={`${lost.hex}-${active.estimateHex}`}
+          aria-label={`Shade bridge from lost shade ${lost.hex} to candidate estimate ${active.estimateHex}`}
+        >
+          <span className="shade-bridge-swatch" style={{ background: lost.hex }} aria-hidden="true" />
+          <div
+            className="shade-bridge-track"
+            style={{ background: `linear-gradient(90deg, ${lost.hex}, ${active.estimateHex})` }}
+            aria-hidden="true"
+          >
+            <span className="shade-bridge-wipe" />
+          </div>
+          <span
+            className="shade-bridge-swatch"
+            style={{ background: active.estimateHex }}
+            aria-hidden="true"
+          />
+          <p>
+            <span>lost {lost.hex}</span>
+            <strong>shade shift</strong>
+            <span>match {active.estimateHex}</span>
+          </p>
+        </div>
+      )}
 
       {comparisons.some((c) => c.estimateError) && (
         <p className="caveat" style={{ color: 'oklch(0.7 0.05 75)' }}>

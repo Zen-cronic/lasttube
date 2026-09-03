@@ -27,7 +27,7 @@ export function VerdictCard({ lost, comparisons }: Props) {
 
   if (scored.length === 0) {
     return (
-      <div className="verdict-card">
+      <div className="verdict-card" role="status" aria-live="polite">
         <h3>No verdict yet</h3>
         <p className="field-note">
           None of the shortlisted candidates produced a usable shade estimate, so LastTube will not
@@ -43,7 +43,7 @@ export function VerdictCard({ lost, comparisons }: Props) {
   const priceBit = best.c.priceDisplay ? ` · ${best.c.priceDisplay}` : '';
 
   return (
-    <div className="verdict-card">
+    <div className="verdict-card" role="status" aria-live="polite">
       <p className="act-label">The verdict</p>
       <h3>{best.c.title}</h3>
       <p>

@@ -1,6 +1,6 @@
 # LastTube
 
-**Your favorite shade vanished. LastTube finds replacements that are actually purchasable, shows them on your face, and explains the closest match.**
+**Your favorite shade vanished. LastTube finds currently listed replacements, shows them on your face, and explains the closest match.**
 
 The loop: **discontinued favorite → live purchase evidence → on-face comparison → one source-backed verdict with an explicit trade-off.**
 
@@ -9,7 +9,7 @@ Built for the DevNetwork [API + Cloud + AI] Hackathon 2026 with both sponsor tec
 - **SerpApi** (Google Shopping engine) discovers currently listed replacement candidates with merchant, price, availability text, source links, and observation timestamps.
 - **Perfect Corp Makeup VTO** renders every comparison through the real async lifecycle: `POST /s2s/v2.0/task/makeup-vto` → bounded polling → signed result download.
 
-![Act 3 — on-face verdict](docs/screenshots/act3-the-verdict.png)
+![Act 3 — on-face verdict](docs/screenshots/judge-devpost-verdict.png)
 
 ## How it works
 
@@ -67,6 +67,34 @@ npm run dev       # web client on http://localhost:5173 (proxies /api)
 ```bash
 npm run verify    # typecheck + lint + 29 offline tests + build + secret scan
 ```
+
+## Rehearse the judge demo (no network or provider spend)
+
+```bash
+npm run build
+npm run capture:demo
+```
+
+The capture command starts the production-built app, opens `/?mode=demo` in the installed Chrome,
+drives Backtalk through a two-candidate verdict, and writes six screenshots under
+`docs/screenshots/`. It fails if the browser attempts a live SerpApi, Perfect Corp, or merchant-image
+request, if fewer than three `FIXTURE` badges render, if the browser reports an error, or if the
+mobile verdict overflows horizontally. Set `CHROME_PATH` only when Chrome is installed elsewhere.
+
+## Deployment shape (human gate)
+
+The production server serves both `dist/` and `/api/*` from one process:
+
+```bash
+npm run build
+npm run start       # http://localhost:8787
+```
+
+`Dockerfile` and `render.yaml` are a reversible judge-preview adapter. The Blueprint disables
+automatic deploys and declares both provider secrets as dashboard-entered values (`sync: false`).
+Creating the Render service, entering secrets, and making the URL public are intentionally left to
+the operator. See Render's official [Blueprint specification](https://render.com/docs/blueprint-spec)
+and [health-check contract](https://render.com/docs/health-checks).
 
 ## Live provider proof (opt-in, spends quota)
 

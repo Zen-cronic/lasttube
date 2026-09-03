@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+!.env.example
+.claude
+.codex
+.playwright-mcp
+node_modules
+dist
+coverage
+docs/screenshots
+proofs
+*.log

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: lasttube
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: SERPAPI_KEY
+        sync: false
+      - key: PERFECT_CORP_API_KEY
+        sync: false

@@ -2,6 +2,7 @@
 // the web client only ever talks to these routes.
 
 import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { getPerfectCorpConfig, getSerpApiConfig } from './env.ts';
 import { demoComparisonBundle, fixtureSearchResultSet, fixtureVtoRender } from './fixtures.ts';
@@ -102,6 +103,15 @@ app.post('/api/vto', async (c) => {
   const render = await runMakeupVto(body.srcFileUrl, body.effects, config);
   return c.json(render, render.providerStatus === 'failed' ? 502 : 200);
 });
+
+// One-process production shape: the same Hono service owns API routes and the
+// built Vite client. API handlers remain above the static fallback so an
+// unknown /api/* request can never silently return index.html.
+if (process.env.NODE_ENV === 'production') {
+  app.all('/api/*', (c) => c.json({ error: 'API route not found' }, 404));
+  app.use('/*', serveStatic({ root: './dist' }));
+  app.get('*', serveStatic({ path: './dist/index.html' }));
+}
 
 const port = Number(process.env.PORT ?? 8787);
 

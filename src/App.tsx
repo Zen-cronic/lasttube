@@ -5,6 +5,7 @@ import type { CandidateRecord, SearchResultSet, VtoRender } from '../shared/type
 import { EvidencePanel, type DataSource } from './components/EvidencePanel.tsx';
 import { LostShadePicker } from './components/LostShadePicker.tsx';
 import { ProviderStatusBadge, type BadgeStatus } from './components/ProviderStatusBadge.tsx';
+import { ProviderProofPanel } from './components/ProviderProofPanel.tsx';
 import { SelfiePanel } from './components/SelfiePanel.tsx';
 import { VerdictCard } from './components/VerdictCard.tsx';
 import { VtoStage, type CandidateComparison } from './components/VtoStage.tsx';
@@ -35,7 +36,10 @@ export default function App() {
   // Act 2 state
   const [hunting, setHunting] = useState(false);
   const [query, setQuery] = useState('');
-  const [dataSource, setDataSource] = useState<DataSource>('live');
+  const [dataSource, setDataSource] = useState<DataSource>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mode') === 'demo' ? 'fixture' : 'live';
+  });
   const [searching, setSearching] = useState(false);
   const [search, setSearch] = useState<SearchResultSet | null>(null);
   const [shortlist, setShortlist] = useState<CandidateRecord[]>([]);
@@ -210,6 +214,11 @@ export default function App() {
     void runSearch(query || lost.defaultQuery, dataSource);
   };
 
+  const changeDataSource = (source: DataSource) => {
+    setDataSource(source);
+    if (hunting && query) void runSearch(query, source);
+  };
+
   const toggleShortlist = (c: CandidateRecord) => {
     setShortlist((prev) => {
       if (prev.some((p) => p.id === c.id)) return prev.filter((p) => p.id !== c.id);
@@ -225,6 +234,15 @@ export default function App() {
 
   const allSettled =
     comparisons.length > 0 && comparisons.every((c) => c.render !== null || c.estimateError !== null);
+  const comparisonHasErrors =
+    lostRender?.providerStatus === 'failed' ||
+    lostRender?.providerStatus === 'unavailable' ||
+    comparisons.some(
+      (c) =>
+        c.estimateError !== null ||
+        c.render?.providerStatus === 'failed' ||
+        c.render?.providerStatus === 'unavailable',
+    );
 
   return (
     <div className="page" style={shadeStyle}>
@@ -243,6 +261,35 @@ export default function App() {
           />
         </div>
       </header>
+
+      <aside className="proof-mode" data-mode={dataSource} aria-label="Provider proof mode">
+        <div>
+          <p className="proof-mode-label">
+            {dataSource === 'fixture' ? 'Demo recording armed' : 'Live provider mode'}
+          </p>
+          <p className="proof-mode-copy" aria-live="polite">
+            {dataSource === 'fixture'
+              ? 'Receipted SerpApi and Perfect Corp responses replay locally. Every replay stays labeled FIXTURE.'
+              : 'The next hunt and comparison call the configured sponsor APIs and may consume event credits.'}
+          </p>
+        </div>
+        <div className="mode-switch" role="group" aria-label="Choose live or demo provider data">
+          <button
+            type="button"
+            aria-pressed={dataSource === 'live'}
+            onClick={() => changeDataSource('live')}
+          >
+            Live APIs
+          </button>
+          <button
+            type="button"
+            aria-pressed={dataSource === 'fixture'}
+            onClick={() => changeDataSource('fixture')}
+          >
+            Safe demo
+          </button>
+        </div>
+      </aside>
 
       <section className="hero">
         <h1>
@@ -278,7 +325,7 @@ export default function App() {
         <section className="act" aria-labelledby="act2-title">
           <p className="act-label">Act 2 · The hunt</p>
           <h2 className="act-title" id="act2-title">
-            Current, purchasable candidates
+            Currently listed candidates
           </h2>
           <EvidencePanel
             result={search}
@@ -287,10 +334,7 @@ export default function App() {
             dataSource={dataSource}
             shortlist={shortlist}
             onQueryChange={setQuery}
-            onDataSourceChange={(s) => {
-              setDataSource(s);
-              void runSearch(query, s);
-            }}
+            onDataSourceChange={changeDataSource}
             onRerun={() => void runSearch(query, dataSource)}
             onToggleShortlist={toggleShortlist}
           />
@@ -322,7 +366,19 @@ export default function App() {
             activeId={activeId}
             onSelect={setActiveId}
           />
+          {allSettled && comparisonHasErrors && (
+            <div className="recovery-row" role="status">
+              <p>
+                The comparison stopped rather than guessing. Resolve the provider or image error,
+                then retry the same shortlist.
+              </p>
+              <button type="button" className="btn btn-secondary" onClick={() => void startComparison()}>
+                Retry comparison{dataSource === 'live' ? ' (uses provider calls)' : ''}
+              </button>
+            </div>
+          )}
           {allSettled && <VerdictCard lost={lost} comparisons={comparisons} />}
+          {allSettled && <ProviderProofPanel />}
         </section>
       )}
 
