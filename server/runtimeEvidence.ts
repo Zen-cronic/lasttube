@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import sharp from 'sharp';
 import {
   PROVIDER_BODY_REDACTION_POLICY,
   RUNTIME_EVIDENCE_BUNDLE_VERSION,
@@ -930,13 +931,25 @@ export async function downloadVtoOutput(
   if (!response.ok) {
     throw new ProviderError(`Perfect Corp output download failed: HTTP ${response.status}`);
   }
-  const mediaType = response.headers.get('content-type')?.split(';')[0]?.trim() || '';
-  if (!mediaType.startsWith('image/')) {
-    throw new ProviderError('Perfect Corp output download returned a non-image content type.');
-  }
+  const declaredMediaType = response.headers.get('content-type')?.split(';')[0]?.trim() || '';
   const bytes = Buffer.from(await response.arrayBuffer());
   if (bytes.length === 0 || bytes.length > MAX_VTO_OUTPUT_BYTES) {
     throw new ProviderError('Perfect Corp output is empty or exceeds the evidence size cap.');
+  }
+  let mediaType = declaredMediaType;
+  if (!mediaType.startsWith('image/')) {
+    if (mediaType !== 'application/octet-stream' && mediaType !== 'binary/octet-stream') {
+      throw new ProviderError('Perfect Corp output download returned a non-image content type.');
+    }
+    try {
+      const metadata = await sharp(bytes).metadata();
+      if (!metadata.format) throw new Error('missing format');
+      mediaType = `image/${metadata.format}`;
+    } catch {
+      throw new ProviderError(
+        'Perfect Corp generic output could not be decoded as a bounded image.',
+      );
+    }
   }
   return {
     bytes,

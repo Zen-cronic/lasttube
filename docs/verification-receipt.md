@@ -1,112 +1,81 @@
-# Verification receipt — versioned, tamper-evident runtime bundle
+# Verification receipt — alternate official model proof
 
 Date: 2026-09-03 EDT
 
-Base commit: `1c5c7dc`
+Base commit: `c678561`
 
-Scope: the runtime-proof repair commit containing this receipt; resolve it with
-`git log -1 --oneline`.
+Scope: Packet 14, a bounded provider-freshness and alternate-model proof. The deterministic judged
+hero, human decisions, and evidence-derived **NO ACTIONABLE LEAD YET** outcome are unchanged.
 
 ## What changed and what it proves
 
-- A successful live SerpApi search opens an evidence run bound to the original wire-body digest and
-  byte count. Before domain normalization, the complete JSON object is recursively stripped of
-  secret-shaped fields and URL query tokens; those exact retained bytes receive a separate digest,
-  file, and download route. Validation re-normalizes the candidate from that retained artifact.
-- Live shade estimation retains the exact fetched merchant-image bytes used by Sharp, plus URL,
-  SHA-256, byte count, method, and coverage. The candidate id and URL must match the bound search.
-- Before a candidate Perfect call, the server requires that retained shade input and checks the
-  requested palette contains its estimated color. Every create/poll response is retained after
-  recursive redaction with its own digest, request/receive timestamps, HTTP status, and safe
-  request/final-response URL lineage. The result URL's full value is represented only by SHA-256;
-  query material is not retained. Download bytes and redirects are bound back to that lineage.
-- The browser receives a local output URL and candidate evidence only after the server validates the
-  `lasttube-candidate-evidence/2.0.0` bundle. Any missing binding, download, digest, cross-field check,
-  or later file tamper fails closed. Validated candidates expose an index plus four bound artifact
-  routes: sanitized Serp response, source image, sanitized Perfect lifecycle, and output image.
-- The Render Blueprint provisions no persistent disk. Every runtime artifact therefore says
-  `exportable_per_run` and `persistence: ephemeral`, with instructions to download before restart or
-  redeploy. This repair does not claim durable storage.
-- Exact variant, shade, and finish remain `unknown` on the new live path because no trusted structured
-  source is configured. A typed enrichment interface defaults to no source, has no title parser, and
-  requires retained JSON receipt bytes whose digest, candidate, record, source, and field values all
-  cross-match before any structured field can become present.
-  Its positive contract test is synthetic policy-fixture proof, not genuine product evidence.
-- Credential-like response fields including page tokens, signatures, policy/session values, and URL
-  fragments are removed or redacted recursively. Adversarial fixtures prove those values do not survive.
-- Pre-VTO validation re-reads the persisted manifest, sanitized search artifact, structured receipt,
-  re-derived listing, and source image before provider execution. Final validation enforces task id,
-  endpoint lineage, response order, lifecycle chronology, and output-download lineage.
-- The all-fields-present test is now explicitly a **synthetic policy fixture**, using `.invalid`
-  URLs. It proves gate behavior only and is not called genuine action evidence.
-- The current hero stays honest. NYX is accepted/preferred as a visual direction, but exact variant
-  and shade are unknown, source-image bytes/hash are unknown, and its candidate render has metadata
-  only. The UI therefore says **No actionable lead yet**, preserves the observed listing/offer as
-  evidence, blocks purchase language, and offers a refined-search handoff without a provider call.
-- Every shortlisted candidate is accounted for: Ngozi is system-excluded at 2.5% coverage, ABH is
-  human-rejected, and NYX is human-accepted/preferred. Any unresolved row blocks the outcome.
-- Three candidate manifests bind listing ids, titles, receipt hash, task/poll metadata, retained
-  output hashes/bytes, estimates, and coverage. Their missing source request and Perfect lifecycle
-  fields are explicit `null`s. A separate baseline manifest is the only candidate-stage artifact
-  with a genuine 19-poll Perfect Corp lifecycle receipt.
-- The existing fixture hero is unchanged in provenance: its three candidate outputs predate the
-  live-run exporter and remain metadata-only. It still resolves every row and stops on NYX; nothing
-  is retroactively upgraded.
+- `npm run proof:serpapi -- --receipt-only` made one fresh Google Shopping call for
+  `mauve rose matte lipstick`. It returned 40 live normalized candidates and wrote sanitized
+  September 3 receipts without replacing the September 1 deterministic fixture.
+- A second portrait published in Perfect Corp's own API playground was retained at
+  `proofs/perfectcorp/2026-09-03-alternate-model-source.png`. It is disclosed fixture media, not a
+  LastTube user's selfie.
+- The alternate-model proof retains two new successful Makeup VTO lifecycles: a Backtalk-family
+  baseline (`#A96A73`) and one ABH candidate-effect comparison (`#bb727a`). Each completed after four
+  bounded polls. Sanitized create/poll responses, source hash/bytes, output-download lineage,
+  downloaded output hash/bytes, and the credit delta are committed.
+- Perfect Corp served the first signed output with `application/octet-stream`. The existing output
+  gate rejected it before saving the signed URL or bytes. The bounded repair accepts the provider's
+  generic binary type only when the response remains within the size cap and Sharp successfully
+  decodes the exact bytes as an image; invalid generic bytes still fail closed.
+- The first rejected download consumed one unit. The retry retained two successful outputs and spent
+  two more units. Packet total: three Perfect Corp units, from 1,344 to 1,341.
+- The alternate-model evidence is a separate robustness proof. It does not replace or retroactively
+  upgrade the judged candidate fixtures, fetch merchant media, validate variant/shade/finish, or
+  unlock an offer.
+- The proof panel now exposes both the fresh SerpApi receipt and `BASELINE + SECOND-MODEL CHECK` while
+  continuing to label the three judged candidate outputs as task/poll metadata only.
 
 ## Commands and results
 
-Run from the repository root with no new provider calls:
+All commands ran from the repository root.
 
 | Command | Result |
 |---|---|
-| `npm run verify` | exit 0: TypeScript, ESLint, 10 Vitest files / 60 offline tests, Vite production build, and secret scan; zero provider calls |
-| production build inside `npm run verify` | exit 0: 43 modules; `dist/index.html` 1.03 kB, CSS 17.18 kB, JS 230.26 kB |
-| `npm run capture:demo` | exit 0 twice: successful baseline required; all 3 candidates resolved as 1 system exclusion + 2 human decisions; preference overrides CIE76; incomplete provenance blocks action; 3+ fixture badges; zero live-provider requests; zero non-local image requests; zero browser errors |
-| controlled baseline-failure path inside `capture:demo` | injected failed fixture baseline; zero decision-panel and zero outcome-card elements; pass |
-| runtime-evidence tests | pass: versioned bundle; retained/redacted Serp and every Perfect response; listing re-derivation; fetched/output bytes; four artifact routes; pre-provider persisted-manifest/search checks; task/chronology/endpoint lineage; tamper rejection |
-| action-policy tests | pass: validated synthetic all-fields-present fixture opens; the same fields without manifest validation stop; current fixture and unknown-field branch stop |
-| structured-enrichment tests | pass: title prose stays unknown; retained receipt bytes/digest/fields must cross-match; missing trust metadata, candidate mismatch, and receipt tampering fail closed |
-| first staged secret scan | correctly rejected a literal synthetic signed-URL parameter in two tests; one bounded fixture repair constructs that parameter from safe fragments; final exact 93-file scan passed |
+| `npm run proof:serpapi -- --receipt-only` | exit 0; 1 live call; 40 candidates; deterministic fixture unchanged |
+| first `npm run proof:alternate-model` | exit 1 after 1 successful provider task; generic response media type rejected before persistence; 1 unit spent |
+| `npm run typecheck && npx vitest run tests/runtimeEvidence.test.ts && npm run lint -- --quiet` | exit 0 after the bounded decoder-backed repair; 8 focused tests passed |
+| retry `npm run proof:alternate-model` | exit 0; baseline + candidate succeeded in 4 polls each; 2 retained outputs; 2 units spent |
+| `npx vitest run tests/alternateModelProof.test.ts tests/runtimeEvidence.test.ts` | exit 0; 10/10 focused tests passed |
+| `npm run verify` | exit 0; typecheck, lint, 11 test files / 63 tests, 43-module production build, secret scan |
+| `npm run capture:demo` | exit 0 twice; built artifact; baseline required; all 3 candidates resolved; preference overrides CIE76; incomplete evidence blocks action; 3+ fixture badges; zero provider/non-local image requests; zero browser errors |
+| `diff -qr submission ../submission/lasttube` | exit 0; byte-identical packages |
+| `git diff --check` | clean |
 
-The two consecutive final captures produced identical SHA-256 values:
+The two final captures were byte-identical:
 
 | Artifact | SHA-256 |
 |---|---|
 | `judge-demo-opening.png` | `e4900b2f99cff73e480034fcc27936bdfe8bd14c08e913fab8caa94dcfc79630` |
-| `judge-demo-verdict.png` | `8bf89b1bc1532993add85da4f5fafd732b2b2ea7bee7a7d795a92080009013d1` |
+| `judge-demo-verdict.png` | `357b45b84da6b2eae4283f61f74175a6b2fd82494a56f0b3d0ae16b523c276c9` |
 | `judge-demo-mobile-verdict.png` | `18357a958c8a78c5f6ce7c520d9ca8661a6526ab4b8894cbd8cf808334f5ee19` |
 | `judge-devpost-thumbnail.png` | `e2db1a14aa1b98bf6321885d8136f4aac2786281dbd506c13f66888d5c03bbe9` |
 | `judge-devpost-hunt.png` | `b37850be3ee9920a0a0eeb27ff7281c95e35adfd90ae459f4486b1db43564792` |
-| `judge-devpost-verdict.png` | `f599ac2202e4784d67875b0ad1a27cc5973bb9a83ee4a603cd62a3f179136336` |
+| `judge-devpost-verdict.png` | `0b9d1a8a7638235f5915e4a7ca0619393ed5c75d531849c651504ba3d1889bde` |
 
-## Visual inspection
+## Direct inspection
 
-- `judge-demo-opening.png` at 1440×900: product appears at frame one; safe-demo banner and both
-  configured-provider badges are visible; the porcelain/wine layout has no collision or crop.
-- `judge-devpost-hunt.png` at 1500×1000: `Observed listing candidates`, `SERPAPI: FIXTURE`, local
-  `REC` thumbnails, merchant, price, source, and timestamp are readable without third-party images.
-- `judge-devpost-verdict.png` at 1500×1000: the complete three-row disposition ledger, system
-  exclusion, human rejection/preference, structured action gate, stopped outcome, and three-level
-  proof inventory and exportable-live-run disclosure remain legible in one frame. Candidate cards
-  say metadata-only; the lost-shade baseline alone says live receipt.
-- `judge-demo-mobile-verdict.png` at 350×1137: the stopped outcome, verbatim listing, missing-evidence
-  ledger, observed offer evidence link, heuristic caveat, and refined-search button wrap without
-  horizontal overflow.
+- Alternate source: 1080×1427 neutral-front portrait, visibly different from the judged fixture.
+- Alternate baseline render: successful mauve-rose lip application; source face and framing retained.
+- Alternate candidate render: visibly lighter/pinker than the baseline; source face and framing match.
+- Built desktop artifact: 1500×1000 verdict keeps the three-row disposition ledger, stopped outcome,
+  fresh SerpApi/second-model proof copy, and metadata-only judged-candidate boundary in one frame.
+- Built mobile artifact: 350×1172 verdict remains readable with no horizontal overflow.
+- Opening artifact: 1440×900 product-first layout remains clean and visibly arms Safe demo.
 
-## Provenance, cost, and remaining human gates
+## Provider, privacy, and action boundaries
 
-- Fixture inputs are sanitized recordings made on 2026-09-01 and stay visibly labeled. The live
-  SerpApi and Perfect Corp receipts predate this repair.
-- Repair verification made **zero** SerpApi calls, **zero** Perfect Corp calls, spent **zero**
-  credits, and cost **$0**.
-- Candidate output hashes and task/poll metadata are claimed exactly as retained. Candidate-specific
-  source-image bytes/hashes and Perfect request/lifecycle receipts are explicitly **not** claimed.
-- The new runtime path and tamper behavior were proven entirely with synthetic in-memory provider/image
-  bytes and local temporary files. No version-2 bundle from a genuine candidate is claimed, and the committed fixture
-  artifacts remain at their prior proof levels.
-- The optional business wedge is an opt-in availability alert and disclosed affiliate handoff only
-  after an evidence-complete exact variant. Neither implementation nor customer demand, conversion,
-  willingness to pay, alert delivery, or affiliate enrollment is claimed.
-- This receipt does not prove a public deployment or video. Public repository visibility, public
-  deployment, final 2:24 recording, YouTube upload, logged-out verification, and Devpost submission
-  remain operator-owned human gates.
+- Provider cost: 1 SerpApi event/free-plan search, 3 Perfect Corp event units, $0 paid.
+- No credential value, raw signed URL, signed query, or raw provider receipt is committed or printed.
+- No real selfie, operator media, new merchant product image, public deployment, push, publication,
+  upload, Devpost edit/submission, outreach, or final track selection occurred.
+- The current preferred fixture listing still lacks trusted structured exact variant, exact shade,
+  finish, and source-image evidence. The product correctly remains **NO ACTIONABLE LEAD YET** with no
+  purchase CTA.
+- Public deployment, repository visibility, video recording/upload, logged-out judge verification,
+  Devpost entry, and final sponsor-track selection remain operator-owned gates.

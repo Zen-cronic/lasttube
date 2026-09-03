@@ -1,0 +1,159 @@
+{
+  "recordedAt": "2026-09-03T14:04:11.531Z",
+  "source": {
+    "kind": "perfectcorp_published_api_playground_sample",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/general_01_f8f1fd2225.png",
+    "sha256": "42534769465cc02a8ac634504fd16a823d6a91568b1c6bffa1b0b71870a95705",
+    "byteLength": 593890,
+    "retainedPath": "proofs/perfectcorp/2026-09-03-alternate-model-source.png"
+  },
+  "role": "baseline",
+  "effectColor": "#A96A73",
+  "lifecycle": {
+    "schemaVersion": 1,
+    "kind": "perfectcorp-makeup-vto-lifecycle",
+    "provider": "perfectcorp",
+    "startedAt": "2026-09-03T14:04:11.932Z",
+    "completedAt": "2026-09-03T14:04:18.643Z",
+    "request": {
+      "srcFileUrl": "https://plugins-media.makeupar.com/strapi/assets/general_01_f8f1fd2225.png",
+      "srcFileUrlSha256": "64dd2c2d7d484382e98acb1219f0a5d41b7bdb696923fd69b4bcfa57706b8991",
+      "effects": [
+        {
+          "category": "lip_color",
+          "shape": {
+            "name": "original"
+          },
+          "palettes": [
+            {
+              "color": "#A96A73",
+              "texture": "matte",
+              "colorIntensity": 80
+            }
+          ],
+          "style": {
+            "type": "full"
+          }
+        }
+      ]
+    },
+    "create": {
+      "sequence": 0,
+      "phase": "create",
+      "requestedAt": "2026-09-03T14:04:11.932Z",
+      "receivedAt": "2026-09-03T14:04:12.234Z",
+      "requestUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto",
+      "finalResponseUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto",
+      "redirected": false,
+      "httpStatus": 200,
+      "retainedBodySha256": "948a78633c09a5d6136078d2fc5210381dc85a14379eeaf00fa738d286ed17e3",
+      "retainedBodyBytes": 100,
+      "retainedBody": {
+        "mediaType": "application/json",
+        "encoding": "utf-8",
+        "redactionPolicy": "lasttube-provider-json-redaction/v1",
+        "bodyText": "{\"status\":200,\"data\":{\"task_id\":\"u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2\"}}"
+      }
+    },
+    "polls": [
+      {
+        "sequence": 1,
+        "phase": "poll",
+        "requestedAt": "2026-09-03T14:04:12.235Z",
+        "receivedAt": "2026-09-03T14:04:12.327Z",
+        "requestUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "finalResponseUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "redirected": false,
+        "httpStatus": 200,
+        "retainedBodySha256": "cfe2af486d2b0caeb6e0b170f504a347979a1dd27fa4f849d6dba68f44079297",
+        "retainedBodyBytes": 75,
+        "retainedBody": {
+          "mediaType": "application/json",
+          "encoding": "utf-8",
+          "redactionPolicy": "lasttube-provider-json-redaction/v1",
+          "bodyText": "{\"status\":200,\"data\":{\"error\":null,\"results\":null,\"task_status\":\"running\"}}"
+        }
+      },
+      {
+        "sequence": 2,
+        "phase": "poll",
+        "requestedAt": "2026-09-03T14:04:14.330Z",
+        "receivedAt": "2026-09-03T14:04:14.458Z",
+        "requestUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "finalResponseUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "redirected": false,
+        "httpStatus": 200,
+        "retainedBodySha256": "cfe2af486d2b0caeb6e0b170f504a347979a1dd27fa4f849d6dba68f44079297",
+        "retainedBodyBytes": 75,
+        "retainedBody": {
+          "mediaType": "application/json",
+          "encoding": "utf-8",
+          "redactionPolicy": "lasttube-provider-json-redaction/v1",
+          "bodyText": "{\"status\":200,\"data\":{\"error\":null,\"results\":null,\"task_status\":\"running\"}}"
+        }
+      },
+      {
+        "sequence": 3,
+        "phase": "poll",
+        "requestedAt": "2026-09-03T14:04:16.459Z",
+        "receivedAt": "2026-09-03T14:04:16.557Z",
+        "requestUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "finalResponseUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "redirected": false,
+        "httpStatus": 200,
+        "retainedBodySha256": "cfe2af486d2b0caeb6e0b170f504a347979a1dd27fa4f849d6dba68f44079297",
+        "retainedBodyBytes": 75,
+        "retainedBody": {
+          "mediaType": "application/json",
+          "encoding": "utf-8",
+          "redactionPolicy": "lasttube-provider-json-redaction/v1",
+          "bodyText": "{\"status\":200,\"data\":{\"error\":null,\"results\":null,\"task_status\":\"running\"}}"
+        }
+      },
+      {
+        "sequence": 4,
+        "phase": "poll",
+        "requestedAt": "2026-09-03T14:04:18.557Z",
+        "receivedAt": "2026-09-03T14:04:18.643Z",
+        "requestUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "finalResponseUrl": "https://yce-api-01.makeupar.com/s2s/v2.0/task/makeup-vto/u9mevW7FD0Pl4w8HTkHUp4c7h7-uWVepw90wue1nFYzEDqCcO_I6dZ4r2qVyuvg2",
+        "redirected": false,
+        "httpStatus": 200,
+        "retainedBodySha256": "db850c7e8d6c163e9fdeb026a7175c1429839111407df3adcf8a615845d6c5e8",
+        "retainedBodyBytes": 253,
+        "retainedBody": {
+          "mediaType": "application/json",
+          "encoding": "utf-8",
+          "redactionPolicy": "lasttube-provider-json-redaction/v1",
+          "bodyText": "{\"status\":200,\"data\":{\"error\":null,\"results\":{\"url\":\"https://yce-us.s3-accelerate.amazonaws.com/ttl30/487723612904622906/118850652154/v2/aeMNNB0KmUIP8rnQ996tC5Q/febe2da3-34b5-4cee-b18d-87ee444a90af.jpg?[SIGNED-QUERY-REDACTED]\"},\"task_status\":\"success\"}}"
+        }
+      }
+    ],
+    "resultUrlLineage": {
+      "selectedFromPollSequence": 4,
+      "signedUrlSha256": "305ec932410efe0eee79e46d8651e914adb226afb5e0afcaf0c4f84d46e66a2c",
+      "sanitizedUrl": "https://yce-us.s3-accelerate.amazonaws.com/ttl30/487723612904622906/118850652154/v2/aeMNNB0KmUIP8rnQ996tC5Q/febe2da3-34b5-4cee-b18d-87ee444a90af.jpg?[SIGNED-QUERY-REDACTED]"
+    },
+    "validation": {
+      "createTaskIdPresent": true,
+      "pollTaskIdsMatchCreate": true,
+      "mismatchedPollSequences": [],
+      "finalStatusMatchesRender": true,
+      "pollCountMatchesResponses": true,
+      "successResultUrlPresent": true
+    }
+  },
+  "outputDownload": {
+    "requestedAt": "2026-09-03T14:04:18.643Z",
+    "receivedAt": "2026-09-03T14:04:18.920Z",
+    "requestedSignedUrlSha256": "305ec932410efe0eee79e46d8651e914adb226afb5e0afcaf0c4f84d46e66a2c",
+    "requestedUrl": "https://yce-us.s3-accelerate.amazonaws.com/ttl30/487723612904622906/118850652154/v2/aeMNNB0KmUIP8rnQ996tC5Q/febe2da3-34b5-4cee-b18d-87ee444a90af.jpg?[SIGNED-QUERY-REDACTED]",
+    "finalResponseUrl": "https://yce-us.s3-accelerate.amazonaws.com/ttl30/487723612904622906/118850652154/v2/aeMNNB0KmUIP8rnQ996tC5Q/febe2da3-34b5-4cee-b18d-87ee444a90af.jpg?[SIGNED-QUERY-REDACTED]",
+    "redirected": false,
+    "httpStatus": 200,
+    "mediaType": "image/png",
+    "outputSha256": "f0883d16e0bacab996196c34db37bcf5b4b6c82b756dcad32f22a0c3657dec2b",
+    "outputBytes": 1876565
+  },
+  "retainedOutputPath": "proofs/perfectcorp/2026-09-03-alternate-model-baseline-render.jpg"
+}

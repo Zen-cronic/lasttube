@@ -1,0 +1,18 @@
+{
+  "proof": "lasttube-alternate-model-comparison",
+  "recordedAt": "2026-09-03T14:04:11.531Z",
+  "source": {
+    "kind": "perfectcorp_published_api_playground_sample",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/general_01_f8f1fd2225.png",
+    "sha256": "42534769465cc02a8ac634504fd16a823d6a91568b1c6bffa1b0b71870a95705",
+    "byteLength": 593890,
+    "retainedPath": "proofs/perfectcorp/2026-09-03-alternate-model-source.png"
+  },
+  "successfulRenders": 2,
+  "credits": {
+    "before": 1343,
+    "after": 1341,
+    "spentUnits": 2
+  },
+  "note": "Fresh baseline plus one candidate effect on a second official fixture model. This robustness proof is separate from the deterministic hero replay and does not establish variant, shade, finish, or an actionable lead."
+}

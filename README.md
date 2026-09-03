@@ -47,6 +47,11 @@ receipted lost-shade Perfect Corp lifecycle. Candidate fixtures are narrower: th
 with task/poll metadata, but no retained request or lifecycle responses. Their per-candidate
 manifests say so, and every replay remains visibly `FIXTURE`.
 
+A separate 2026-09-03 robustness receipt uses a second portrait published in Perfect Corp's API
+playground. It retains a fresh baseline and one candidate-effect lifecycle on that alternate model,
+including sanitized create/poll responses and downloaded output hashes. This does not upgrade the
+deterministic candidate fixtures, validate a product field, or create an actionable lead.
+
 New live candidate runs use a stricter proof path. The search response's wire digest opens an
 evidence run, while a complete recursively redacted JSON copy is retained and separately hashed
 before normalization. Shade estimation retains and hashes the exact fetched merchant-image bytes.
@@ -109,7 +114,7 @@ npm run dev       # web client on http://localhost:5173 (proxies /api)
 ## Verify (no network needed)
 
 ```bash
-npm run verify    # typecheck + lint + 60 offline tests + build + secret scan
+npm run verify    # typecheck + lint + 63 offline tests + build + secret scan
 ```
 
 ## Rehearse the judge demo (no network or provider spend)
@@ -155,6 +160,7 @@ neither is claimed or provisioned by this prototype.
 ```bash
 npm run proof:serpapi       # 1 real google_shopping search -> proofs/serpapi/
 npm run proof:perfectcorp   # 1 real makeup-vto lifecycle   -> proofs/perfectcorp/
+npm run proof:alternate-model # 2 VTO lifecycles on a second official fixture model
 npx tsx scripts/build-demo-bundle.ts   # re-record the labeled demo bundle
 ```
 

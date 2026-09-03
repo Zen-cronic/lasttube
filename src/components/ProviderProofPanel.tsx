@@ -19,18 +19,18 @@ export function ProviderProofPanel() {
       <div className="proof-receipt-grid">
         <div>
           <p className="proof-receipt-provider">SerpApi · Google Shopping</p>
-          <strong>LIVE response → 40 normalized candidates</strong>
+          <strong>FRESH LIVE response → 40 candidates</strong>
           <p>
-            “mauve rose matte lipstick” · observed 2026-09-01 01:52 UTC · merchant,
-            price, listing source, and availability text retained.
+            “mauve rose matte lipstick” · observed 2026-09-03 14:00 UTC · receipt-only freshness
+            check; the deterministic Sep 1 replay was not overwritten.
           </p>
         </div>
         <div>
           <p className="proof-receipt-provider">Perfect Corp · Makeup VTO</p>
-          <strong>LOST-SHADE BASELINE · LIVE receipt · 19 polls</strong>
+          <strong>BASELINE + SECOND-MODEL CHECK</strong>
           <p>
-            One unit spent · request, task, bounded lifecycle, output hash, and downloaded render
-            are preserved.
+            The judged baseline receipt remains preserved. A Sep 3 live check added baseline and
+            candidate lifecycles on a different official sample model, with downloaded output hashes.
           </p>
         </div>
         <div>

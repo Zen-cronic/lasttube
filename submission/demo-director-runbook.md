@@ -101,6 +101,7 @@ room. Rehearse against the actions and shorten pauses before changing the script
 |---|---|---|
 | SerpApi determines observed-market candidates | Act 2 candidate rows, query, source, merchant, price, observed-at, provider badge | `proofs/serpapi/2026-09-01-google-shopping.json` and `2026-09-01-normalized.json` |
 | Perfect Corp baseline is genuinely receipted | Lost-shade baseline with VTO badge and explicit receipt label | `proofs/perfectcorp/2026-09-01-makeup-vto-lifecycle.json`, downloaded render, and `proofs/offline/lost-shade-baseline.json` |
+| Perfect Corp works on a second disclosed fixture model | Proof inventory says `SECOND-MODEL CHECK` | `proofs/perfectcorp/2026-09-03-alternate-model-*`: retained official sample, baseline/candidate lifecycles, and output hashes |
 | Candidate proof is not overstated | Candidate rows say `VTO metadata only`; proof inventory separates their outputs | Three `proofs/offline/candidate-*.json` manifests with explicit null request/lifecycle fields |
 | New live candidate proof fails closed | Runtime-proof note; validated live candidates expose a manifest-download link | `server/runtimeEvidence.ts`; offline tests re-hash sanitized raw search, source, every sanitized Perfect response/URL lineage, and output; tampering blocks export |
 | Fixture cannot masquerade as live | proof-mode banner; SerpApi and VTO fixture badges | `npm run capture:demo` rejects live search, VTO, and shade-estimate requests |
@@ -108,8 +109,8 @@ room. Rehearse against the actions and shorten pauses before changing the script
 | Weak images cannot enter human comparison | 10% heuristic copy; Ngozi visibly system-excluded | `shared/shadeEvidence.ts`; threshold, bundle, and provenance tests |
 | Perfect Corp baseline is mandatory | remembered shade plus candidate render; baseline-required copy | capture injects a failed baseline and asserts zero decision/outcome UI |
 | Human judgment changes the result | ABH rejected despite lower ΔE; NYX accepted/preferred | `shared/reviewDecision.ts`; capture asserts the preferred title and `CIE76 did not choose` |
-| Missing structured evidence stops action | no-actionable card, present/absent/unknown ledger, refined-search handoff | `shared/evidence.ts`; positive and fail-closed policy tests; no new provider calls |
-| Failure does not become a fake result | search error/empty states and recorded exclusion rows | typed provider status plus 60 offline tests |
+| Missing structured evidence stops action | no-actionable card, present/absent/unknown ledger, refined-search handoff | `shared/evidence.ts`; positive and fail-closed policy tests; fresh receipts do not promote missing fields |
+| Failure does not become a fake result | search error/empty states and recorded exclusion rows | typed provider status plus offline tests |
 | Mobile judge can read the verdict | wrapped 350 px verdict capture | capture fails on horizontal overflow |
 
 ## Compliance checklist

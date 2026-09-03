@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import sharp from 'sharp';
 import { afterEach, describe, expect, it } from 'vitest';
 import app from '../server/index.ts';
 import {
@@ -434,5 +435,32 @@ describe('downloadVtoOutput', () => {
     await expect(downloadVtoOutput('http://insecure.invalid/output', fetchImpl)).rejects.toThrow(
       /HTTPS/,
     );
+  });
+
+  it('accepts a provider octet-stream only when the bounded bytes decode as an image', async () => {
+    const png = await sharp({
+      create: { width: 2, height: 2, channels: 3, background: '#a96a73' },
+    })
+      .png()
+      .toBuffer();
+    const genericFetch = (async () =>
+      new Response(new Uint8Array(png), {
+        status: 200,
+        headers: { 'content-type': 'application/octet-stream' },
+      })) as typeof fetch;
+    const downloaded = await downloadVtoOutput(
+      'https://synthetic-policy-fixture.invalid/output',
+      genericFetch,
+    );
+    expect(downloaded.mediaType).toBe('image/png');
+
+    const invalidFetch = (async () =>
+      new Response(new TextEncoder().encode('not an image'), {
+        status: 200,
+        headers: { 'content-type': 'application/octet-stream' },
+      })) as typeof fetch;
+    await expect(
+      downloadVtoOutput('https://synthetic-policy-fixture.invalid/output', invalidFetch),
+    ).rejects.toThrow(/could not be decoded/);
   });
 });

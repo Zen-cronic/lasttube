@@ -88,7 +88,8 @@ missing, LastTube stops instead of inventing a verdict.
 ## Where the sponsor technology does the real work
 
 **Perfect Corp:** Makeup VTO is the required human-decision layer. The comparison is not a CSS
-filter or static mock: the single preserved live lifecycle receipt is the lost-shade baseline; it
+filter or static mock: within the judged replay, the preserved live lifecycle receipt is the
+lost-shade baseline; it
 completed after 19 bounded polls, spent one event unit, and retained the request and downloaded
 output. A successful image-bearing baseline is mandatory; if it fails, every decision and outcome
 remains locked. Candidate fixtures retain outputs, hashes, task ids, and poll counts, but not their
@@ -97,6 +98,11 @@ receipted. The human must view each usable candidate, explicitly accept or rejec
 among the accepted set. VTO compares estimated colors consistently; it does not validate the actual
 formulation or exact variant.
 
+A separate September 3 robustness proof uses a second portrait published in Perfect Corp's API
+playground. It preserves fresh baseline and candidate-effect lifecycles, sanitized responses, and
+downloaded output hashes on that different fixture model. It is not substituted into the judged
+replay and does not establish a product variant, shade, finish, or actionable lead.
+
 For a new live candidate, review stays locked unless LastTube downloads the signed Perfect output
 and validates a versioned bundle binding sanitized provider-response artifacts, exact listing,
 source-image bytes, request effects, every task/poll response, safe URL lineage, and output bytes.
@@ -104,7 +110,8 @@ Offline tests—not a new provider run—prove tampering fails closed. The curre
 predate this path and remain metadata-only; the submission does not upgrade their proof retroactively.
 
 **SerpApi:** a live Google Shopping search determines which alternatives the response reported and
-where the evidence came from. The preserved proof normalized 40 candidates for the hero query with
+where the evidence came from. A September 3 receipt-only freshness run again normalized 40
+candidates without overwriting the deterministic replay. The preserved proof keeps the hero query's
 merchant, price, exact listing text, observed offer, source, and timestamp fields. Remove SerpApi
 and LastTube loses its market-evidence claim; remove Perfect Corp and neither the required baseline
 nor human comparison can occur, so LastTube blocks the outcome.
@@ -135,7 +142,7 @@ the data limits, and added a request-sequence guard so stale responses cannot cr
   has stored image bytes needed for a truthful coverage/hash check, so we made zero new VTO calls.
 - A deterministic judge-demo route that fails its capture check if it attempts any live provider
   request or loses its `FIXTURE` labels.
-- 60 offline tests, type checking, linting, production build, secret scan, responsive capture, and
+- 63 offline tests, type checking, linting, production build, secret scan, responsive capture, and
   a container-ready one-process runtime.
 
 ## What we learned

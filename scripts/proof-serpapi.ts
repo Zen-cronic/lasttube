@@ -12,6 +12,7 @@ import { normalizeShoppingResponse, searchShoppingRaw } from '../server/provider
 // Hero scenario: Urban Decay's Vice lipstick line (including the cult shade
 // "Backtalk") was discontinued; hunt currently listed mauve-rose analogs.
 const QUERY = 'mauve rose matte lipstick';
+const receiptOnly = process.argv.includes('--receipt-only');
 
 async function main() {
   const config = getSerpApiConfig();
@@ -51,31 +52,35 @@ async function main() {
   const normalizedPath = path.join(proofDir, `${day}-normalized.json`);
   fs.writeFileSync(normalizedPath, JSON.stringify(normalized, null, 2));
 
-  // Derived fixture (trimmed to keep the repo light).
-  const rawObj = sanitizedRaw as { shopping_results?: unknown[] } & Record<string, unknown>;
-  const fixtureRaw = {
-    ...rawObj,
-    shopping_results: Array.isArray(rawObj.shopping_results)
-      ? rawObj.shopping_results.slice(0, 10)
-      : [],
-  };
-  const fixturePath = path.resolve('server/providers/fixtures/serpapi-google-shopping.json');
-  fs.mkdirSync(path.dirname(fixturePath), { recursive: true });
-  fs.writeFileSync(
-    fixturePath,
-    JSON.stringify(
-      {
-        fixture: true,
-        label:
-          'FIXTURE — sanitized recording of a real SerpApi google_shopping response; not live data.',
-        recordedAt,
-        query: QUERY,
-        raw: fixtureRaw,
-      },
-      null,
-      2,
-    ),
-  );
+  let fixturePath: string | null = null;
+  if (!receiptOnly) {
+    // Derived fixture (trimmed to keep the repo light). `--receipt-only` deliberately
+    // leaves the deterministic judged path untouched while proving freshness.
+    const rawObj = sanitizedRaw as { shopping_results?: unknown[] } & Record<string, unknown>;
+    const fixtureRaw = {
+      ...rawObj,
+      shopping_results: Array.isArray(rawObj.shopping_results)
+        ? rawObj.shopping_results.slice(0, 10)
+        : [],
+    };
+    fixturePath = path.resolve('server/providers/fixtures/serpapi-google-shopping.json');
+    fs.mkdirSync(path.dirname(fixturePath), { recursive: true });
+    fs.writeFileSync(
+      fixturePath,
+      JSON.stringify(
+        {
+          fixture: true,
+          label:
+            'FIXTURE — sanitized recording of a real SerpApi google_shopping response; not live data.',
+          recordedAt,
+          query: QUERY,
+          raw: fixtureRaw,
+        },
+        null,
+        2,
+      ),
+    );
+  }
 
   console.log(`[proof:serpapi] status=${normalized.providerStatus}`);
   console.log(`[proof:serpapi] candidates=${normalized.candidates.length}`);
@@ -87,7 +92,11 @@ async function main() {
   for (const w of normalized.warnings) console.log(`  warning: ${w}`);
   console.log(`[proof:serpapi] receipt: ${receiptPath}`);
   console.log(`[proof:serpapi] normalized: ${normalizedPath}`);
-  console.log(`[proof:serpapi] fixture refreshed: ${fixturePath}`);
+  console.log(
+    fixturePath
+      ? `[proof:serpapi] fixture refreshed: ${fixturePath}`
+      : '[proof:serpapi] receipt-only mode: deterministic fixture unchanged',
+  );
   if (normalized.providerStatus !== 'live' || normalized.candidates.length === 0) {
     console.error('[proof:serpapi] proof FAILED — no live candidates.');
     process.exit(1);

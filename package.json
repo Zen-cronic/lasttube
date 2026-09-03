@@ -16,6 +16,7 @@
     "test:watch": "vitest",
     "proof:serpapi": "tsx scripts/proof-serpapi.ts",
     "proof:perfectcorp": "tsx scripts/proof-perfectcorp.ts",
+    "proof:alternate-model": "tsx scripts/record-alternate-model-demo.ts",
     "scan:secrets": "tsx scripts/scan-secrets.ts",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run scan:secrets",
     "capture:demo": "tsx scripts/capture-demo.ts"
