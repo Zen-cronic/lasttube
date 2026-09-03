@@ -1,4 +1,4 @@
-// Perceptual color math for the closest visual-lead ranking.
+// Perceptual color math for explaining human-reviewed visual directions.
 // sRGB hex -> CIE Lab (D65) and CIE76 delta-E, plus plain-language trade-off
 // wording. Delta-E here is an explanation aid over approximated shade hexes —
 // the same-face render is a required human comparison, not formulation proof.

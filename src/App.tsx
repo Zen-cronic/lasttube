@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { DemoComparisonBundle } from '../server/fixtures.ts';
 import { SAMPLE_FACE_URL, foundationEffect, lipColorEffect } from '../shared/effects.ts';
+import {
+  isSuccessfulVtoRender,
+  resolveReviewDecisions,
+  type CandidateReviewDecision,
+} from '../shared/reviewDecision.ts';
 import { assessShadeEvidenceCoverage } from '../shared/shadeEvidence.ts';
 import type { CandidateRecord, SearchResultSet, VtoRender } from '../shared/types.ts';
+import { CandidateDecisionPanel } from './components/CandidateDecisionPanel.tsx';
 import { EvidencePanel, type DataSource } from './components/EvidencePanel.tsx';
-import { HumanReviewGate } from './components/HumanReviewGate.tsx';
 import { LostShadePicker } from './components/LostShadePicker.tsx';
 import { ProviderStatusBadge, type BadgeStatus } from './components/ProviderStatusBadge.tsx';
 import { ProviderProofPanel } from './components/ProviderProofPanel.tsx';
 import { SelfiePanel } from './components/SelfiePanel.tsx';
-import { VerdictCard } from './components/VerdictCard.tsx';
+import { DecisionOutcomeCard } from './components/VerdictCard.tsx';
 import { VtoStage, type CandidateComparison } from './components/VtoStage.tsx';
 import type { LostShade } from './data/lostShades.ts';
 
@@ -30,6 +35,21 @@ function providerBadge(value: string | undefined): BadgeStatus {
 
 function effectsFor(category: LostShade['category'], hex: string) {
   return category === 'foundation' ? [foundationEffect(hex)] : [lipColorEffect(hex)];
+}
+
+function failedVtoRender(error: string): VtoRender {
+  const now = new Date().toISOString();
+  return {
+    providerStatus: 'failed',
+    provider: 'perfectcorp',
+    taskId: null,
+    imageUrl: null,
+    startedAt: now,
+    completedAt: now,
+    pollCount: 0,
+    expiryNote: 'No render was produced.',
+    error,
+  };
 }
 
 export default function App() {
@@ -53,8 +73,10 @@ export default function App() {
   const [lostRendering, setLostRendering] = useState(false);
   const [comparisons, setComparisons] = useState<CandidateComparison[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [reviewedIds, setReviewedIds] = useState<string[]>([]);
-  const [visualReviewConfirmed, setVisualReviewConfirmed] = useState(false);
+  const [reviewDecisions, setReviewDecisions] = useState<
+    Record<string, CandidateReviewDecision | undefined>
+  >({});
+  const [preferredId, setPreferredId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/health')
@@ -114,8 +136,9 @@ export default function App() {
     if (!lost || shortlist.length === 0) return;
     setComparing(true);
     setActiveId(null);
-    setReviewedIds([]);
-    setVisualReviewConfirmed(false);
+    setReviewDecisions({});
+    setPreferredId(null);
+    setLostRender(null);
 
     const base = (c: CandidateRecord): CandidateComparison => ({
       id: c.id,
@@ -176,16 +199,19 @@ export default function App() {
 
     setComparisons(shortlist.map(base));
 
-    // Render what they remember: the lost shade on the sample face.
+    // The remembered shade is a required comparison baseline. Candidate work
+    // may run concurrently, but no decision UI unlocks unless this promise
+    // resolves to a successful image-bearing VTO result.
     setLostRendering(true);
-    void requestVto(lost.hex, lost.category, dataSource).then((render) => {
-      setLostRender(render);
-      setLostRendering(false);
-    });
+    const baselinePromise = requestVto(lost.hex, lost.category, dataSource)
+      .then((render) => setLostRender(render))
+      .catch((err) =>
+        setLostRender(failedVtoRender(`Lost-shade baseline failed: ${(err as Error).message}`)),
+      )
+      .finally(() => setLostRendering(false));
 
     // Estimate each candidate's shade from its merchant image, then render it.
-    await Promise.all(
-      shortlist.map(async (c) => {
+    const candidatePromises = shortlist.map(async (c) => {
         const update = (patch: Partial<CandidateComparison>) => {
           setComparisons((prev) => prev.map((p) => (p.id === c.id ? { ...p, ...patch } : p)));
         };
@@ -216,8 +242,8 @@ export default function App() {
         } catch (err) {
           update({ estimateError: (err as Error).message, rendering: false });
         }
-      }),
-    );
+      });
+    await Promise.all([baselinePromise, ...candidatePromises]);
   }, [lost, shortlist, dataSource, requestVto]);
 
   const selectLost = (shade: LostShade) => {
@@ -230,8 +256,8 @@ export default function App() {
     setComparisons([]);
     setLostRender(null);
     setActiveId(null);
-    setReviewedIds([]);
-    setVisualReviewConfirmed(false);
+    setReviewDecisions({});
+    setPreferredId(null);
   };
 
   const startHunt = () => {
@@ -241,8 +267,8 @@ export default function App() {
     setComparisons([]);
     setLostRender(null);
     setActiveId(null);
-    setReviewedIds([]);
-    setVisualReviewConfirmed(false);
+    setReviewDecisions({});
+    setPreferredId(null);
     void runSearch(query || lost.defaultQuery, dataSource);
   };
 
@@ -261,7 +287,25 @@ export default function App() {
 
   const reviewCandidate = (id: string) => {
     setActiveId(id);
-    setReviewedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
+
+  const decideCandidate = (id: string, decision: CandidateReviewDecision) => {
+    setActiveId(id);
+    setReviewDecisions((prev) => ({ ...prev, [id]: decision }));
+    if (decision === 'rejected') {
+      setPreferredId((current) => (current === id ? null : current));
+    }
+  };
+
+  const refineSearch = () => {
+    if (!lost) return;
+    setQuery(`"${lost.shadeName}" ${lost.productName} exact shade`);
+    setComparing(false);
+    setActiveId(null);
+    requestAnimationFrame(() => {
+      document.getElementById('replacement-query')?.focus();
+      document.getElementById('act2-title')?.scrollIntoView({ behavior: 'smooth' });
+    });
   };
 
   // Signature element: the shade under consideration tints the interface.
@@ -269,11 +313,12 @@ export default function App() {
   const activeHex = activeComparison?.estimateHex ?? lost?.hex ?? '#a96a73';
   const shadeStyle = { '--shade': activeHex } as CSSProperties;
 
-  const allSettled =
+  const allCandidatesSettled =
     comparisons.length > 0 && comparisons.every((c) => c.render !== null || c.estimateError !== null);
+  const baselineSettled = !lostRendering && lostRender !== null;
+  const comparisonSettled = baselineSettled && allCandidatesSettled;
+  const baselineReady = isSuccessfulVtoRender(lostRender);
   const comparisonHasErrors =
-    lostRender?.providerStatus === 'failed' ||
-    lostRender?.providerStatus === 'unavailable' ||
     comparisons.some(
       (c) =>
         c.estimateError !== null ||
@@ -283,7 +328,14 @@ export default function App() {
   const reviewableIds = comparisons
     .filter((c) => c.estimateHex !== null && c.render?.imageUrl)
     .map((c) => c.id);
-  const reviewedCount = reviewableIds.filter((id) => reviewedIds.includes(id)).length;
+  const reviewResolution = resolveReviewDecisions(
+    reviewableIds,
+    reviewDecisions,
+    preferredId,
+  );
+  const reviewableComparisons = comparisons.filter((candidate) =>
+    reviewableIds.includes(candidate.id),
+  );
 
   return (
     <div className="page" style={shadeStyle}>
@@ -292,7 +344,7 @@ export default function App() {
           <p className="wordmark">
             Last<span className="tube">Tube</span>
           </p>
-          <p className="tagline">Your favorite shade vanished. Inspect its closest visual lead.</p>
+          <p className="tagline">Your favorite shade vanished. Decide whether any lead is actionable.</p>
         </div>
         <div className="provider-strip">
           <ProviderStatusBadge name="SerpApi" status={providerBadge(health?.providers.serpapi)} />
@@ -338,8 +390,9 @@ export default function App() {
         </h1>
         <p>
           Name the one you lost. LastTube gathers timestamped listing evidence, rejects images with
-          too little usable shade signal, and requires a Perfect Corp same-face review before it
-          ranks one visual lead — exact shade unverified, sources attached.
+          too little usable shade signal, then requires a successful Perfect Corp baseline plus
+          explicit accept, reject, and preference decisions on the same face. Missing exact-variant
+          evidence stops the outcome instead of inventing a lead.
         </p>
       </section>
 
@@ -407,7 +460,22 @@ export default function App() {
             activeId={activeId}
             onSelect={reviewCandidate}
           />
-          {allSettled && comparisonHasErrors && (
+          {comparisonSettled && !baselineReady && (
+            <div className="recovery-row baseline-block" role="alert">
+              <div>
+                <p className="act-label">Baseline required</p>
+                <h3>Lost-shade baseline failed. Comparison is blocked.</h3>
+                <p>
+                  Without a successful image-bearing Perfect Corp render of the remembered shade,
+                  candidate decisions and outcomes stay locked.
+                </p>
+              </div>
+              <button type="button" className="btn btn-secondary" onClick={() => void startComparison()}>
+                Retry baseline{dataSource === 'live' ? ' (uses provider calls)' : ''}
+              </button>
+            </div>
+          )}
+          {comparisonSettled && baselineReady && comparisonHasErrors && (
             <div className="recovery-row" role="status">
               <p>
                 The comparison stopped rather than guessing. Resolve the provider or image error,
@@ -418,18 +486,50 @@ export default function App() {
               </button>
             </div>
           )}
-          {allSettled && (
-            <HumanReviewGate
-              reviewedCount={reviewedCount}
-              totalCount={reviewableIds.length}
-              confirmed={visualReviewConfirmed}
-              onConfirm={() => setVisualReviewConfirmed(true)}
+          {comparisonSettled && baselineReady && reviewableComparisons.length > 0 && (
+            <CandidateDecisionPanel
+              candidates={reviewableComparisons}
+              activeId={activeId}
+              decisions={reviewDecisions}
+              preferredId={reviewResolution.preferredId}
+              onView={reviewCandidate}
+              onDecide={decideCandidate}
+              onPrefer={setPreferredId}
             />
           )}
-          {allSettled && visualReviewConfirmed && (
-            <VerdictCard lost={lost} comparisons={comparisons} />
+          {comparisonSettled &&
+            baselineReady &&
+            reviewResolution.complete &&
+            (reviewResolution.acceptedIds.length === 0 || reviewResolution.preferredId) && (
+              <DecisionOutcomeCard
+                lost={lost}
+                comparisons={comparisons}
+                acceptedIds={reviewResolution.acceptedIds}
+                preferredId={reviewResolution.preferredId}
+                onRefine={refineSearch}
+              />
+            )}
+          {comparisonSettled &&
+            baselineReady &&
+            reviewResolution.complete &&
+            reviewResolution.acceptedIds.length > 0 &&
+            !reviewResolution.preferredId && (
+              <p className="warning-strip" role="status">
+                Review complete. Choose one accepted candidate as your visual preference, or reject
+                it to stop with no lead.
+              </p>
+            )}
+          {comparisonSettled && baselineReady && reviewableComparisons.length === 0 && (
+            <div className="verdict-card no-actionable-card" role="status">
+              <p className="act-label">Evidence stopped</p>
+              <h3>No actionable lead.</h3>
+              <p>No candidate produced both usable image evidence and a completed same-face render.</p>
+              <button type="button" className="btn" onClick={refineSearch}>
+                Refine search with exact shade terms
+              </button>
+            </div>
           )}
-          {allSettled && <ProviderProofPanel />}
+          {comparisonSettled && <ProviderProofPanel />}
         </section>
       )}
 

@@ -47,6 +47,7 @@ export function EvidencePanel({
       <div className="evidence-header">
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <input
+            id="replacement-query"
             type="text"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}

@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Your favorite shade vanished. LastTube finds listed visual leads, rejects weak shade evidence, and requires same-face review before ranking a lead.",
+  "description": "Compare observed shade listings on one face, make explicit human decisions, and stop when exact-variant evidence is missing.",
   "scripts": {
     "dev": "vite",
     "dev:api": "tsx watch server/index.ts",

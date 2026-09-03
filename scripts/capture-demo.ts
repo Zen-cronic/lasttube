@@ -5,7 +5,7 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { chromium } from 'playwright-core';
+import { chromium, type Browser } from 'playwright-core';
 
 const repo = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const capturePort = process.env.CAPTURE_PORT || '18787';
@@ -35,6 +35,61 @@ async function verifyProductionRouting(): Promise<void> {
     throw new Error(
       `unknown API route must be a JSON 404, received ${missingApi.status} ${contentType}`,
     );
+  }
+}
+
+async function verifyBaselineFailureBlocksOutcome(browser: Browser): Promise<void> {
+  const page = await browser.newPage({ viewport: { width: 1200, height: 800 } });
+  const errors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/api/demo/comparison-bundle', async (route) => {
+    const response = await route.fetch();
+    const bundle = (await response.json()) as {
+      lost: { render: Record<string, unknown> };
+    };
+    bundle.lost.render = {
+      ...bundle.lost.render,
+      providerStatus: 'failed',
+      imageUrl: null,
+      completedAt: new Date(0).toISOString(),
+      error: 'controlled end-to-end baseline failure',
+    };
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(bundle),
+    });
+  });
+
+  try {
+    await page.goto(`${baseUrl}/?mode=demo`, { waitUntil: 'networkidle' });
+    await page
+      .getByRole('button', { name: /Urban Decay Vice Lipstick — Backtalk/i })
+      .click();
+    await page.getByRole('button', { name: 'Find living replacements' }).click();
+    await page.getByText('SERPAPI: FIXTURE').waitFor();
+    const rows = page.locator('.candidate-row');
+    await rows.nth(0).getByRole('button', { name: 'Try on-face' }).click();
+    await rows.nth(2).getByRole('button', { name: 'Try on-face' }).click();
+    await page.getByRole('button', { name: 'Compare 2 on-face' }).click();
+    await page
+      .getByRole('heading', { name: 'Lost-shade baseline failed. Comparison is blocked.' })
+      .waitFor();
+
+    if ((await page.locator('.decision-panel').count()) !== 0) {
+      throw new Error('candidate decision panel unlocked after lost-shade baseline failure');
+    }
+    if ((await page.locator('.verdict-card').count()) !== 0) {
+      throw new Error('outcome unlocked after lost-shade baseline failure');
+    }
+    if (errors.length > 0) {
+      throw new Error(`baseline-failure browser errors: ${errors.join(' | ')}`);
+    }
+  } finally {
+    await page.close();
   }
 }
 
@@ -112,19 +167,39 @@ async function main(): Promise<void> {
       await candidateRows.nth(0).getByRole('button', { name: 'Try on-face' }).click();
       await candidateRows.nth(2).getByRole('button', { name: 'Try on-face' }).click();
       await page.getByRole('button', { name: 'Compare 2 on-face' }).click();
-      await page.getByRole('heading', { name: 'Review every usable same-face render.' }).waitFor();
+      await page.getByRole('heading', { name: 'Decide on each usable same-face render.' }).waitFor();
 
       if ((await page.locator('.verdict-card').count()) !== 0) {
-        throw new Error('visual lead appeared before the required human review checkpoint');
+        throw new Error('outcome appeared before explicit candidate decisions');
       }
       const usableSwatches = page.locator('.swatch:not([disabled])');
       if ((await usableSwatches.count()) !== 2) {
         throw new Error('expected exactly two fixture candidates above the shade-evidence threshold');
       }
+      if ((await page.locator('.render-cell').first().locator('img').count()) !== 1) {
+        throw new Error('lost-shade baseline render is missing');
+      }
+
+      // Reject the candidate CIE76 would rank first, then prefer the other one.
+      // The final state proves human input—not the metric—controls the outcome.
       await usableSwatches.nth(0).click();
+      await page
+        .getByRole('button', { name: 'Reject visual fit for Anastasia Beverly Hills Lip Velvet' })
+        .click();
       await usableSwatches.nth(1).click();
-      await page.getByRole('button', { name: 'Confirm same-face review' }).click();
-      await page.getByText('Closest visual lead · exact shade unverified').waitFor();
+      await page
+        .getByRole('button', {
+          name: 'Accept visual fit for NYX Professional Makeup Fat Matte Lipstick',
+        })
+        .click();
+      await page
+        .getByRole('button', { name: 'Prefer NYX Professional Makeup Fat Matte Lipstick' })
+        .click();
+      await page.getByRole('heading', { name: 'No actionable lead yet.' }).waitFor();
+      await page
+        .getByText(/Your visual preference is NYX Professional Makeup Fat Matte Lipstick/)
+        .waitFor();
+      await page.getByText('CIE76 did not choose this preference.').waitFor();
 
       const fixtureBadges = await page.locator('.badge-fixture').count();
       if (fixtureBadges < 3) {
@@ -168,8 +243,10 @@ async function main(): Promise<void> {
         path: path.join(screenshotDir, 'judge-demo-mobile-verdict.png'),
       });
 
+      await verifyBaselineFailureBlocksOutcome(browser);
+
       console.log(
-        '[capture:demo] PASS — production artifact, 2 usable FIXTURE candidates, required human review gate, exact-listing caveat, 3+ fixture badges, zero live provider or non-local image requests, zero browser errors',
+        '[capture:demo] PASS — production artifact, required successful baseline, 2 explicit candidate decisions, human preference overrides CIE76, no actionable lead without exact variant, 3+ fixture badges, zero live provider or non-local image requests, zero browser errors',
       );
     } finally {
       await browser.close();

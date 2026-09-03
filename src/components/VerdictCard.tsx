@@ -1,5 +1,5 @@
-// The post-review evidence summary: one closest visual lead, its limitations,
-// and the exact observed listing receipt behind it.
+// Human decision outcome. CIE76 explains the selected visual direction but
+// never selects it, and missing exact-variant evidence fails closed.
 
 import { deltaE, describeTradeoff } from '../../shared/color.ts';
 import type { LostShade } from '../data/lostShades.ts';
@@ -8,6 +8,9 @@ import type { CandidateComparison } from './VtoStage.tsx';
 interface Props {
   lost: LostShade;
   comparisons: CandidateComparison[];
+  acceptedIds: string[];
+  preferredId: string | null;
+  onRefine: () => void;
 }
 
 function observedTime(iso: string): string {
@@ -18,74 +21,78 @@ function observedTime(iso: string): string {
   }
 }
 
-export function VerdictCard({ lost, comparisons }: Props) {
-  const scored = comparisons
-    // A color estimate without a completed same-face render never enters the
-    // post-review ranking. A failed or unavailable VTO candidate cannot win on
-    // color math alone.
-    .filter((c) => c.estimateHex !== null && Boolean(c.render?.imageUrl))
-    .map((c) => ({ c, dE: deltaE(lost.hex, c.estimateHex!) }))
-    .filter((s): s is { c: CandidateComparison; dE: number } => s.dE !== null)
-    .sort((a, b) => a.dE - b.dE);
+export function DecisionOutcomeCard({
+  lost,
+  comparisons,
+  acceptedIds,
+  preferredId,
+  onRefine,
+}: Props) {
+  const preferred = comparisons.find(
+    (candidate) => candidate.id === preferredId && acceptedIds.includes(candidate.id),
+  );
 
-  if (scored.length === 0) {
+  if (!preferred) {
     return (
-      <div className="verdict-card" role="status" aria-live="polite">
-        <h3>No verdict yet</h3>
-        <p className="field-note">
-          None of the shortlisted candidates produced a usable shade estimate, so LastTube will not
-          guess. Shortlist candidates whose product images show the actual shade.
+      <div className="verdict-card no-actionable-card" role="status" aria-live="polite">
+        <p className="act-label">Human decision · stopped</p>
+        <h3>No actionable lead.</h3>
+        <p>
+          You rejected every usable same-face render. LastTube excludes them from the outcome and
+          does not let color distance restore a candidate you rejected.
         </p>
+        <button type="button" className="btn" onClick={onRefine}>
+          Refine search with exact shade terms
+        </button>
       </div>
     );
   }
 
-  const best = scored[0]!;
-  const runnerUp = scored[1] ?? null;
-  const tradeoff = describeTradeoff(lost.hex, best.c.estimateHex!);
-  const distinctSource = best.c.sourceUrl && best.c.sourceUrl !== best.c.productUrl;
+  const dE = deltaE(lost.hex, preferred.estimateHex!);
+  const tradeoff = describeTradeoff(lost.hex, preferred.estimateHex!);
+  const distinctSource = preferred.sourceUrl && preferred.sourceUrl !== preferred.productUrl;
 
   return (
-    <div className="verdict-card" role="status" aria-live="polite">
-      <p className="act-label">Closest visual lead · exact shade unverified</p>
-      <h3>{best.c.title}</h3>
+    <div className="verdict-card no-actionable-card" role="status" aria-live="polite">
+      <p className="act-label">Visual preference saved · action blocked</p>
+      <h3>No actionable lead yet.</h3>
       <p>
-        After the required same-face review, color distance ranks this observed listing as the
-        closest visual lead to {lost.productName} — {lost.shadeName}: {tradeoff}. The preserved
-        listing does not name an exact shade or variant, so this is not a purchase recommendation
-        or a claim that the formula matches.
-        {runnerUp &&
-          ` Runner-up: ${runnerUp.c.title} (ΔE ${runnerUp.dE.toFixed(1)} vs ${best.dE.toFixed(1)}).`}
+        Your visual preference is <strong>{preferred.title}</strong>: {tradeoff}. That human choice
+        overrides color-distance ordering, but the observed listing does not identify an exact
+        shade or variant. LastTube keeps it as a visual reference and blocks purchase language.
       </p>
       <div className="exact-listing">
-        <strong>Observed listing text (verbatim)</strong>
-        <span>{best.c.title}</span>
-        <small>Exact shade / variant: not present in the preserved SerpApi result.</small>
+        <strong>Preferred observed listing text (verbatim)</strong>
+        <span>{preferred.title}</span>
+        <small>Exact shade / variant: not present — actionable lead blocked.</small>
       </div>
       <div className="receipt-strip">
-        <span>merchant: {best.c.merchant}</span>
-        <span>price: {best.c.priceDisplay ?? 'not reported'}</span>
-        <span>observed: {observedTime(best.c.observedAt)}</span>
-        {best.c.productUrl && (
-          <a href={best.c.productUrl} target="_blank" rel="noreferrer noopener">
+        <span>human accepted: {acceptedIds.length}</span>
+        <span>merchant: {preferred.merchant}</span>
+        <span>price observed: {preferred.priceDisplay ?? 'not reported'}</span>
+        <span>observed: {observedTime(preferred.observedAt)}</span>
+        {preferred.productUrl && (
+          <a href={preferred.productUrl} target="_blank" rel="noreferrer noopener">
             observed offer
           </a>
         )}
         {distinctSource && (
-          <a href={best.c.sourceUrl!} target="_blank" rel="noreferrer noopener">
+          <a href={preferred.sourceUrl!} target="_blank" rel="noreferrer noopener">
             source evidence
           </a>
         )}
-        <span>shade est: {best.c.estimateHex}</span>
-        <span>usable pixels: {((best.c.estimateCoverage ?? 0) * 100).toFixed(1)}%</span>
-        <span>ΔE CIE76: {best.dE.toFixed(1)}</span>
+        <span>shade est: {preferred.estimateHex}</span>
+        <span>usable pixels: {((preferred.estimateCoverage ?? 0) * 100).toFixed(1)}%</span>
+        <span>ΔE CIE76 context only: {dE?.toFixed(1) ?? 'unavailable'}</span>
       </div>
       <p className="caveat">
-        Images below 10% usable saturated foreground coverage are rejected. Packaging can still
-        skew a passing estimate. ΔE and Perfect Corp&apos;s same-face render compare the estimated
-        color consistently; neither validates the product&apos;s real finish, undertone, formulation,
-        exact variant, availability, or fit for a person.
+        The 10% image-coverage floor is a heuristic. Perfect Corp compares estimated colors on one
+        face; it does not validate the real product, formulation, exact variant, availability, or
+        fit. CIE76 did not choose this preference.
       </p>
+      <button type="button" className="btn" onClick={onRefine}>
+        Refine search with exact shade terms
+      </button>
     </div>
   );
 }

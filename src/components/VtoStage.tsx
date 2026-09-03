@@ -154,7 +154,7 @@ export function VtoStage({ lost, lostRender, lostRendering, comparisons, activeI
           <p>
             <span>lost {lost.hex}</span>
             <strong>shade shift</strong>
-            <span>lead {active.estimateHex}</span>
+            <span>candidate {active.estimateHex}</span>
           </p>
         </div>
       )}

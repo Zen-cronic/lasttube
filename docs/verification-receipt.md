@@ -1,27 +1,31 @@
-# Verification receipt — evidence-backed shade review
+# Verification receipt — decision-bearing comparison repair
 
 Date: 2026-09-03 EDT
 
-Base commit: `f904e04`
+Base commit: `57bfb20`
 
-Scope: the judge-panel repair commit containing this receipt; resolve it with `git log -1 --oneline`.
+Scope: the hostile-generalist repair commit containing this receipt; resolve it with
+`git log -1 --oneline`.
 
 ## What changed and what it proves
 
-- Merchant-image shade estimation now has one shared, fail-closed minimum: at least **10% of sampled
-  pixels must survive the background, near-black, and low-saturation filters**. Missing, invalid, or
-  lower coverage produces an error rather than a color estimate or ranking candidate.
-- The 10% value is a conservative product heuristic chosen to reject the preserved 2.5%-coverage
-  packaging-heavy fixture. It is not a scientifically validated quality score. Passing coverage can
-  still be skewed by packaging, which is disclosed in the UI and submission copy.
-- The fixture retains all three recorded estimates for audit, but only the 39.7% and 35.2% candidates
-  can enter its final comparison. The 2.5% candidate is visibly rejected if selected.
-- A completed Perfect Corp same-face render is required for ranking. The human must open every
-  usable render and confirm the checkpoint before the lead appears; a failed/unavailable VTO result
-  cannot win on color math alone.
-- The final card preserves the exact observed listing text and observed-offer URL. Because the
-  preserved hero listing does not name a shade or variant, it says **closest visual lead — exact
-  shade unverified**, makes no formulation claim, and exposes no Buy action.
+- A successful image-bearing Perfect Corp render of the remembered shade is now a hard baseline.
+  Candidate work may complete concurrently, but baseline failure keeps decision controls and every
+  outcome locked.
+- The generic open-every-swatch confirmation is gone. Each usable candidate requires an explicit
+  human `Accept visual fit` or `Reject` decision, and preference is a separate choice among accepted
+  candidates.
+- CIE76 is context only. The deterministic path rejects ABH even though it has the lower ΔE, then
+  accepts and prefers NYX. The resulting card names the human preference, proving the metric did not
+  choose or restore a rejected candidate.
+- Neither preserved candidate title identifies an exact shade/variant. The product therefore says
+  **No actionable lead yet**, blocks purchase language, and offers a refined-search handoff without
+  automatically calling SerpApi.
+- `docs/variant-evidence-audit.md` reviews all 40 preserved SerpApi titles. Exact-looking titles exist,
+  but none has stored image bytes for a truthful offline hash/coverage check. No new VTO lifecycle was
+  warranted or created.
+- The 10% coverage floor remains explicitly labeled a conservative heuristic rather than scientific
+  validation.
 
 ## Commands and results
 
@@ -29,40 +33,44 @@ Run from the repository root with no new provider calls:
 
 | Command | Result |
 |---|---|
-| `npm run verify` | exit 0: TypeScript, ESLint, 5 Vitest files / 33 tests, Vite production build, secret scan |
-| `npm run build` | exit 0: 41 modules; `dist/index.html` 1.03 kB, CSS 14.29 kB, JS 218.14 kB |
-| `npm run capture:demo` | exit 0 twice: 2 usable fixture candidates; human-review gate; exact-listing caveat; 3+ fixture badges; zero live provider requests; zero non-local image requests; zero browser errors |
+| `npm run verify` | exit 0: TypeScript, ESLint, 6 Vitest files / 38 tests, Vite production build, secret scan |
+| `npm run build` | exit 0: 42 modules; `dist/index.html` 1.06 kB, CSS 15.91 kB, JS 222.19 kB |
+| `npm run capture:demo` | exit 0 twice: successful baseline required; 2 explicit decisions; human preference overrides CIE76; no actionable lead without exact variant; 3+ fixture badges; zero live-provider requests; zero non-local image requests; zero browser errors |
+| controlled baseline-failure path inside `capture:demo` | injected failed fixture baseline; zero decision-panel and zero outcome-card elements; pass |
 | `git diff --check` | exit 0 |
 
 The two consecutive final captures produced identical SHA-256 values:
 
 | Artifact | SHA-256 |
 |---|---|
-| `judge-demo-opening.png` | `2b1088951381580a49245208f21a01c2644a46c30d6634e4d532587ed83064b1` |
-| `judge-demo-verdict.png` | `a0f2c43e232f3607c84067e7d70c4d7594ea6192b240810e2b0711a38476dcfc` |
-| `judge-demo-mobile-verdict.png` | `e41a26c55f946be00a91164379bc68497cbded201d156158b93bd22c738269ee` |
-| `judge-devpost-thumbnail.png` | `46da5d9ba852c7423c0a92fa4fa87f621795ebfcd83eb4157e4d684f6b6a2850` |
-| `judge-devpost-hunt.png` | `5657a1086cfb0816b26f73704685b904da9886487625d6e91da566346e7a3311` |
-| `judge-devpost-verdict.png` | `6057368ddbc824aaff6d10e2c1c19926b50f698adb2f8cb085f67a6863791529` |
+| `judge-demo-opening.png` | `0a323ebf0110671504075e222f817df15682b57cc5181cfb6d092dc81f4a3fda` |
+| `judge-demo-verdict.png` | `780666494643c2c0e49aa05bbc51e0a5ec4b55075b9359c36b9c0e262ab52e91` |
+| `judge-demo-mobile-verdict.png` | `522daa8c597a5a7d41317bed8b1ee573caf6a2ab36a4e2f44b124cefaa7ceef0` |
+| `judge-devpost-thumbnail.png` | `3f33411c5732a61c191154b3415a2570433573e8dab9c7eea14a6bad210bb102` |
+| `judge-devpost-hunt.png` | `bfe1061d71b792ad2557e6d5f8655e8451cfe0ba2280e44de3d2a3acfc875a80` |
+| `judge-devpost-verdict.png` | `ce7916a1d3eda6796d58d7745571207f7280cbcfa456a9a3e31c3f8b05045b51` |
 
 ## Visual inspection
 
-- `judge-demo-opening.png` at 1440×900: product appears at frame one; the safe-demo banner and both
+- `judge-demo-opening.png` at 1440×900: product appears at frame one; safe-demo banner and both
   configured-provider badges are visible; the porcelain/wine layout has no collision or crop.
-- `judge-devpost-hunt.png` at 1500×1000: the heading says **Observed listing candidates**; SerpApi is
-  visibly `FIXTURE`; deterministic `REC` thumbnails, merchant, price, source, and timestamp remain
-  legible without any third-party image request.
-- `judge-devpost-verdict.png` at 1500×1000: both Perfect Corp renders and `VTO: FIXTURE` badges, the
-  `2 OF 2` confirmed human checkpoint, exact-shade-unverified lead, verbatim listing text, observed
-  offer, coverage, ΔE, and preserved live receipt cards share one frame. Text is compact but legible.
-- `judge-demo-mobile-verdict.png` at 350×532: the exact-listing card and receipt strip wrap without
-  horizontal overflow.
+- `judge-devpost-hunt.png` at 1500×1000: `Observed listing candidates`, `SERPAPI: FIXTURE`, local
+  `REC` thumbnails, merchant, price, source, and timestamp are readable without third-party images.
+- `judge-devpost-verdict.png` at 1500×1000: the remembered baseline and preferred candidate render,
+  both `VTO: FIXTURE` badges, rejected ABH, accepted/preferred NYX, `NO ACTIONABLE LEAD YET`, verbatim
+  preferred listing, offer, coverage, `CIE76 CONTEXT ONLY`, and preserved live receipts share one
+  frame.
+- `judge-demo-mobile-verdict.png` at 350×933: the complete stopped-outcome card, evidence strip, and
+  refined-search button wrap without horizontal overflow.
 
 ## Provenance, cost, and remaining human gates
 
-- Fixture inputs are sanitized recordings made on 2026-09-01 and remain visibly labeled. The live
-  SerpApi and Perfect Corp receipt files were preserved before this repair.
-- Repair verification made **zero** provider calls and cost **$0**.
+- Fixture inputs are sanitized recordings made on 2026-09-01 and stay visibly labeled. The live
+  SerpApi and Perfect Corp receipts predate this repair.
+- Repair verification made **zero** SerpApi calls, **zero** Perfect Corp calls, spent **zero**
+  credits, and cost **$0**.
+- No candidate-specific input image/hash or new VTO lifecycle is claimed because no exact-variant
+  candidate cleared the offline evidence gate.
 - This receipt does not prove a public deployment or video. Public repository visibility, public
-  deployment, final 2:24 recording, YouTube upload, logged-out link verification, and Devpost
-  submission remain operator-owned human gates.
+  deployment, final 2:24 recording, YouTube upload, logged-out verification, and Devpost submission
+  remain operator-owned human gates.
