@@ -75,6 +75,55 @@ export interface CandidateEvidence {
   systemExclusionReason: string | null;
 }
 
+export interface RuntimeCandidateEvidenceManifest {
+  schemaVersion: 1;
+  kind: 'candidate-evidence-manifest';
+  runId: string;
+  candidateId: string;
+  createdAt: string;
+  updatedAt: string;
+  storage: {
+    mode: 'exportable_per_run';
+    persistence: 'ephemeral';
+    disclosure: string;
+  };
+  searchResponse: {
+    provider: 'serpapi';
+    providerStatus: 'live';
+    query: string;
+    observedAt: string;
+    rawBodySha256: string;
+    rawBodyBytes: number;
+    digestBasis: 'exact_response_body_bytes';
+  };
+  vtoLifecycle: {
+    provider: 'perfectcorp';
+    request: {
+      srcFileUrl: string;
+      effects: unknown[];
+    };
+    outcome: {
+      providerStatus: 'live';
+      taskId: string;
+      pollCount: number;
+      startedAt: string;
+      completedAt: string;
+    };
+  } | null;
+  evidence: CandidateEvidence;
+  artifacts: {
+    manifestUrl: string;
+    sourceImage: { downloadUrl: string; mediaType: string } | null;
+    outputImage: { downloadUrl: string; mediaType: string } | null;
+  };
+  integrity: {
+    state: 'collecting' | 'validated' | 'invalid';
+    checkedAt: string;
+    checks: string[];
+    error: string | null;
+  };
+}
+
 export interface CandidateListingInput {
   id: string;
   title: string;
@@ -177,6 +226,8 @@ function fieldIsPresent(field: EvidenceField): boolean {
 export function deriveLeadOutcome(input: {
   baselineReady: boolean;
   evidence: CandidateEvidence | null;
+  /** Only a server-validated per-run manifest may unlock an external action. */
+  manifestValidated: boolean;
   humanAccepted: boolean;
   humanPreferred: boolean;
 }): LeadOutcome {
@@ -186,6 +237,7 @@ export function deriveLeadOutcome(input: {
   }
 
   const missing: string[] = [];
+  if (!input.manifestValidated) missing.push('validated per-run evidence manifest');
   if (!input.baselineReady) missing.push('successful lost-shade baseline');
   if (!input.humanAccepted) missing.push('human acceptance');
   if (!input.humanPreferred) missing.push('human preference');

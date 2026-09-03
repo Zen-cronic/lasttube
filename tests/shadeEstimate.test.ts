@@ -8,6 +8,7 @@ import { deltaE } from '../shared/color.ts';
 import {
   estimateShadeFromBytes,
   estimateShadeFromUrl,
+  captureShadeFromUrl,
   isAllowedImageUrl,
 } from '../server/shadeEstimate.ts';
 import {
@@ -66,7 +67,10 @@ describe('estimateShadeFromUrl', () => {
   it('returns the exact fetched input hash and byte count with the estimate', async () => {
     const bytes = await solidPng('#a96a73');
     const fetchImpl = (async () =>
-      new Response(new Uint8Array(bytes), { status: 200 })) as typeof fetch;
+      new Response(new Uint8Array(bytes), {
+        status: 200,
+        headers: { 'content-type': 'image/png' },
+      })) as typeof fetch;
     const estimate = await estimateShadeFromUrl(
       'https://encrypted-tbn0.gstatic.com/shopping?q=fixture',
       fetchImpl,
@@ -76,6 +80,24 @@ describe('estimateShadeFromUrl', () => {
       createHash('sha256').update(bytes).digest('hex'),
     );
     expect(estimate.sourceImage.url).toContain('gstatic.com');
+  });
+
+  it('retains the exact fetched bytes for the exportable evidence run', async () => {
+    const bytes = await solidPng('#a96a73');
+    const fetchImpl = (async () =>
+      new Response(new Uint8Array(bytes), {
+        status: 200,
+        headers: { 'content-type': 'image/png' },
+      })) as typeof fetch;
+    const captured = await captureShadeFromUrl(
+      'https://encrypted-tbn0.gstatic.com/shopping?q=capture-fixture',
+      fetchImpl,
+    );
+    expect(captured.bytes.equals(bytes)).toBe(true);
+    expect(captured.mediaType).toBe('image/png');
+    expect(captured.estimate.sourceImage.sha256).toBe(
+      createHash('sha256').update(bytes).digest('hex'),
+    );
   });
 });
 

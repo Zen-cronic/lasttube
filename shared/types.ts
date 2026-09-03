@@ -2,6 +2,8 @@
 // Every provider result is stamped with a ProviderStatus so fixture data can
 // never masquerade as live data anywhere downstream (UI, receipts, demo).
 
+import type { RuntimeCandidateEvidenceManifest } from './evidence.ts';
+
 /** How a provider call actually resolved. */
 export type ProviderStatus =
   | 'live' // a real network call to the provider succeeded
@@ -51,6 +53,8 @@ export interface SearchResultSet {
   candidates: CandidateRecord[];
   /** Stale/missing/conflicting-evidence disclosures for the UI to surface. */
   warnings: string[];
+  /** Present only when the live server opened an exportable evidence run. */
+  evidenceRunId?: string;
   /** Present when providerStatus is 'failed' or 'unavailable'. Never contains secrets. */
   error?: string;
 }
@@ -71,6 +75,8 @@ export interface VtoRender {
   pollCount: number;
   /** Disclosure the UI must show next to live renders. */
   expiryNote: string;
+  /** Server-validated, exportable candidate proof. Baseline and fixtures omit it. */
+  evidenceManifest?: RuntimeCandidateEvidenceManifest;
   /** Present when providerStatus is 'failed' or 'unavailable'. Never contains secrets. */
   error?: string;
 }

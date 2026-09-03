@@ -22,6 +22,8 @@ export interface CandidateComparison {
   render: VtoRender | null;
   rendering: boolean;
   evidence: CandidateEvidence;
+  manifestValidated: boolean;
+  manifestUrl: string | null;
   systemExclusionReason: string | null;
 }
 

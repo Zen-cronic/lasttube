@@ -63,6 +63,7 @@ export function DecisionOutcomeCard({
   const outcome = deriveLeadOutcome({
     baselineReady,
     evidence: preferred.evidence,
+    manifestValidated: preferred.manifestValidated,
     humanAccepted: acceptedIds.includes(preferred.id),
     humanPreferred: preferredId === preferred.id,
   });

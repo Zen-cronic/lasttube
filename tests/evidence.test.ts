@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { deriveLeadOutcome, type CandidateEvidence } from '../shared/evidence.ts';
 
-function completeEvidence(): CandidateEvidence {
+/** Synthetic policy fixture only. This is not provider or product evidence. */
+function syntheticPolicyFixtureEvidence(): CandidateEvidence {
   return {
     schemaVersion: 1,
     candidateId: 'exact-rose-42',
@@ -10,8 +11,8 @@ function completeEvidence(): CandidateEvidence {
       state: 'present',
       observedTitle: 'Example Lip Color',
       merchant: 'Example merchant',
-      observedOfferUrl: 'https://example.com/offer/42',
-      sourceUrl: 'https://example.com/evidence/42',
+      observedOfferUrl: 'https://synthetic-policy-fixture.invalid/offer/42',
+      sourceUrl: 'https://synthetic-policy-fixture.invalid/evidence/42',
       observedAt: '2026-09-03T00:00:00.000Z',
       sourceReceiptPath: 'proofs/example.json',
       sourceReceiptSha256: 'a'.repeat(64),
@@ -22,8 +23,8 @@ function completeEvidence(): CandidateEvidence {
     finish: { state: 'present', value: 'matte', basis: 'structured finish field' },
     sourceImage: {
       state: 'present',
-      listingThumbnailUrl: 'https://example.com/image.jpg',
-      actualRequestUrl: 'https://example.com/image.jpg',
+      listingThumbnailUrl: 'https://synthetic-policy-fixture.invalid/image.jpg',
+      actualRequestUrl: 'https://synthetic-policy-fixture.invalid/image.jpg',
       sha256: 'b'.repeat(64),
       byteLength: 12345,
       coverage: 0.42,
@@ -37,7 +38,7 @@ function completeEvidence(): CandidateEvidence {
       providerStatus: 'live',
       taskId: 'task-42',
       pollCount: 3,
-      actualSourceFaceUrl: 'https://example.com/face.jpg',
+      actualSourceFaceUrl: 'https://synthetic-policy-fixture.invalid/face.jpg',
       actualEffectRequest: '#a96a73 matte',
       lifecycleReceiptPath: 'proofs/vto-42.json',
       outputImagePath: 'proofs/vto-42.jpg',
@@ -50,18 +51,19 @@ function completeEvidence(): CandidateEvidence {
 }
 
 describe('deriveLeadOutcome', () => {
-  it('unlocks the observed offer only when every required evidence field is present', () => {
+  it('unlocks only for a validated, all-fields-present synthetic policy fixture', () => {
     expect(
       deriveLeadOutcome({
         baselineReady: true,
-        evidence: completeEvidence(),
+        evidence: syntheticPolicyFixtureEvidence(),
+        manifestValidated: true,
         humanAccepted: true,
         humanPreferred: true,
       }),
     ).toEqual({
       kind: 'actionable',
       candidateId: 'exact-rose-42',
-      observedOfferUrl: 'https://example.com/offer/42',
+      observedOfferUrl: 'https://synthetic-policy-fixture.invalid/offer/42',
       exactLabel: 'Example Lip Color — Rose Archive (matte)',
       alertEligible: true,
     });
@@ -74,6 +76,7 @@ describe('deriveLeadOutcome', () => {
     const result = deriveLeadOutcome({
       baselineReady: true,
       evidence,
+      manifestValidated: false,
       humanAccepted: true,
       humanPreferred: true,
     });
@@ -87,15 +90,30 @@ describe('deriveLeadOutcome', () => {
   });
 
   it('fails closed when one otherwise-complete field becomes unknown', () => {
-    const evidence = completeEvidence();
+    const evidence = syntheticPolicyFixtureEvidence();
     evidence.finish = { state: 'unknown', value: null, basis: 'not retained' };
     const result = deriveLeadOutcome({
       baselineReady: true,
       evidence,
+      manifestValidated: true,
       humanAccepted: true,
       humanPreferred: true,
     });
     expect(result.kind).toBe('no_actionable_lead');
     if (result.kind === 'no_actionable_lead') expect(result.missing).toContain('finish');
+  });
+
+  it('blocks even complete synthetic fields when the per-run manifest is not validated', () => {
+    const result = deriveLeadOutcome({
+      baselineReady: true,
+      evidence: syntheticPolicyFixtureEvidence(),
+      manifestValidated: false,
+      humanAccepted: true,
+      humanPreferred: true,
+    });
+    expect(result.kind).toBe('no_actionable_lead');
+    if (result.kind === 'no_actionable_lead') {
+      expect(result.missing).toContain('validated per-run evidence manifest');
+    }
   });
 });

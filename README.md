@@ -28,7 +28,10 @@ Those anecdotes do **not** establish LastTube's accuracy, validation, market siz
 3. **Resolve every candidate** — merchant-image estimation fails closed below 10% usable saturated
    foreground coverage. Each shortlisted row becomes either a recorded system exclusion or an
    explicit human accept/reject after Perfect Corp successfully renders the remembered baseline.
-   Preference is accepted-only; CIE76 is context, never the chooser.
+   On the live path, the server first binds the exact search-response digest and fetched image bytes,
+   then downloads the Perfect output and validates an exportable per-run manifest. A missing or
+   invalid manifest system-excludes the candidate before review. Preference is accepted-only;
+   CIE76 is context, never the chooser.
 4. **Action gate** — an observed offer unlocks only when listing identity, exact variant, shade,
    finish, hashed source-image coverage, verified candidate VTO input/lifecycle/output, and human
    preference are all present. The tracked hero evidence is incomplete, so it ends with **No
@@ -44,6 +47,13 @@ receipted lost-shade Perfect Corp lifecycle. Candidate fixtures are narrower: th
 with task/poll metadata, but no retained request or lifecycle responses. Their per-candidate
 manifests say so, and every replay remains visibly `FIXTURE`.
 
+New live candidate runs use a stricter proof path. The search response's exact body digest opens an
+evidence run; shade estimation retains and hashes the exact fetched merchant-image bytes; Perfect
+request inputs plus task/poll outcome are bound to the locally downloaded output bytes. Only a
+re-hashed `validated` manifest reaches the UI policy, where it is downloadable beside the candidate.
+The current Render shape has no persistent disk, so this is truthfully an **exportable per-run
+manifest**, not durable storage: download the JSON and its two bound images before restart/redeploy.
+
 ![Demo mode — visibly labeled fixtures](docs/screenshots/demo-mode.png)
 
 ## Architecture
@@ -54,11 +64,12 @@ Vite + React client (src/)
         │  /api/* only — no secrets in the browser
         ▼
 Hono on Node (server/)
-  /api/search                → SerpApi google_shopping → typed CandidateRecords
+  /api/search                → SerpApi result + exact response-body digest → evidence run
   /api/shade-estimate        → sharp: dominant saturated color of merchant image
-                               (https + host allowlist, size cap, ≥10% usable coverage)
+                               + exact fetched bytes/hash retained per run
   /api/vto                   → Perfect Corp makeup-vto: create → bounded poll
-                               (2s interval, <10s gap, 120s budget) → result
+                               → download/hash output → validate manifest or fail closed
+  /api/evidence/runs/...     → downloadable manifest + bound source/output images
   /api/demo/comparison-bundle→ labeled replay with proof level per artifact
         │
         ▼
@@ -86,7 +97,7 @@ npm run dev       # web client on http://localhost:5173 (proxies /api)
 ## Verify (no network needed)
 
 ```bash
-npm run verify    # typecheck + lint + 44 offline tests + build + secret scan
+npm run verify    # typecheck + lint + 51 offline tests + build + secret scan
 ```
 
 ## Rehearse the judge demo (no network or provider spend)
@@ -122,6 +133,11 @@ Creating the Render service, entering secrets, and making the URL public are int
 the operator. See Render's official [Blueprint specification](https://render.com/docs/blueprint-spec)
 and [health-check contract](https://render.com/docs/health-checks).
 
+The Blueprint provisions no persistent disk. Runtime evidence files therefore live in the server's
+ephemeral temporary directory and are explicitly labeled exportable per-run. Production durability
+would require an operator-approved object store or persistent disk plus retention/deletion policy;
+neither is claimed or provisioned by this prototype.
+
 ## Live provider proof (opt-in, spends quota)
 
 ```bash
@@ -156,6 +172,9 @@ unlocks the offer/action branch.
   never presents a Buy action.
 - `present`, `absent`, and `unknown` are separate evidence states. Marketing prose is not silently
   promoted into a structured shade or variant.
+- Complete fields in unit tests are labeled **synthetic policy fixtures**. They prove only that the
+  gate can open when a server-validated manifest and every required field are present; they are not
+  evidence of a real actionable product lead.
 - A successful image-bearing Perfect Corp render of the remembered shade is mandatory. Baseline failure blocks candidate decisions and outcomes.
 - Perfect Corp provides a consistent same-face view for explicit accept/reject/preference choices. It does not validate finish, undertone, formulation, availability, or fit for a person.
 - ΔE explains approximate image-derived colors; it cannot accept, reject, prefer, or restore a human-rejected candidate.

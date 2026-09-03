@@ -208,7 +208,9 @@ async function main(): Promise<void> {
         .getByText(/Your visual preference is NYX Professional Makeup Fat Matte Lipstick/)
         .waitFor();
       await page.getByText('CIE76 did not choose this preference.').waitFor();
-      await page.getByText(/Still needed: exact variant/).waitFor();
+      await page
+        .getByText(/Still needed: validated per-run evidence manifest.*exact variant/)
+        .waitFor();
       if ((await page.locator('.actionable-link').count()) !== 0) {
         throw new Error('actionable observed-offer branch unlocked with incomplete evidence');
       }

@@ -3,12 +3,16 @@
 
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { getPerfectCorpConfig, getSerpApiConfig } from './env.ts';
 import { demoComparisonBundle, fixtureSearchResultSet, fixtureVtoRender } from './fixtures.ts';
 import { runMakeupVto } from './providers/perfectcorp.ts';
-import { searchShopping } from './providers/serpapi.ts';
-import { estimateShadeFromUrl } from './shadeEstimate.ts';
+import { searchShoppingWithEvidence } from './providers/serpapi.ts';
+import {
+  downloadVtoOutput,
+  runtimeEvidenceStore,
+} from './runtimeEvidence.ts';
+import { captureShadeFromUrl } from './shadeEstimate.ts';
 import type { MakeupEffect, SearchResultSet, VtoRender } from '../shared/types.ts';
 
 const app = new Hono();
@@ -46,7 +50,11 @@ app.get('/api/search', async (c) => {
     };
     return c.json(unavailable, 503);
   }
-  const result = await searchShopping(q, config);
+  const search = await searchShoppingWithEvidence(q, config);
+  const result = search.result;
+  if (result.providerStatus === 'live' && search.responseDigest) {
+    result.evidenceRunId = runtimeEvidenceStore.openSearchRun(result, search.responseDigest);
+  }
   return c.json(result, result.providerStatus === 'failed' ? 502 : 200);
 });
 
@@ -63,10 +71,24 @@ app.get('/api/demo/comparison-bundle', (c) => {
 // Evidence-derived shade estimation from a merchant product image.
 app.get('/api/shade-estimate', async (c) => {
   const url = c.req.query('url') ?? '';
+  const evidenceRunId = c.req.query('evidenceRunId') ?? '';
+  const candidateId = c.req.query('candidateId') ?? '';
   if (!url) return c.json({ error: 'missing url parameter' }, 400);
+  if (!evidenceRunId || !candidateId) {
+    return c.json(
+      { error: 'evidenceRunId and candidateId are required for exportable live evidence' },
+      400,
+    );
+  }
   try {
-    const estimate = await estimateShadeFromUrl(url);
-    return c.json(estimate);
+    const captured = await captureShadeFromUrl(url);
+    const evidenceManifest = await runtimeEvidenceStore.recordSourceImage({
+      runId: evidenceRunId,
+      candidateId,
+      requestedUrl: url,
+      captured,
+    });
+    return c.json({ ...captured.estimate, evidenceManifest });
   } catch (err) {
     return c.json({ error: (err as Error).message }, 422);
   }
@@ -74,7 +96,13 @@ app.get('/api/shade-estimate', async (c) => {
 
 // Makeup VTO render. Body: { srcFileUrl, effects, mode? }
 app.post('/api/vto', async (c) => {
-  let body: { srcFileUrl?: string; effects?: MakeupEffect[]; mode?: string };
+  let body: {
+    srcFileUrl?: string;
+    effects?: MakeupEffect[];
+    mode?: string;
+    evidenceRunId?: string;
+    candidateId?: string;
+  };
   try {
     body = await c.req.json();
   } catch {
@@ -85,6 +113,21 @@ app.post('/api/vto', async (c) => {
   }
   if (!body.srcFileUrl || !Array.isArray(body.effects) || body.effects.length === 0) {
     return c.json({ error: 'srcFileUrl and a non-empty effects array are required' }, 400);
+  }
+  const hasEvidenceBinding = Boolean(body.evidenceRunId || body.candidateId);
+  if (hasEvidenceBinding && (!body.evidenceRunId || !body.candidateId)) {
+    return c.json({ error: 'evidenceRunId and candidateId must be supplied together' }, 400);
+  }
+  if (body.evidenceRunId && body.candidateId) {
+    try {
+      await runtimeEvidenceStore.assertCandidateReadyForVto(
+        body.evidenceRunId,
+        body.candidateId,
+        body.effects,
+      );
+    } catch (err) {
+      return c.json({ error: (err as Error).message }, 409);
+    }
   }
   const config = getPerfectCorpConfig();
   if (!config) {
@@ -102,8 +145,89 @@ app.post('/api/vto', async (c) => {
     return c.json(unavailable, 503);
   }
   const render = await runMakeupVto(body.srcFileUrl, body.effects, config);
+  if (
+    render.providerStatus === 'live' &&
+    render.imageUrl &&
+    body.evidenceRunId &&
+    body.candidateId
+  ) {
+    try {
+      const output = await downloadVtoOutput(render.imageUrl);
+      const evidenceManifest = await runtimeEvidenceStore.recordVtoOutput({
+        runId: body.evidenceRunId,
+        candidateId: body.candidateId,
+        srcFileUrl: body.srcFileUrl,
+        effects: body.effects,
+        render,
+        outputBytes: output.bytes,
+        outputMediaType: output.mediaType,
+      });
+      if (evidenceManifest.integrity.state !== 'validated') {
+        throw new Error(`candidate evidence manifest ${evidenceManifest.integrity.state}`);
+      }
+      return c.json({
+        ...render,
+        imageUrl: evidenceManifest.artifacts.outputImage!.downloadUrl,
+        expiryNote:
+          'Perfect Corp output downloaded, hashed, and retained for this exportable server run. Download the manifest before restart or redeploy.',
+        evidenceManifest,
+      });
+    } catch (err) {
+      const failed: VtoRender = {
+        ...render,
+        providerStatus: 'failed',
+        imageUrl: null,
+        error: `Candidate evidence export failed: ${(err as Error).message}`,
+      };
+      return c.json(failed, 502);
+    }
+  }
   return c.json(render, render.providerStatus === 'failed' ? 502 : 200);
 });
+
+app.get('/api/evidence/runs/:runId/candidates/:candidateId/manifest', (c) => {
+  try {
+    const manifest = runtimeEvidenceStore.getManifest(
+      c.req.param('runId') ?? '',
+      c.req.param('candidateId') ?? '',
+    );
+    const safeId = manifest.candidateId.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 80);
+    c.header('Content-Disposition', `attachment; filename="lasttube-${safeId}-manifest.json"`);
+    c.header('Cache-Control', 'no-store');
+    return c.json(manifest);
+  } catch (err) {
+    return c.json({ error: (err as Error).message }, 404);
+  }
+});
+
+async function evidenceArtifact(
+  c: Context,
+  kind: 'source' | 'output',
+) {
+  try {
+    const artifact = await runtimeEvidenceStore.readArtifact(
+      c.req.param('runId') ?? '',
+      c.req.param('candidateId') ?? '',
+      kind,
+    );
+    return new Response(new Uint8Array(artifact.bytes), {
+      headers: {
+        'Content-Type': artifact.mediaType,
+        'Content-Disposition': `attachment; filename="${artifact.fileName}"`,
+        'Cache-Control': 'no-store',
+      },
+    });
+  } catch (err) {
+    return c.json({ error: (err as Error).message }, 404);
+  }
+}
+
+app.get('/api/evidence/runs/:runId/candidates/:candidateId/source-image', (c) =>
+  evidenceArtifact(c, 'source'),
+);
+app.get('/api/evidence/runs/:runId/candidates/:candidateId/output-image', (c) =>
+  evidenceArtifact(c, 'output'),
+);
 
 // One-process production shape: the same Hono service owns API routes and the
 // built Vite client. API handlers remain above the static fallback so an

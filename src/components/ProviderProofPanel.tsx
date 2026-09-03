@@ -42,6 +42,12 @@ export function ProviderProofPanel() {
           </p>
         </div>
       </div>
+      <p className="field-note proof-runtime-note">
+        New LIVE candidate runs fail closed unless the server binds the exact SerpApi response
+        digest, listing, fetched source bytes, Perfect request/task/polls, and downloaded output in
+        a validated manifest. The current host has ephemeral storage, so that proof is downloadable
+        per run—not claimed as durable across a restart.
+      </p>
     </aside>
   );
 }

@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { DemoComparisonBundle } from '../server/fixtures.ts';
 import { SAMPLE_FACE_URL, foundationEffect, lipColorEffect } from '../shared/effects.ts';
-import { unknownCandidateEvidence } from '../shared/evidence.ts';
+import {
+  unknownCandidateEvidence,
+  type RuntimeCandidateEvidenceManifest,
+} from '../shared/evidence.ts';
 import {
   isSuccessfulVtoRender,
   resolveCandidateDispositions,
@@ -30,6 +33,7 @@ interface ShadeEstimateResponse {
   sampledPixels?: number;
   method?: string;
   sourceImage?: { url: string; sha256: string; byteLength: number };
+  evidenceManifest?: RuntimeCandidateEvidenceManifest;
   error?: string;
 }
 
@@ -121,7 +125,12 @@ export default function App() {
   }, []);
 
   const requestVto = useCallback(
-    async (hex: string, category: LostShade['category'], source: DataSource): Promise<VtoRender> => {
+    async (
+      hex: string,
+      category: LostShade['category'],
+      source: DataSource,
+      evidenceBinding?: { runId: string; candidateId: string },
+    ): Promise<VtoRender> => {
       const res = await fetch('/api/vto', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -129,6 +138,12 @@ export default function App() {
           srcFileUrl: SAMPLE_FACE_URL,
           effects: effectsFor(category, hex),
           ...(source === 'fixture' ? { mode: 'fixture' } : {}),
+          ...(evidenceBinding
+            ? {
+                evidenceRunId: evidenceBinding.runId,
+                candidateId: evidenceBinding.candidateId,
+              }
+            : {}),
         }),
       });
       return (await res.json()) as VtoRender;
@@ -159,6 +174,8 @@ export default function App() {
       render: null,
       rendering: false,
       evidence: unknownCandidateEvidence(c),
+      manifestValidated: false,
+      manifestUrl: null,
       systemExclusionReason: null,
     });
 
@@ -201,6 +218,8 @@ export default function App() {
             estimateCoverage: rec.estimateCoverage,
             render: rec.render,
             evidence: rec.evidence,
+            manifestValidated: false,
+            manifestUrl: null,
           };
         });
         setComparisons(mapped);
@@ -240,10 +259,19 @@ export default function App() {
           update({ estimateError: reason, systemExclusionReason: reason });
           return;
         }
+        const evidenceRunId = search?.evidenceRunId;
+        if (!evidenceRunId) {
+          const reason = 'System excluded — live search has no exportable evidence run.';
+          update({ estimateError: reason, systemExclusionReason: reason });
+          return;
+        }
         try {
-          const res = await fetch(
-            `/api/shade-estimate?url=${encodeURIComponent(c.thumbnailUrl)}`,
-          );
+          const params = new URLSearchParams({
+            url: c.thumbnailUrl,
+            evidenceRunId,
+            candidateId: c.id,
+          });
+          const res = await fetch(`/api/shade-estimate?${params.toString()}`);
           const est = (await res.json()) as ShadeEstimateResponse;
           if (!res.ok || !est.hex) {
             const reason = `System excluded — ${est.error ?? 'shade estimation failed'}.`;
@@ -260,60 +288,51 @@ export default function App() {
             });
             return;
           }
-          const evidenceAfterEstimate = {
-            ...unknownCandidateEvidence(c),
-            sourceImage: {
-              state: est.sourceImage?.sha256 && est.sourceImage.byteLength ? ('present' as const) : ('unknown' as const),
-              listingThumbnailUrl: c.thumbnailUrl,
-              actualRequestUrl: est.sourceImage?.url ?? null,
-              sha256: est.sourceImage?.sha256 ?? null,
-              byteLength: est.sourceImage?.byteLength ?? null,
-              coverage: assessment.coverage,
-              estimatedHex: est.hex,
-              method: est.method ?? null,
-              basis: est.sourceImage
-                ? 'Current allow-listed input bytes were hashed and measured by LastTube.'
-                : 'Estimate returned without retained input provenance.',
-            },
-          };
+          if (!est.evidenceManifest || est.evidenceManifest.integrity.state !== 'collecting') {
+            const reason =
+              'System excluded — shade estimate has no bound exportable evidence manifest.';
+            update({ estimateError: reason, systemExclusionReason: reason });
+            return;
+          }
+          const evidenceAfterEstimate =
+            est.evidenceManifest.evidence;
           update({
             estimateHex: est.hex,
             estimateCoverage: assessment.coverage,
             rendering: true,
             evidence: evidenceAfterEstimate,
+            manifestValidated: false,
+            manifestUrl: est.evidenceManifest.artifacts.manifestUrl,
           });
-          const render = await requestVto(est.hex, lost.category, dataSource);
+          const render = await requestVto(est.hex, lost.category, dataSource, {
+            runId: evidenceRunId,
+            candidateId: c.id,
+          });
           const renderSucceeded = isSuccessfulVtoRender(render);
-          const evidenceAfterRender = {
-            ...evidenceAfterEstimate,
-            sameFaceRender: {
-              state: renderSucceeded ? ('present' as const) : ('absent' as const),
-              proofLevel:
-                renderSucceeded && render.providerStatus === 'live'
-                  ? ('runtime_live' as const)
-                  : ('missing' as const),
-              providerStatus: render.providerStatus,
-              taskId: render.taskId,
-              pollCount: render.pollCount,
-              actualSourceFaceUrl: SAMPLE_FACE_URL,
-              actualEffectRequest: JSON.stringify(effectsFor(lost.category, est.hex)),
-              lifecycleReceiptPath: null,
-              outputImagePath: render.imageUrl,
-              outputImageSha256: null,
-              outputImageBytes: null,
-              basis: renderSucceeded
-                ? 'Current live response completed; durable output bytes/hash are not yet retained.'
-                : 'Candidate VTO did not produce a successful image-bearing response.',
-            },
-          };
+          const manifestValidated = render.evidenceManifest?.integrity.state === 'validated';
+          const evidenceAfterRender = manifestValidated
+            ? render.evidenceManifest!.evidence
+            : {
+                ...evidenceAfterEstimate,
+                sameFaceRender: {
+                  ...evidenceAfterEstimate.sameFaceRender,
+                  state: 'absent' as const,
+                  proofLevel: 'missing' as const,
+                  providerStatus: render.providerStatus,
+                  basis: 'Candidate VTO did not return a validated exportable manifest.',
+                },
+              };
           update({
             render,
             rendering: false,
             evidence: evidenceAfterRender,
-            ...(renderSucceeded
+            manifestValidated,
+            manifestUrl: render.evidenceManifest?.artifacts.manifestUrl ?? null,
+            ...(renderSucceeded && manifestValidated
               ? {}
               : {
-                  systemExclusionReason: `System excluded — candidate VTO ${render.providerStatus}.`,
+                  systemExclusionReason:
+                    'System excluded — candidate VTO did not produce a validated exportable manifest.',
                 }),
           });
         } catch (err) {
@@ -322,7 +341,7 @@ export default function App() {
         }
       });
     await Promise.all([baselinePromise, ...candidatePromises]);
-  }, [lost, shortlist, dataSource, requestVto]);
+  }, [lost, shortlist, dataSource, requestVto, search]);
 
   const selectLost = (shade: LostShade) => {
     setLost(shade);

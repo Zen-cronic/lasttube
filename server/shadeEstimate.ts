@@ -43,6 +43,12 @@ export interface UrlShadeEstimate extends ShadeEstimate {
   };
 }
 
+export interface CapturedShadeEstimate {
+  estimate: UrlShadeEstimate;
+  bytes: Buffer;
+  mediaType: string;
+}
+
 /** Estimate the dominant saturated color from raw image bytes. */
 export async function estimateShadeFromBytes(bytes: Buffer): Promise<ShadeEstimate> {
   const { data, info } = await sharp(bytes)
@@ -89,10 +95,10 @@ export async function estimateShadeFromBytes(bytes: Buffer): Promise<ShadeEstima
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
 /** Fetch (allow-listed, size-capped) + estimate. */
-export async function estimateShadeFromUrl(
+export async function captureShadeFromUrl(
   url: string,
   fetchImpl: typeof fetch = fetch,
-): Promise<UrlShadeEstimate> {
+): Promise<CapturedShadeEstimate> {
   if (!isAllowedImageUrl(url)) {
     throw new ProviderError('Image URL is not on the allowed evidence hosts.');
   }
@@ -100,17 +106,33 @@ export async function estimateShadeFromUrl(
   if (!res.ok) {
     throw new ProviderError(`Image fetch failed: HTTP ${res.status}`);
   }
+  const mediaType = res.headers.get('content-type')?.split(';')[0]?.trim() || 'application/octet-stream';
+  if (!mediaType.startsWith('image/')) {
+    throw new ProviderError('Image fetch returned a non-image content type.');
+  }
   const buf = Buffer.from(await res.arrayBuffer());
   if (buf.length > MAX_IMAGE_BYTES) {
     throw new ProviderError('Image exceeds the size cap for shade estimation.');
   }
   const estimate = await estimateShadeFromBytes(buf);
   return {
-    ...estimate,
-    sourceImage: {
-      url,
-      sha256: createHash('sha256').update(buf).digest('hex'),
-      byteLength: buf.length,
+    estimate: {
+      ...estimate,
+      sourceImage: {
+        url,
+        sha256: createHash('sha256').update(buf).digest('hex'),
+        byteLength: buf.length,
+      },
     },
+    bytes: buf,
+    mediaType,
   };
+}
+
+/** Fetch and estimate without exposing raw bytes to an API caller. */
+export async function estimateShadeFromUrl(
+  url: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<UrlShadeEstimate> {
+  return (await captureShadeFromUrl(url, fetchImpl)).estimate;
 }

@@ -2,6 +2,7 @@
 // No network access anywhere in this file.
 
 import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fixtureSearchResultSet, FIXTURE_LABEL } from '../server/fixtures.ts';
@@ -9,6 +10,7 @@ import {
   AVAILABILITY_CAVEAT,
   normalizeShoppingResponse,
   searchShopping,
+  searchShoppingWithEvidence,
 } from '../server/providers/serpapi.ts';
 
 const fixtureFile = path.resolve('server/providers/fixtures/serpapi-google-shopping.json');
@@ -64,6 +66,25 @@ describe('fixtureSearchResultSet', () => {
 });
 
 describe('searchShopping failure paths', () => {
+  it('binds a successful result to the exact response body digest', async () => {
+    const body = JSON.stringify(fixture.raw);
+    const fetchImpl = (async () =>
+      new Response(body, {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      })) as typeof fetch;
+    const search = await searchShoppingWithEvidence('synthetic digest fixture', {
+      apiKey: 'synthetic-test-key-not-real',
+      fetchImpl,
+    });
+    expect(search.result.providerStatus).toBe('live');
+    expect(search.responseDigest).toEqual({
+      sha256: createHash('sha256').update(body).digest('hex'),
+      byteLength: Buffer.byteLength(body),
+      basis: 'exact_response_body_bytes',
+    });
+  });
+
   it('returns failed status without leaking the api key into the error', async () => {
     const apiKey = 'test-secret-key-12345678';
     const failingFetch: typeof fetch = async (input) => {

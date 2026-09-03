@@ -80,6 +80,16 @@ export function CandidateDecisionPanel({
                   source image {candidate.evidence.sourceImage.state} · VTO{' '}
                   {candidate.evidence.sameFaceRender.proofLevel.replaceAll('_', ' ')}
                 </span>
+                {candidate.manifestValidated && candidate.manifestUrl && (
+                  <a
+                    className="manifest-link"
+                    href={candidate.manifestUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    Download validated per-run manifest
+                  </a>
+                )}
               </div>
               {isSystemExcluded ? (
                 <span className="system-excluded-stamp">System excluded</span>

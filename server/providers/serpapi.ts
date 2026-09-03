@@ -1,6 +1,7 @@
 // SerpApi client: live Google Shopping evidence for replacement candidates.
 // The normalizer is pure and fully unit-testable offline against fixtures.
 
+import { createHash } from 'node:crypto';
 import type { CandidateRecord, ProviderStatus, SearchResultSet } from '../../shared/types.ts';
 import { ProviderError, redactSecrets } from '../redact.ts';
 
@@ -122,11 +123,21 @@ export interface SerpApiClientOptions {
   num?: number;
 }
 
-/** One live Google Shopping search. Throws ProviderError (redacted) on failure. */
-export async function searchShoppingRaw(
+export interface SerpApiResponseDigest {
+  sha256: string;
+  byteLength: number;
+  basis: 'exact_response_body_bytes';
+}
+
+interface RawShoppingFetch {
+  raw: unknown;
+  digest: SerpApiResponseDigest;
+}
+
+async function fetchShoppingRaw(
   query: string,
   opts: SerpApiClientOptions,
-): Promise<unknown> {
+): Promise<RawShoppingFetch> {
   const fetchImpl = opts.fetchImpl ?? fetch;
   const base = opts.baseUrl ?? 'https://serpapi.com';
   const url = new URL('/search.json', base);
@@ -148,9 +159,57 @@ export async function searchShoppingRaw(
     throw new ProviderError(`SerpApi HTTP ${res.status}: ${body.slice(0, 300)}`);
   }
   try {
-    return JSON.parse(body) as unknown;
+    return {
+      raw: JSON.parse(body) as unknown,
+      digest: {
+        sha256: createHash('sha256').update(body).digest('hex'),
+        byteLength: Buffer.byteLength(body),
+        basis: 'exact_response_body_bytes',
+      },
+    };
   } catch {
     throw new ProviderError(`SerpApi returned non-JSON body (HTTP ${res.status}).`);
+  }
+}
+
+/** One live Google Shopping search. Throws ProviderError (redacted) on failure. */
+export async function searchShoppingRaw(
+  query: string,
+  opts: SerpApiClientOptions,
+): Promise<unknown> {
+  return (await fetchShoppingRaw(query, opts)).raw;
+}
+
+export interface ShoppingSearchWithEvidence {
+  result: SearchResultSet;
+  responseDigest: SerpApiResponseDigest | null;
+}
+
+/** Live search with an exact wire-body digest for a server-side evidence run. */
+export async function searchShoppingWithEvidence(
+  query: string,
+  opts: SerpApiClientOptions,
+): Promise<ShoppingSearchWithEvidence> {
+  const observedAt = new Date().toISOString();
+  try {
+    const fetched = await fetchShoppingRaw(query, opts);
+    return {
+      result: normalizeShoppingResponse(fetched.raw, query, observedAt, 'live'),
+      responseDigest: fetched.digest,
+    };
+  } catch (err) {
+    return {
+      result: {
+        providerStatus: 'failed',
+        provider: 'serpapi',
+        query,
+        observedAt,
+        candidates: [],
+        warnings: [],
+        error: redactSecrets((err as Error).message),
+      },
+      responseDigest: null,
+    };
   }
 }
 
@@ -159,19 +218,5 @@ export async function searchShopping(
   query: string,
   opts: SerpApiClientOptions,
 ): Promise<SearchResultSet> {
-  const observedAt = new Date().toISOString();
-  try {
-    const raw = await searchShoppingRaw(query, opts);
-    return normalizeShoppingResponse(raw, query, observedAt, 'live');
-  } catch (err) {
-    return {
-      providerStatus: 'failed',
-      provider: 'serpapi',
-      query,
-      observedAt,
-      candidates: [],
-      warnings: [],
-      error: redactSecrets((err as Error).message),
-    };
-  }
+  return (await searchShoppingWithEvidence(query, opts)).result;
 }

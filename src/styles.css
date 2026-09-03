@@ -877,6 +877,14 @@ body {
   line-height: 1.35;
 }
 
+.manifest-link {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--primary);
+  text-underline-offset: 3px;
+}
+
 .system-excluded-stamp {
   justify-self: end;
   padding: 6px 9px;
