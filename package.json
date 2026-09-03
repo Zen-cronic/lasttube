@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Your favorite shade vanished. LastTube finds currently listed replacements, shows them on your face, and explains the closest match.",
+  "description": "Your favorite shade vanished. LastTube finds listed visual leads, rejects weak shade evidence, and requires same-face review before ranking a lead.",
   "scripts": {
     "dev": "vite",
     "dev:api": "tsx watch server/index.ts",

@@ -4,10 +4,14 @@
 // skew the estimate — the UI says so, and the on-face render is the real test.
 
 import sharp from 'sharp';
+import {
+  assessShadeEvidenceCoverage,
+  MIN_SHADE_EVIDENCE_COVERAGE,
+} from '../shared/shadeEvidence.ts';
 import { ProviderError } from './redact.ts';
 
 export const SHADE_ESTIMATE_METHOD =
-  'Dominant saturated color of the merchant product image (background pixels excluded); an estimate, not a lab match.';
+  `Dominant saturated color of the merchant product image (background pixels excluded; minimum ${Math.round(MIN_SHADE_EVIDENCE_COVERAGE * 100)}% usable coverage); an estimate, not a lab match or formulation check.`;
 
 /** Hosts we are willing to fetch product images from (SSRF guard). */
 const ALLOWED_HOSTS = [/(^|\.)serpapi\.com$/, /(^|\.)gstatic\.com$/, /(^|\.)googleusercontent\.com$/];
@@ -59,13 +63,15 @@ export async function estimateShadeFromBytes(bytes: Buffer): Promise<ShadeEstima
     bSum += b;
     kept += 1;
   }
-  if (kept < total * 0.005 || kept === 0) {
-    throw new ProviderError('Image has too few saturated pixels to estimate a shade.');
+  const coverage = kept / total;
+  const assessment = assessShadeEvidenceCoverage(coverage);
+  if (!assessment.usable) {
+    throw new ProviderError(`Image rejected: ${assessment.reason}.`);
   }
   const toHex = (v: number) => Math.round(v).toString(16).padStart(2, '0');
   return {
     hex: `#${toHex(rSum / kept)}${toHex(gSum / kept)}${toHex(bSum / kept)}`,
-    coverage: kept / total,
+    coverage,
     sampledPixels: kept,
     method: SHADE_ESTIMATE_METHOD,
   };

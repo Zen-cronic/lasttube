@@ -68,6 +68,7 @@ export interface DemoComparisonBundle {
     candidateId: string;
     title: string;
     estimateHex: string;
+    estimateCoverage: number;
     estimateMethod: string;
     render: VtoRender;
   }>;
@@ -107,6 +108,7 @@ export function demoComparisonBundle(): DemoComparisonBundle {
       candidateId: c.candidateId,
       title: c.title,
       estimateHex: c.estimate.hex,
+      estimateCoverage: c.estimate.coverage,
       estimateMethod: c.estimate.method,
       render: fixtureRender(
         fix.recordedAt,

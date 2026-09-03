@@ -20,7 +20,7 @@ export function LostShadePicker({ selected, onSelect }: Props) {
       category: 'lip_color',
       finish: 'matte',
       hex: customHex,
-      discontinuedNote: 'Entered by you — LastTube hunts for its closest living match.',
+      discontinuedNote: 'Entered by you — LastTube hunts for a reviewable visual lead.',
       defaultQuery: `${name} dupe`,
     });
   };

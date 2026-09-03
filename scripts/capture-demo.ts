@@ -110,9 +110,21 @@ async function main(): Promise<void> {
 
       const candidateRows = page.locator('.candidate-row');
       await candidateRows.nth(0).getByRole('button', { name: 'Try on-face' }).click();
-      await candidateRows.nth(1).getByRole('button', { name: 'Try on-face' }).click();
+      await candidateRows.nth(2).getByRole('button', { name: 'Try on-face' }).click();
       await page.getByRole('button', { name: 'Compare 2 on-face' }).click();
-      await page.getByText('Anastasia Beverly Hills Lip Velvet', { exact: true }).last().waitFor();
+      await page.getByRole('heading', { name: 'Review every usable same-face render.' }).waitFor();
+
+      if ((await page.locator('.verdict-card').count()) !== 0) {
+        throw new Error('visual lead appeared before the required human review checkpoint');
+      }
+      const usableSwatches = page.locator('.swatch:not([disabled])');
+      if ((await usableSwatches.count()) !== 2) {
+        throw new Error('expected exactly two fixture candidates above the shade-evidence threshold');
+      }
+      await usableSwatches.nth(0).click();
+      await usableSwatches.nth(1).click();
+      await page.getByRole('button', { name: 'Confirm same-face review' }).click();
+      await page.getByText('Closest visual lead · exact shade unverified').waitFor();
 
       const fixtureBadges = await page.locator('.badge-fixture').count();
       if (fixtureBadges < 3) {
@@ -132,11 +144,11 @@ async function main(): Promise<void> {
       await page.getByText('The fixture has a paper trail.').waitFor();
 
       await page.evaluate(() => {
-        document.body.style.zoom = '0.72';
+        document.body.style.zoom = '0.62';
       });
       await page.setViewportSize({ width: 1500, height: 1000 });
       await page.locator('[aria-labelledby="act3-title"]').scrollIntoViewIfNeeded();
-      await page.evaluate(() => window.scrollBy(0, 160));
+      await page.evaluate(() => window.scrollBy(0, 80));
       await page.screenshot({ path: path.join(screenshotDir, 'judge-devpost-verdict.png') });
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.locator('[aria-labelledby="act3-title"]').scrollIntoViewIfNeeded();
@@ -157,7 +169,7 @@ async function main(): Promise<void> {
       });
 
       console.log(
-        '[capture:demo] PASS — production artifact, 2-candidate FIXTURE flow, 3+ fixture badges, zero live provider or non-local image requests, zero browser errors',
+        '[capture:demo] PASS — production artifact, 2 usable FIXTURE candidates, required human review gate, exact-listing caveat, 3+ fixture badges, zero live provider or non-local image requests, zero browser errors',
       );
     } finally {
       await browser.close();

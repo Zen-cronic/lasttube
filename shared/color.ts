@@ -1,7 +1,7 @@
-// Perceptual color math for the closest-match verdict.
+// Perceptual color math for the closest visual-lead ranking.
 // sRGB hex -> CIE Lab (D65) and CIE76 delta-E, plus plain-language trade-off
 // wording. Delta-E here is an explanation aid over approximated shade hexes —
-// the on-face render is the real test, and the UI says so.
+// the same-face render is a required human comparison, not formulation proof.
 
 export interface Lab {
   L: number;

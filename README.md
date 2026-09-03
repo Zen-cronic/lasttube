@@ -1,21 +1,21 @@
 # LastTube
 
-**Your favorite shade vanished. LastTube finds currently listed replacements, shows them on your face, and explains the closest match.**
+**Your favorite shade vanished. LastTube finds observed visual leads, rejects weak shade evidence, and requires a same-face review before ranking one—exact shade unverified.**
 
-The loop: **discontinued favorite → live purchase evidence → on-face comparison → one source-backed verdict with an explicit trade-off.**
+The loop: **discontinued favorite → timestamped listing evidence → fail-closed shade check → required same-face review → one source-backed visual lead.**
 
 Built for the DevNetwork [API + Cloud + AI] Hackathon 2026 with both sponsor technologies load-bearing in the judged hero flow:
 
-- **SerpApi** (Google Shopping engine) discovers currently listed replacement candidates with merchant, price, availability text, source links, and observation timestamps.
+- **SerpApi** (Google Shopping engine) discovers observed replacement candidates with merchant, price, availability text, source links, and observation timestamps.
 - **Perfect Corp Makeup VTO** renders every comparison through the real async lifecycle: `POST /s2s/v2.0/task/makeup-vto` → bounded polling → signed result download.
 
-![Act 3 — on-face verdict](docs/screenshots/judge-devpost-verdict.png)
+![Act 3 — reviewed visual lead](docs/screenshots/judge-devpost-verdict.png)
 
 ## How it works
 
 1. **The loss** — pick a real discontinued favorite (Urban Decay's retired Vice line, BECCA's closed catalog) or name your own and set its approximate hex.
-2. **The hunt** — one live SerpApi `google_shopping` search becomes an evidence panel: each row keeps merchant, price, the availability text the source actually reported, a source link, and the observation time. Copy states plainly that a listing is evidence of current availability, **not a real-time stock check**.
-3. **The verdict** — each shortlisted candidate's shade is **estimated from the merchant's own product image** (dominant saturated color, background-filtered, method disclosed), rendered on the same sample face by Perfect Corp, and scored against the lost shade in CIE Lab. One winner is named with a plain-language trade-off ("a close relative (ΔE 5.9) — slightly lighter, pinker"), a runner-up delta, and a receipt strip.
+2. **The hunt** — one live SerpApi `google_shopping` search becomes an evidence panel: each row keeps merchant, price, the availability text the source actually reported, a source link, and the observation time. Copy states plainly that the row is evidence from that observation, **not a real-time stock check**.
+3. **Human review, then a visual lead** — merchant-image estimation fails closed below 10% usable saturated foreground coverage. Passing estimates are rendered on the same sample face by Perfect Corp; the human must open every usable render and confirm review before the CIE Lab ranking appears. The final card preserves the exact observed listing text and offer link while stating that the shade/variant and formulation remain unverified.
 
 The interface itself is tinted by the shade under consideration (`--shade`), so the product's subject — the color — is the one bold element on the page.
 
@@ -29,20 +29,20 @@ Every provider result is stamped `live | fixture | unavailable | failed` and the
 
 ```
 Vite + React client (src/)
-  Act 1 input → Act 2 evidence panel → Act 3 VTO stage + verdict
+  Act 1 input → Act 2 evidence panel → Act 3 VTO review gate + visual lead
         │  /api/* only — no secrets in the browser
         ▼
 Hono on Node (server/)
   /api/search                → SerpApi google_shopping → typed CandidateRecords
   /api/shade-estimate        → sharp: dominant saturated color of merchant image
-                               (https + host allowlist, size cap)
+                               (https + host allowlist, size cap, ≥10% usable coverage)
   /api/vto                   → Perfect Corp makeup-vto: create → bounded poll
                                (2s interval, <10s gap, 120s budget) → result
   /api/demo/comparison-bundle→ labeled replay of recorded real lifecycles
         │
         ▼
-shared/ (types.ts, color.ts, effects.ts)
-  provider-status contract · hex→Lab(D65) · CIE76 ΔE · trade-off wording
+shared/ (types.ts, color.ts, effects.ts, shadeEvidence.ts)
+  provider status · fail-closed shade policy · hex→Lab(D65) · CIE76 ΔE
 proofs/ — sanitized live-call receipts (committed evidence)
 ```
 
@@ -65,7 +65,7 @@ npm run dev       # web client on http://localhost:5173 (proxies /api)
 ## Verify (no network needed)
 
 ```bash
-npm run verify    # typecheck + lint + 29 offline tests + build + secret scan
+npm run verify    # typecheck + lint + 33 offline tests + build + secret scan
 ```
 
 ## Rehearse the judge demo (no network or provider spend)
@@ -76,7 +76,8 @@ npm run capture:demo
 ```
 
 The capture command starts the production-built app, opens `/?mode=demo` in the installed Chrome,
-drives Backtalk through a two-candidate verdict, and writes six screenshots under
+drives Backtalk through two usable candidates, requires both same-face renders to be reviewed,
+unlocks the explicitly unverified visual lead, and writes six screenshots under
 `docs/screenshots/`. It fails if the browser attempts a live SerpApi, Perfect Corp, or merchant-image
 request, if fixture rows render remote product thumbnails, if any non-local image is requested, if
 fewer than three `FIXTURE` badges render, if the browser reports an error, or if the mobile verdict
@@ -112,9 +113,13 @@ Receipts are sanitized before writing: credential values, `api_key` params, and 
 ## Honesty notes
 
 - Shopping listings are **observed evidence with timestamps**, not stock guarantees; the copy says so wherever they appear.
-- Candidate shades are **estimates from merchant product images** — packaging can skew them; the method and its limits are disclosed in the verdict.
-- ΔE is an explanation aid over approximated hexes, not a promise of real-world appearance — the on-face renders are the test that matters.
+- Candidate images below **10% usable saturated foreground coverage are rejected**. Passing estimates can still be skewed by packaging.
+- The exact listing title and observed offer URL are preserved. If the receipt does not name a shade/variant, the UI says `exact shade unverified` and never presents a Buy action.
+- Perfect Corp provides a consistent same-face view that the human must inspect before ranking. It does not validate finish, undertone, formulation, availability, or fit for a person.
+- ΔE ranks approximate image-derived colors; it is an explanation aid, not a real-world match guarantee.
 - Preset "lost shade" hexes are labeled as approximations from published swatches.
+
+The latest command-level evidence is tracked in [`docs/verification-receipt.md`](docs/verification-receipt.md).
 
 ## Privacy
 

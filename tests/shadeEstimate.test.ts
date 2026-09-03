@@ -8,6 +8,10 @@ import {
   estimateShadeFromBytes,
   isAllowedImageUrl,
 } from '../server/shadeEstimate.ts';
+import {
+  assessShadeEvidenceCoverage,
+  MIN_SHADE_EVIDENCE_COVERAGE,
+} from '../shared/shadeEvidence.ts';
 
 async function solidPng(hex: string, w = 64, h = 64): Promise<Buffer> {
   return sharp({ create: { width: w, height: h, channels: 3, background: hex } })
@@ -35,12 +39,38 @@ describe('estimateShadeFromBytes', () => {
       .toBuffer();
     const est = await estimateShadeFromBytes(bytes);
     expect(deltaE(est.hex, '#a96a73')!).toBeLessThan(3);
+    expect(est.coverage).toBeGreaterThanOrEqual(MIN_SHADE_EVIDENCE_COVERAGE);
     expect(est.coverage).toBeLessThan(0.3);
   });
 
   it('refuses an image with no saturated pixels', async () => {
     const bytes = await solidPng('#f8f8f8');
-    await expect(estimateShadeFromBytes(bytes)).rejects.toThrow(/too few saturated/);
+    await expect(estimateShadeFromBytes(bytes)).rejects.toThrow(/10% minimum required/);
+  });
+
+  it('fails closed when a packaging-heavy image exposes too little usable shade area', async () => {
+    const tinySwatch = await solidPng('#a96a73', 14, 14);
+    const bytes = await sharp({
+      create: { width: 96, height: 96, channels: 3, background: '#ffffff' },
+    })
+      .composite([{ input: tinySwatch, top: 41, left: 41 }])
+      .png()
+      .toBuffer();
+    await expect(estimateShadeFromBytes(bytes)).rejects.toThrow(/usable shade coverage/);
+  });
+});
+
+describe('assessShadeEvidenceCoverage', () => {
+  it('rejects missing, invalid, and sub-threshold coverage', () => {
+    expect(assessShadeEvidenceCoverage(undefined).usable).toBe(false);
+    expect(assessShadeEvidenceCoverage(Number.NaN).usable).toBe(false);
+    expect(assessShadeEvidenceCoverage(0.02488425925925926).usable).toBe(false);
+  });
+
+  it('accepts evidence at the documented 10% threshold', () => {
+    const assessment = assessShadeEvidenceCoverage(MIN_SHADE_EVIDENCE_COVERAGE);
+    expect(assessment.usable).toBe(true);
+    expect(assessment.reason).toContain('10.0%');
   });
 });
 

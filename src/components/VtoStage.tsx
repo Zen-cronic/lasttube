@@ -1,4 +1,4 @@
-// Act 3 — the verdict stage. Dark VTO stage (genre convention) showing the
+// Act 3 — the required human-review stage. Dark VTO stage showing the
 // lost shade rendered from memory beside the active candidate's render, a
 // swatch rail of estimated candidate shades, and per-render provider status.
 
@@ -12,9 +12,11 @@ export interface CandidateComparison {
   merchant: string;
   priceDisplay: string | null;
   priceValue: number | null;
+  productUrl: string | null;
   sourceUrl: string | null;
   observedAt: string;
   estimateHex: string | null;
+  estimateCoverage: number | null;
   estimateError: string | null;
   render: VtoRender | null;
   rendering: boolean;
@@ -103,7 +105,7 @@ export function VtoStage({ lost, lostRender, lostRendering, comparisons, activeI
             label={active.title}
             sublabel={
               active.estimateHex
-                ? `rendered from the merchant-image estimate ${active.estimateHex}`
+                ? `merchant-image estimate ${active.estimateHex} · ${((active.estimateCoverage ?? 0) * 100).toFixed(1)}% usable pixels`
                 : 'no shade estimate'
             }
             render={active.render}
@@ -152,7 +154,7 @@ export function VtoStage({ lost, lostRender, lostRendering, comparisons, activeI
           <p>
             <span>lost {lost.hex}</span>
             <strong>shade shift</strong>
-            <span>match {active.estimateHex}</span>
+            <span>lead {active.estimateHex}</span>
           </p>
         </div>
       )}

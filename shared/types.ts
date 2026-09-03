@@ -11,7 +11,7 @@ export type ProviderStatus =
 
 export type ProviderName = 'serpapi' | 'perfectcorp';
 
-/** One currently-purchasable replacement candidate, normalized from SerpApi. */
+/** One observed replacement lead, normalized from a timestamped SerpApi listing. */
 export interface CandidateRecord {
   id: string;
   title: string;

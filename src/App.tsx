@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { DemoComparisonBundle } from '../server/fixtures.ts';
 import { SAMPLE_FACE_URL, foundationEffect, lipColorEffect } from '../shared/effects.ts';
+import { assessShadeEvidenceCoverage } from '../shared/shadeEvidence.ts';
 import type { CandidateRecord, SearchResultSet, VtoRender } from '../shared/types.ts';
 import { EvidencePanel, type DataSource } from './components/EvidencePanel.tsx';
+import { HumanReviewGate } from './components/HumanReviewGate.tsx';
 import { LostShadePicker } from './components/LostShadePicker.tsx';
 import { ProviderStatusBadge, type BadgeStatus } from './components/ProviderStatusBadge.tsx';
 import { ProviderProofPanel } from './components/ProviderProofPanel.tsx';
@@ -18,6 +20,7 @@ interface Health {
 
 interface ShadeEstimateResponse {
   hex?: string;
+  coverage?: number;
   error?: string;
 }
 
@@ -50,6 +53,8 @@ export default function App() {
   const [lostRendering, setLostRendering] = useState(false);
   const [comparisons, setComparisons] = useState<CandidateComparison[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [reviewedIds, setReviewedIds] = useState<string[]>([]);
+  const [visualReviewConfirmed, setVisualReviewConfirmed] = useState(false);
 
   useEffect(() => {
     fetch('/api/health')
@@ -109,6 +114,8 @@ export default function App() {
     if (!lost || shortlist.length === 0) return;
     setComparing(true);
     setActiveId(null);
+    setReviewedIds([]);
+    setVisualReviewConfirmed(false);
 
     const base = (c: CandidateRecord): CandidateComparison => ({
       id: c.id,
@@ -116,9 +123,11 @@ export default function App() {
       merchant: c.merchant,
       priceDisplay: c.price.display,
       priceValue: c.price.value,
+      productUrl: c.productUrl,
       sourceUrl: c.sourceUrl,
       observedAt: c.observedAt,
       estimateHex: null,
+      estimateCoverage: null,
       estimateError: null,
       render: null,
       rendering: false,
@@ -141,10 +150,22 @@ export default function App() {
               estimateError: 'not in the demo recording — switch to live mode for this one',
             };
           }
-          return { ...base(c), estimateHex: rec.estimateHex, render: rec.render };
+          const assessment = assessShadeEvidenceCoverage(rec.estimateCoverage);
+          if (!assessment.usable) {
+            return {
+              ...base(c),
+              estimateCoverage: assessment.coverage,
+              estimateError: `recorded image rejected — ${assessment.reason}`,
+            };
+          }
+          return {
+            ...base(c),
+            estimateHex: rec.estimateHex,
+            estimateCoverage: rec.estimateCoverage,
+            render: rec.render,
+          };
         });
         setComparisons(mapped);
-        setActiveId(mapped.find((m) => m.render !== null)?.id ?? null);
       } catch (err) {
         setComparisons(
           shortlist.map((c) => ({ ...base(c), estimateError: (err as Error).message })),
@@ -181,8 +202,15 @@ export default function App() {
             update({ estimateError: est.error ?? 'shade estimation failed' });
             return;
           }
-          update({ estimateHex: est.hex, rendering: true });
-          setActiveId((prev) => prev ?? c.id);
+          const assessment = assessShadeEvidenceCoverage(est.coverage);
+          if (!assessment.usable) {
+            update({
+              estimateCoverage: assessment.coverage,
+              estimateError: `merchant image rejected — ${assessment.reason}`,
+            });
+            return;
+          }
+          update({ estimateHex: est.hex, estimateCoverage: assessment.coverage, rendering: true });
           const render = await requestVto(est.hex, lost.category, dataSource);
           update({ render, rendering: false });
         } catch (err) {
@@ -202,6 +230,8 @@ export default function App() {
     setComparisons([]);
     setLostRender(null);
     setActiveId(null);
+    setReviewedIds([]);
+    setVisualReviewConfirmed(false);
   };
 
   const startHunt = () => {
@@ -211,6 +241,8 @@ export default function App() {
     setComparisons([]);
     setLostRender(null);
     setActiveId(null);
+    setReviewedIds([]);
+    setVisualReviewConfirmed(false);
     void runSearch(query || lost.defaultQuery, dataSource);
   };
 
@@ -225,6 +257,11 @@ export default function App() {
       if (prev.length >= 3) return prev;
       return [...prev, c];
     });
+  };
+
+  const reviewCandidate = (id: string) => {
+    setActiveId(id);
+    setReviewedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
   };
 
   // Signature element: the shade under consideration tints the interface.
@@ -243,6 +280,10 @@ export default function App() {
         c.render?.providerStatus === 'failed' ||
         c.render?.providerStatus === 'unavailable',
     );
+  const reviewableIds = comparisons
+    .filter((c) => c.estimateHex !== null && c.render?.imageUrl)
+    .map((c) => c.id);
+  const reviewedCount = reviewableIds.filter((id) => reviewedIds.includes(id)).length;
 
   return (
     <div className="page" style={shadeStyle}>
@@ -251,7 +292,7 @@ export default function App() {
           <p className="wordmark">
             Last<span className="tube">Tube</span>
           </p>
-          <p className="tagline">Your favorite shade vanished. Meet its closest living match.</p>
+          <p className="tagline">Your favorite shade vanished. Inspect its closest visual lead.</p>
         </div>
         <div className="provider-strip">
           <ProviderStatusBadge name="SerpApi" status={providerBadge(health?.providers.serpapi)} />
@@ -296,9 +337,9 @@ export default function App() {
           They discontinued <em>your</em> shade.
         </h1>
         <p>
-          Name the one you lost. LastTube gathers live purchase evidence for its closest living
-          relatives, renders them on-face with Perfect Corp&apos;s try-on engine, and calls one
-          winner — trade-offs stated, sources attached.
+          Name the one you lost. LastTube gathers timestamped listing evidence, rejects images with
+          too little usable shade signal, and requires a Perfect Corp same-face review before it
+          ranks one visual lead — exact shade unverified, sources attached.
         </p>
       </section>
 
@@ -325,7 +366,7 @@ export default function App() {
         <section className="act" aria-labelledby="act2-title">
           <p className="act-label">Act 2 · The hunt</p>
           <h2 className="act-title" id="act2-title">
-            Currently listed candidates
+            Observed listing candidates
           </h2>
           <EvidencePanel
             result={search}
@@ -354,9 +395,9 @@ export default function App() {
 
       {comparing && lost && (
         <section className="act" aria-labelledby="act3-title">
-          <p className="act-label">Act 3 · The verdict</p>
+          <p className="act-label">Act 3 · Human review</p>
           <h2 className="act-title" id="act3-title">
-            Same face, same light — pick with your eyes
+            Same face, same light — inspect before any lead
           </h2>
           <VtoStage
             lost={lost}
@@ -364,7 +405,7 @@ export default function App() {
             lostRendering={lostRendering}
             comparisons={comparisons}
             activeId={activeId}
-            onSelect={setActiveId}
+            onSelect={reviewCandidate}
           />
           {allSettled && comparisonHasErrors && (
             <div className="recovery-row" role="status">
@@ -377,7 +418,17 @@ export default function App() {
               </button>
             </div>
           )}
-          {allSettled && <VerdictCard lost={lost} comparisons={comparisons} />}
+          {allSettled && (
+            <HumanReviewGate
+              reviewedCount={reviewedCount}
+              totalCount={reviewableIds.length}
+              confirmed={visualReviewConfirmed}
+              onConfirm={() => setVisualReviewConfirmed(true)}
+            />
+          )}
+          {allSettled && visualReviewConfirmed && (
+            <VerdictCard lost={lost} comparisons={comparisons} />
+          )}
           {allSettled && <ProviderProofPanel />}
         </section>
       )}

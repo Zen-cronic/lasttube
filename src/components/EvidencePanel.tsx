@@ -167,7 +167,7 @@ export function EvidencePanel({
           )}
           <p className="caveat">
             Listings and prices are what Google Shopping reported via SerpApi at the stated
-            observation time — evidence of current availability, not a real-time stock check.
+            observation time — evidence from that recorded search, not a real-time stock check.
           </p>
         </>
       )}
