@@ -5,7 +5,7 @@
 export function SelfiePanel() {
   return (
     <div className="card">
-      <h3>The face it has to work on</h3>
+      <h3>Preview shades on a demo model</h3>
       <figure className="selfie-figure">
         <img src="/sample-face.jpg" alt="Demo model portrait used for virtual try-on" width={280} />
         <figcaption>

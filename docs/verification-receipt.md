@@ -7,6 +7,11 @@ Base commit: `c678561`
 Scope: Packet 14, a bounded provider-freshness and alternate-model proof. The deterministic judged
 hero, human decisions, and evidence-derived **NO ACTIONABLE LEAD YET** outcome are unchanged.
 
+Demo-director follow-up: the model card now says **Preview shades on a demo model**; the built
+Safe-demo rehearsal passed with no external calls. `.playwright-mcp/` is ignored before recording,
+and the repository-local `submission/` snapshot is removed from Git tracking while remaining on disk
+and byte-identical to the sibling submission package.
+
 ## What changed and what it proves
 
 - `npm run proof:serpapi -- --receipt-only` made one fresh Google Shopping call for
@@ -51,10 +56,10 @@ The two final captures were byte-identical:
 
 | Artifact | SHA-256 |
 |---|---|
-| `judge-demo-opening.png` | `e4900b2f99cff73e480034fcc27936bdfe8bd14c08e913fab8caa94dcfc79630` |
+| `judge-demo-opening.png` | `7e3b70ae3c7038f9750cdf41e22f5faac34bd7d71112e9b208b91bae23a0f490` |
 | `judge-demo-verdict.png` | `357b45b84da6b2eae4283f61f74175a6b2fd82494a56f0b3d0ae16b523c276c9` |
 | `judge-demo-mobile-verdict.png` | `18357a958c8a78c5f6ce7c520d9ca8661a6526ab4b8894cbd8cf808334f5ee19` |
-| `judge-devpost-thumbnail.png` | `e2db1a14aa1b98bf6321885d8136f4aac2786281dbd506c13f66888d5c03bbe9` |
+| `judge-devpost-thumbnail.png` | `ae5ff3f5e8dd4b43cbe40e262062549dd8184dff7c632d323a2d4a6bdb6d83d7` |
 | `judge-devpost-hunt.png` | `b37850be3ee9920a0a0eeb27ff7281c95e35adfd90ae459f4486b1db43564792` |
 | `judge-devpost-verdict.png` | `0b9d1a8a7638235f5915e4a7ca0619393ed5c75d531849c651504ba3d1889bde` |
 
@@ -66,7 +71,8 @@ The two final captures were byte-identical:
 - Built desktop artifact: 1500×1000 verdict keeps the three-row disposition ledger, stopped outcome,
   fresh SerpApi/second-model proof copy, and metadata-only judged-candidate boundary in one frame.
 - Built mobile artifact: 350×1172 verdict remains readable with no horizontal overflow.
-- Opening artifact: 1440×900 product-first layout remains clean and visibly arms Safe demo.
+- Opening artifact: 1440×900 product-first layout remains clean, visibly arms Safe demo, and the
+  friendlier demo-model heading fits without collision.
 
 ## Provider, privacy, and action boundaries
 
