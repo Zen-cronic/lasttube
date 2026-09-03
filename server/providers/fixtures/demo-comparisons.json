@@ -1,6 +1,6 @@
 {
   "fixture": true,
-  "label": "FIXTURE — recordings of real, receipted Perfect Corp makeup-vto lifecycles and merchant-image shade estimates; replayed by demo mode with visible labels.",
+  "label": "FIXTURE — one receipted lost-shade baseline plus locally retained candidate outputs with task/poll metadata. Candidate request/lifecycle receipts were not retained. Replayed with visible labels.",
   "recordedAt": "2026-09-01T02:13:21.230Z",
   "lost": {
     "hex": "#A96A73",

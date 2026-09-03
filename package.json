@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Compare observed shade listings on one face, make explicit human decisions, and stop when exact-variant evidence is missing.",
+  "description": "Resolve every discontinued-shade candidate and unlock an observed offer only when structured variant and visual evidence are complete.",
   "scripts": {
     "dev": "vite",
     "dev:api": "tsx watch server/index.ts",

@@ -1,8 +1,12 @@
 # LastTube
 
-**Your favorite shade vanished. LastTube tests observed listings on one face, makes you accept or reject each direction, and stops when exact-variant evidence is missing.**
+**Your favorite shade vanished. LastTube gives every observed listing a recorded disposition, lets
+you decide between usable same-face directions, and unlocks action only for evidence-complete exact
+variants.**
 
-The loop: **discontinued favorite → timestamped listing evidence → fail-closed shade check → required baseline → human accept/reject/preference → actionable lead or an honest stop.**
+The loop: **discontinued favorite → timestamped listing evidence → system exclusion or human
+decision for every candidate → required baseline → accepted-only preference → evidence-complete
+offer or an honest stop.**
 
 Built for the DevNetwork [API + Cloud + AI] Hackathon 2026 with both sponsor technologies load-bearing in the judged hero flow:
 
@@ -21,13 +25,24 @@ Those anecdotes do **not** establish LastTube's accuracy, validation, market siz
 
 1. **The loss** — pick a real discontinued favorite (Urban Decay's retired Vice line, BECCA's closed catalog) or name your own and set its approximate hex.
 2. **The hunt** — one live SerpApi `google_shopping` search becomes an evidence panel: each row keeps merchant, price, the availability text the source actually reported, a source link, and the observation time. Copy states plainly that the row is evidence from that observation, **not a real-time stock check**.
-3. **Human decision or an honest stop** — merchant-image estimation fails closed below 10% usable saturated foreground coverage. Perfect Corp must successfully render the remembered shade as a baseline and every passing candidate on the same face. The human explicitly accepts or rejects each visual direction and selects a preference among accepted candidates; CIE76 is context, never the chooser. Because the preserved preferred listing has no exact shade/variant, the demo ends with **No actionable lead yet** and a refined-search handoff.
+3. **Resolve every candidate** — merchant-image estimation fails closed below 10% usable saturated
+   foreground coverage. Each shortlisted row becomes either a recorded system exclusion or an
+   explicit human accept/reject after Perfect Corp successfully renders the remembered baseline.
+   Preference is accepted-only; CIE76 is context, never the chooser.
+4. **Action gate** — an observed offer unlocks only when listing identity, exact variant, shade,
+   finish, hashed source-image coverage, verified candidate VTO input/lifecycle/output, and human
+   preference are all present. The tracked hero evidence is incomplete, so it ends with **No
+   actionable lead yet** and a refined-search handoff.
 
 The interface itself is tinted by the shade under consideration (`--shade`), so the product's subject — the color — is the one bold element on the page.
 
 ## Provider honesty
 
-Every provider result is stamped `live | fixture | unavailable | failed` and the stamp is rendered next to the data it describes. Demo mode replays **recordings of real, receipted provider lifecycles** (task ids and poll counts preserved) and labels every surface `FIXTURE` — it cannot masquerade as live. Missing evidence is disclosed as missing, never fabricated.
+Every provider result is stamped `live | fixture | unavailable | failed` and the stamp is rendered
+next to the data it describes. Demo mode replays a receipted SerpApi response and the one genuinely
+receipted lost-shade Perfect Corp lifecycle. Candidate fixtures are narrower: three tracked outputs
+with task/poll metadata, but no retained request or lifecycle responses. Their per-candidate
+manifests say so, and every replay remains visibly `FIXTURE`.
 
 ![Demo mode — visibly labeled fixtures](docs/screenshots/demo-mode.png)
 
@@ -44,12 +59,12 @@ Hono on Node (server/)
                                (https + host allowlist, size cap, ≥10% usable coverage)
   /api/vto                   → Perfect Corp makeup-vto: create → bounded poll
                                (2s interval, <10s gap, 120s budget) → result
-  /api/demo/comparison-bundle→ labeled replay of recorded real lifecycles
+  /api/demo/comparison-bundle→ labeled replay with proof level per artifact
         │
         ▼
-shared/ (types.ts, color.ts, effects.ts, shadeEvidence.ts)
-  provider status · fail-closed shade policy · hex→Lab(D65) · CIE76 ΔE
-proofs/ — sanitized live-call receipts (committed evidence)
+shared/ (types.ts, evidence.ts, reviewDecision.ts, shadeEvidence.ts, color.ts)
+  structured evidence state · candidate disposition · action derivation · CIE76 context
+proofs/ — sanitized live receipts + per-candidate offline provenance manifests
 ```
 
 ## Setup
@@ -71,7 +86,7 @@ npm run dev       # web client on http://localhost:5173 (proxies /api)
 ## Verify (no network needed)
 
 ```bash
-npm run verify    # typecheck + lint + 38 offline tests + build + secret scan
+npm run verify    # typecheck + lint + 44 offline tests + build + secret scan
 ```
 
 ## Rehearse the judge demo (no network or provider spend)
@@ -82,9 +97,9 @@ npm run capture:demo
 ```
 
 The capture command starts the production-built app, opens `/?mode=demo` in the installed Chrome,
-drives Backtalk through two usable candidates, verifies the lost-shade baseline, rejects the
-lower-ΔE candidate, accepts and prefers the other, proves CIE76 did not choose, ends with no
-actionable lead, and writes six screenshots under
+drives Backtalk through three shortlisted candidates, records one system exclusion, verifies the
+lost-shade baseline, rejects the lower-ΔE candidate, accepts and prefers the other, proves CIE76 did
+not choose, confirms the structured action gate stays locked, and writes six screenshots under
 `docs/screenshots/`. It fails if the browser attempts a live SerpApi, Perfect Corp, or merchant-image
 request, if fixture rows render remote product thumbnails, if any non-local image is requested, if
 fewer than three `FIXTURE` badges render, if the browser reports an error, or if the mobile verdict
@@ -115,19 +130,38 @@ npm run proof:perfectcorp   # 1 real makeup-vto lifecycle   -> proofs/perfectcor
 npx tsx scripts/build-demo-bundle.ts   # re-record the labeled demo bundle
 ```
 
-Receipts are sanitized before writing: credential values, `api_key` params, and signed-URL query material are redacted; result images are downloaded because Perfect Corp signed URLs expire (~2 hours). The committed receipts include the full task lifecycle (task id, poll count, credit balance before/after).
+Receipts are sanitized before writing: credential values, `api_key` params, and signed-URL query
+material are redacted; result images are downloaded because Perfect Corp signed URLs expire (~2
+hours). The committed full Perfect Corp lifecycle belongs to the lost-shade baseline only. Candidate
+artifacts are inventoried honestly under [`proofs/offline/`](proofs/offline/) with listing ids,
+task/poll metadata, output hashes/bytes, estimates, coverage, and explicit `null` fields for the
+source-image/request/lifecycle evidence that was not retained.
+
+## Business wedge, without invented validation
+
+LastTube's plausible post-prototype loop is opt-in availability monitoring for an
+**evidence-complete exact variant**, followed by an observed-offer handoff. A disclosed affiliate
+relationship could monetize that handoff, but neither demand, conversion, willingness to pay,
+alert delivery, nor affiliate enrollment is claimed or implemented here. Incomplete evidence never
+unlocks the offer/action branch.
 
 ## Honesty notes
 
 - Shopping listings are **observed evidence with timestamps**, not stock guarantees; the copy says so wherever they appear.
 - Candidate images below **10% usable saturated foreground coverage are rejected**. Passing estimates can still be skewed by packaging.
+- Every shortlisted candidate ends in a visible `system excluded`, `human rejected`, or `human
+  accepted` state; unresolved rows block the outcome.
 - The exact listing title and observed offer URL are preserved. If the receipt does not name a
   shade/variant, the UI says `exact shade / variant: not present`, returns no actionable lead, and
   never presents a Buy action.
+- `present`, `absent`, and `unknown` are separate evidence states. Marketing prose is not silently
+  promoted into a structured shade or variant.
 - A successful image-bearing Perfect Corp render of the remembered shade is mandatory. Baseline failure blocks candidate decisions and outcomes.
 - Perfect Corp provides a consistent same-face view for explicit accept/reject/preference choices. It does not validate finish, undertone, formulation, availability, or fit for a person.
 - ΔE explains approximate image-derived colors; it cannot accept, reject, prefer, or restore a human-rejected candidate.
-- The preserved 40-result variant audit found exact-looking titles, but no stored image bytes for an offline coverage/hash check. No new VTO calls were warranted; see [`docs/variant-evidence-audit.md`](docs/variant-evidence-audit.md).
+- The preserved 40-result variant audit found exact-looking titles, but no stored image bytes for an
+  offline coverage/hash check. No new VTO calls were warranted; see
+  [`docs/variant-evidence-audit.md`](docs/variant-evidence-audit.md).
 - Preset "lost shade" hexes are labeled as approximations from published swatches.
 
 The latest command-level evidence is tracked in [`docs/verification-receipt.md`](docs/verification-receipt.md).

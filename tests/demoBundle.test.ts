@@ -1,5 +1,5 @@
-// Offline tests: the deterministic demo bundle replays recorded real
-// lifecycles and can never present itself as live.
+// Offline tests: the deterministic demo bundle exposes exact proof levels and
+// can never present itself as live.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,6 +20,8 @@ describe('demoComparisonBundle', () => {
       expect(c.render.imageUrl).toMatch(/^\/fixtures\//);
       expect(c.estimateHex).toMatch(/^#[0-9a-f]{6}$/i);
       expect(typeof c.estimateCoverage).toBe('number');
+      expect(c.evidence.candidateId).toBe(c.candidateId);
+      expect(c.evidence.sameFaceRender.proofLevel).toBe('metadata_only');
       // The recorded render image actually exists in public/.
       const file = path.resolve('public', c.render.imageUrl!.replace(/^\//, ''));
       expect(fs.existsSync(file)).toBe(true);
@@ -39,13 +41,18 @@ describe('demoComparisonBundle', () => {
     expect(usable).toHaveLength(2);
     expect(rejected).toHaveLength(1);
     expect(rejected[0]!.title).toBe('Ngozi Mauve Rose Matte Lipstick');
+    expect(rejected[0]!.evidence.systemExclusionReason).toContain('2.5%');
   });
 
-  it('carries real task ids and poll counts from the recording', () => {
+  it('separates the verified baseline receipt from candidate task/poll metadata', () => {
     const bundle = demoComparisonBundle();
+    expect(bundle.lost.evidence.proofLevel).toBe('verified_lifecycle');
+    expect(bundle.lost.render.taskId).toBe(bundle.lost.evidence.taskId);
+    expect(bundle.lost.render.pollCount).toBe(19);
     for (const c of bundle.comparisons) {
       expect(typeof c.render.taskId).toBe('string');
       expect(c.render.pollCount).toBeGreaterThan(0);
+      expect(c.evidence.sameFaceRender.lifecycleReceiptPath).toBeNull();
     }
   });
 });

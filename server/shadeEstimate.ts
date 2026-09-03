@@ -3,6 +3,7 @@
 // filtered to saturated, non-background colors and averaged. Packaging can
 // skew the estimate — the UI says so, and the on-face render is the real test.
 
+import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 import {
   assessShadeEvidenceCoverage,
@@ -32,6 +33,14 @@ export interface ShadeEstimate {
   coverage: number;
   sampledPixels: number;
   method: string;
+}
+
+export interface UrlShadeEstimate extends ShadeEstimate {
+  sourceImage: {
+    url: string;
+    sha256: string;
+    byteLength: number;
+  };
 }
 
 /** Estimate the dominant saturated color from raw image bytes. */
@@ -83,7 +92,7 @@ const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 export async function estimateShadeFromUrl(
   url: string,
   fetchImpl: typeof fetch = fetch,
-): Promise<ShadeEstimate> {
+): Promise<UrlShadeEstimate> {
   if (!isAllowedImageUrl(url)) {
     throw new ProviderError('Image URL is not on the allowed evidence hosts.');
   }
@@ -95,5 +104,13 @@ export async function estimateShadeFromUrl(
   if (buf.length > MAX_IMAGE_BYTES) {
     throw new ProviderError('Image exceeds the size cap for shade estimation.');
   }
-  return estimateShadeFromBytes(buf);
+  const estimate = await estimateShadeFromBytes(buf);
+  return {
+    ...estimate,
+    sourceImage: {
+      url,
+      sha256: createHash('sha256').update(buf).digest('hex'),
+      byteLength: buf.length,
+    },
+  };
 }

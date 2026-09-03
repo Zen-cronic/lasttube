@@ -1,9 +1,10 @@
 // OPT-IN live recording of the deterministic demo bundle.
 // Takes the top 3 candidates from the sanitized SerpApi fixture, estimates
-// each shade from its merchant image, renders each through a REAL Perfect
-// Corp makeup-vto lifecycle, downloads the renders locally, and writes a
-// labeled fixture bundle. The demo mode then replays these recordings —
-// visibly labeled as fixtures, never as live results.
+// each shade from its merchant image, renders each through Perfect Corp,
+// downloads the outputs locally, and writes a labeled task/poll summary.
+// This legacy script does NOT persist candidate request/lifecycle receipts;
+// outputs must remain described as metadata-only until a separate receipt
+// captures the input bytes/hash, request, lifecycle, and downloaded result.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -94,7 +95,7 @@ async function main() {
       {
         fixture: true,
         label:
-          'FIXTURE — recordings of real, receipted Perfect Corp makeup-vto lifecycles and merchant-image shade estimates; replayed by demo mode with visible labels.',
+          'FIXTURE — locally retained candidate outputs with task/poll metadata. Candidate request/lifecycle receipts are not written by this script; replay with visible labels.',
         recordedAt,
         lost: {
           hex: LOST_HEX,

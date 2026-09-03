@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "3718473068890078758",
+  "listingIdentity": {
+    "state": "present",
+    "observedTitle": "Anastasia Beverly Hills Lip Velvet",
+    "merchant": "Sephora",
+    "observedOfferUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:3718473068890078758,productid:16469277566828417655,headlineOfferDocid:14037340483897598926,imageDocid:12542202147392333398,rds:PC_6883051569397126677|PROD_PC_6883051569397126677,gpcid:6883051569397126677,mid:576462770259146320,pvt:hg&hl=en&gl=us&udm=28",
+    "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:3718473068890078758,productid:16469277566828417655,headlineOfferDocid:14037340483897598926,imageDocid:12542202147392333398,rds:PC_6883051569397126677|PROD_PC_6883051569397126677,gpcid:6883051569397126677,mid:576462770259146320,pvt:hg&hl=en&gl=us&udm=28",
+    "observedAt": "2026-09-01T01:52:38.961Z",
+    "sourceReceiptPath": "proofs/serpapi/2026-09-01-normalized.json",
+    "sourceReceiptSha256": "b6eade6ec3bd8b4261f5e025627840fc989888b1742f9ec779211f9436d35857",
+    "basis": "Candidate id, exact title, merchant, offer and source are present in the tracked normalized SerpApi receipt."
+  },
+  "exactVariant": {
+    "state": "absent",
+    "value": null,
+    "basis": "The preserved exact listing title names the product family but no variant identifier."
+  },
+  "exactShade": {
+    "state": "absent",
+    "value": null,
+    "basis": "The preserved exact listing title contains no shade name or shade code."
+  },
+  "finish": {
+    "state": "unknown",
+    "value": null,
+    "basis": "Lip Velvet may be a family name; no structured finish field or detail-page snapshot was retained."
+  },
+  "sourceImage": {
+    "state": "unknown",
+    "listingThumbnailUrl": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSOwMiHqiRfFZof8k9izD96k2OYT9G0Dg0_4a39vHlPyrMhTQAyBp1ckbYBb0hhmqrTxHtlAfVHWdpaqomyq51a3fwWPUDPWw",
+    "actualRequestUrl": null,
+    "sha256": null,
+    "byteLength": null,
+    "coverage": 0.3971354166666667,
+    "estimatedHex": "#bb727a",
+    "method": "Dominant saturated color of the merchant product image (background pixels excluded); an estimate, not a lab match.",
+    "basis": "The legacy bundle retained an estimate and coverage, but not the fetched input bytes, input hash, or actual request record."
+  },
+  "sameFaceRender": {
+    "state": "present",
+    "proofLevel": "metadata_only",
+    "providerStatus": "fixture",
+    "taskId": "vPA7a4e_rXpKox2m2ZFsoOZrK39TKnT8oM3s1t8PvSj498tLIshwV3DLBd5qzgZ0",
+    "pollCount": 4,
+    "actualSourceFaceUrl": null,
+    "actualEffectRequest": null,
+    "lifecycleReceiptPath": null,
+    "outputImagePath": "public/fixtures/vto-demo-3718473068890078758.jpg",
+    "outputImageSha256": "7ea0619338d8043cb68fa41e08e98b03b1cff816b9ee2b3cb27a0dc13d29fe84",
+    "outputImageBytes": 1608847,
+    "basis": "Tracked output plus task id and poll count exist; candidate request and lifecycle response were not retained, so this is not a receipted lifecycle."
+  },
+  "systemExclusionReason": null
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "lost-shade-baseline",
+  "proofLevel": "verified_lifecycle",
+  "recordedAt": "2026-09-01T01:52:46.761Z",
+  "lifecycleReceiptPath": "proofs/perfectcorp/2026-09-01-makeup-vto-lifecycle.json",
+  "lifecycleReceiptSha256": "94cc5ce2e37cc0e48677f1a93e1618ff00d477e95ec8b88bf37953fa12f9c025",
+  "sourceFaceUrl": "https://plugins-media.makeupar.com/strapi/assets/sample_Image_1_202b6bf6e6.jpg",
+  "effectColor": "#A96A73",
+  "taskId": "koo9wt0Z-mk-cOOd_DUvv0hjWMkL8cxH27I53vzCAqUljuTb-UxtDDcvMVvazt6a",
+  "pollCount": 19,
+  "finalStatus": "success",
+  "outputImagePath": "proofs/perfectcorp/2026-09-01-makeup-vto-render.jpg",
+  "outputImageSha256": "7f133482331ada20ee89aafe5e208ed6f8858422c6efca20e84197cc7f6b67ea",
+  "outputImageBytes": 1608813,
+  "fixtureCopyPath": "public/fixtures/vto-sample-render.jpg",
+  "fixtureCopySha256": "7f133482331ada20ee89aafe5e208ed6f8858422c6efca20e84197cc7f6b67ea",
+  "basis": "Unlike the candidate fixtures, this baseline has a tracked sanitized request, bounded poll lifecycle, downloaded output and one-unit credit receipt."
+}

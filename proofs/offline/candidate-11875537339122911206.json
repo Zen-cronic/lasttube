@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "11875537339122911206",
+  "listingIdentity": {
+    "state": "present",
+    "observedTitle": "Ngozi Mauve Rose Matte Lipstick",
+    "merchant": "nnennacosmetics.com",
+    "observedOfferUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:11875537339122911206,productid:8496946285149361067,headlineOfferDocid:4833376213035798560,imageDocid:2072819593498776152,gpcid:11195417079246274164,pvt:hg&hl=en&gl=us&udm=28",
+    "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:11875537339122911206,productid:8496946285149361067,headlineOfferDocid:4833376213035798560,imageDocid:2072819593498776152,gpcid:11195417079246274164,pvt:hg&hl=en&gl=us&udm=28",
+    "observedAt": "2026-09-01T01:52:38.961Z",
+    "sourceReceiptPath": "proofs/serpapi/2026-09-01-normalized.json",
+    "sourceReceiptSha256": "b6eade6ec3bd8b4261f5e025627840fc989888b1742f9ec779211f9436d35857",
+    "basis": "Candidate id, exact title, merchant, offer and source are present in the tracked normalized SerpApi receipt."
+  },
+  "exactVariant": {
+    "state": "unknown",
+    "value": null,
+    "basis": "Mauve Rose appears in the title, but the receipt does not distinguish a product name from an exact variant."
+  },
+  "exactShade": {
+    "state": "unknown",
+    "value": null,
+    "basis": "Mauve Rose is shade-like prose, but no structured shade field or code was retained."
+  },
+  "finish": {
+    "state": "present",
+    "value": "matte",
+    "basis": "The exact preserved title explicitly says Matte Lipstick; formulation quality remains unverified."
+  },
+  "sourceImage": {
+    "state": "unknown",
+    "listingThumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRsB7oWI5paUe-dD6rtgUsSECcIJNUJ7rCbRSrpPQ0xP9relvrFMEi9a4PpDmEqpyPeKaSfUXKdbsI8GhqD-KIM2WIsA8qIrmnAP20i4LnxRIHXCF8zSU_2PQ",
+    "actualRequestUrl": null,
+    "sha256": null,
+    "byteLength": null,
+    "coverage": 0.02488425925925926,
+    "estimatedHex": "#974d47",
+    "method": "Dominant saturated color of the merchant product image (background pixels excluded); an estimate, not a lab match.",
+    "basis": "The legacy bundle retained an estimate and coverage, but not the fetched input bytes, input hash, or actual request record."
+  },
+  "sameFaceRender": {
+    "state": "present",
+    "proofLevel": "metadata_only",
+    "providerStatus": "fixture",
+    "taskId": "I4mq9aJbZQryvTYPeear1i4RLyKDJMeSC4zpPkloaWYht5EyVxjXgsYSy71xA_3o",
+    "pollCount": 5,
+    "actualSourceFaceUrl": null,
+    "actualEffectRequest": null,
+    "lifecycleReceiptPath": null,
+    "outputImagePath": "public/fixtures/vto-demo-11875537339122911206.jpg",
+    "outputImageSha256": "199e76563512c8ce60194a47ab18c3f0181f816da788e608b248c15baac6ce6f",
+    "outputImageBytes": 1608711,
+    "basis": "Tracked output plus task id and poll count exist; candidate request and lifecycle response were not retained, so this is not a receipted lifecycle."
+  },
+  "systemExclusionReason": "System excluded — 2.5% usable shade coverage is below the disclosed 10% heuristic floor."
+}

@@ -836,13 +836,19 @@ body {
   background: var(--card);
 }
 
-.decision-row[data-decision='accepted'] {
+.decision-row[data-decision='human_accepted'] {
   border-color: var(--status-live);
 }
 
-.decision-row[data-decision='rejected'] {
+.decision-row[data-decision='human_rejected'] {
   opacity: 0.7;
   border-style: dashed;
+}
+
+.decision-row[data-decision='system_excluded'] {
+  border-color: color-mix(in oklch, var(--status-failed) 45%, var(--border));
+  border-style: dashed;
+  background: color-mix(in oklch, var(--card) 94%, var(--status-failed));
 }
 
 .decision-row[data-preferred='true'] {
@@ -863,6 +869,21 @@ body {
   font-family: var(--font-mono);
   font-size: 9px;
   text-transform: uppercase;
+}
+
+.decision-row .evidence-state-line {
+  margin-top: 3px;
+  color: color-mix(in oklch, var(--muted-foreground) 78%, var(--shade));
+  line-height: 1.35;
+}
+
+.system-excluded-stamp {
+  justify-self: end;
+  padding: 6px 9px;
+  border: 1px solid var(--status-failed);
+  border-radius: var(--radius-badge);
+  color: var(--status-failed) !important;
+  font-weight: 600;
 }
 
 .decision-actions {
@@ -909,6 +930,41 @@ body {
 
 .no-actionable-card > .btn {
   margin-top: 14px;
+}
+
+.actionable-card {
+  border-left-color: var(--status-live);
+}
+
+.actionable-link {
+  display: inline-block;
+  margin-top: 14px;
+  text-decoration: none;
+}
+
+.evidence-ledger {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid color-mix(in oklch, var(--shade) 34%, var(--border));
+  border-radius: var(--radius-badge);
+  background: color-mix(in oklch, var(--muted) 82%, var(--shade));
+}
+
+.evidence-ledger strong,
+.evidence-ledger span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.evidence-ledger strong {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.evidence-ledger span {
+  color: var(--muted-foreground);
 }
 
 .receipt-strip {
@@ -974,7 +1030,7 @@ body {
 
 .proof-receipt-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-top: 14px;
 }
@@ -1035,6 +1091,10 @@ body {
 
   .decision-row {
     grid-template-columns: 1fr;
+  }
+
+  .system-excluded-stamp {
+    justify-self: start;
   }
 
   .decision-actions {

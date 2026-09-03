@@ -41,3 +41,22 @@ It offers a refine-search handoff but does not automatically call SerpApi. A fut
 proceed only after the operator intentionally acquires and preserves the exact candidate image,
 confirms its identity/license, records its SHA-256 and extraction coverage, and confirms any VTO
 credits are event/free. That remains a human/post-hackathon gate, not evidence claimed here.
+
+## Current hero-candidate provenance boundary
+
+The three candidates already present in the deterministic comparison now have individual tracked
+manifests under `proofs/offline/candidate-*.json`. Each binds the SerpApi candidate/listing id to the
+exact observed title and offer, retained estimate/coverage, candidate VTO task/poll summary, and the
+SHA-256 plus byte count of the retained output image.
+
+Those manifests also preserve the negative evidence instead of filling gaps by inference:
+
+- the merchant source-image bytes, hash, and actual request record are missing;
+- the candidate Perfect Corp source-face/effect request and lifecycle responses are missing;
+- their output/task/poll records are therefore `metadata_only`, not receipted lifecycles; and
+- only `proofs/offline/lost-shade-baseline.json` points to a genuine tracked Perfect Corp request,
+  19-poll lifecycle, one-unit receipt, and hashed output.
+
+This provenance repair does not qualify any current hero candidate. The structured outcome policy
+requires all identity, exact variant, shade, finish, source-image, candidate-VTO, baseline, and human
+decision fields before it can expose an actionable observed offer or alert-eligible state.

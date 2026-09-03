@@ -73,8 +73,9 @@ async function verifyBaselineFailureBlocksOutcome(browser: Browser): Promise<voi
     await page.getByText('SERPAPI: FIXTURE').waitFor();
     const rows = page.locator('.candidate-row');
     await rows.nth(0).getByRole('button', { name: 'Try on-face' }).click();
+    await rows.nth(1).getByRole('button', { name: 'Try on-face' }).click();
     await rows.nth(2).getByRole('button', { name: 'Try on-face' }).click();
-    await page.getByRole('button', { name: 'Compare 2 on-face' }).click();
+    await page.getByRole('button', { name: 'Compare 3 on-face' }).click();
     await page
       .getByRole('heading', { name: 'Lost-shade baseline failed. Comparison is blocked.' })
       .waitFor();
@@ -165,9 +166,10 @@ async function main(): Promise<void> {
 
       const candidateRows = page.locator('.candidate-row');
       await candidateRows.nth(0).getByRole('button', { name: 'Try on-face' }).click();
+      await candidateRows.nth(1).getByRole('button', { name: 'Try on-face' }).click();
       await candidateRows.nth(2).getByRole('button', { name: 'Try on-face' }).click();
-      await page.getByRole('button', { name: 'Compare 2 on-face' }).click();
-      await page.getByRole('heading', { name: 'Decide on each usable same-face render.' }).waitFor();
+      await page.getByRole('button', { name: 'Compare 3 on-face' }).click();
+      await page.getByRole('heading', { name: 'Resolve every shortlisted candidate.' }).waitFor();
 
       if ((await page.locator('.verdict-card').count()) !== 0) {
         throw new Error('outcome appeared before explicit candidate decisions');
@@ -179,6 +181,11 @@ async function main(): Promise<void> {
       if ((await page.locator('.render-cell').first().locator('img').count()) !== 1) {
         throw new Error('lost-shade baseline render is missing');
       }
+      await page.getByText('System excluded', { exact: true }).waitFor();
+      await page
+        .locator('.decision-row-excluded')
+        .getByText(/2.5% usable shade coverage is below/)
+        .waitFor();
 
       // Reject the candidate CIE76 would rank first, then prefer the other one.
       // The final state proves human input—not the metric—controls the outcome.
@@ -195,11 +202,16 @@ async function main(): Promise<void> {
       await page
         .getByRole('button', { name: 'Prefer NYX Professional Makeup Fat Matte Lipstick' })
         .click();
+      await page.getByText(/3 of 3 candidates resolved · 1 system excluded/).waitFor();
       await page.getByRole('heading', { name: 'No actionable lead yet.' }).waitFor();
       await page
         .getByText(/Your visual preference is NYX Professional Makeup Fat Matte Lipstick/)
         .waitFor();
       await page.getByText('CIE76 did not choose this preference.').waitFor();
+      await page.getByText(/Still needed: exact variant/).waitFor();
+      if ((await page.locator('.actionable-link').count()) !== 0) {
+        throw new Error('actionable observed-offer branch unlocked with incomplete evidence');
+      }
 
       const fixtureBadges = await page.locator('.badge-fixture').count();
       if (fixtureBadges < 3) {
@@ -216,7 +228,7 @@ async function main(): Promise<void> {
           `demo capture requested non-local image assets: ${externalImageRequests.join(', ')}`,
         );
       }
-      await page.getByText('The fixture has a paper trail.').waitFor();
+      await page.getByText('The proof boundary is explicit.').waitFor();
 
       await page.evaluate(() => {
         document.body.style.zoom = '0.62';
@@ -246,7 +258,7 @@ async function main(): Promise<void> {
       await verifyBaselineFailureBlocksOutcome(browser);
 
       console.log(
-        '[capture:demo] PASS — production artifact, required successful baseline, 2 explicit candidate decisions, human preference overrides CIE76, no actionable lead without exact variant, 3+ fixture badges, zero live provider or non-local image requests, zero browser errors',
+        '[capture:demo] PASS — production artifact, required successful baseline, all 3 candidates resolved (1 system exclusion + 2 human decisions), human preference overrides CIE76, incomplete provenance blocks the actionable branch, 3+ fixture badges, zero live provider or non-local image requests, zero browser errors',
       );
     } finally {
       await browser.close();

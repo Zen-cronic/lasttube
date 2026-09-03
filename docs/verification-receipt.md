@@ -1,31 +1,36 @@
-# Verification receipt — decision-bearing comparison repair
+# Verification receipt — evidence-derived action repair
 
 Date: 2026-09-03 EDT
 
-Base commit: `57bfb20`
+Base commit: `a43ca81`
 
 Scope: the hostile-generalist repair commit containing this receipt; resolve it with
 `git log -1 --oneline`.
 
 ## What changed and what it proves
 
-- A successful image-bearing Perfect Corp render of the remembered shade is now a hard baseline.
-  Candidate work may complete concurrently, but baseline failure keeps decision controls and every
-  outcome locked.
-- The generic open-every-swatch confirmation is gone. Each usable candidate requires an explicit
-  human `Accept visual fit` or `Reject` decision, and preference is a separate choice among accepted
-  candidates.
-- CIE76 is context only. The deterministic path rejects ABH even though it has the lower ΔE, then
-  accepts and prefers NYX. The resulting card names the human preference, proving the metric did not
-  choose or restore a rejected candidate.
-- Neither preserved candidate title identifies an exact shade/variant. The product therefore says
-  **No actionable lead yet**, blocks purchase language, and offers a refined-search handoff without
-  automatically calling SerpApi.
-- `docs/variant-evidence-audit.md` reviews all 40 preserved SerpApi titles. Exact-looking titles exist,
-  but none has stored image bytes for a truthful offline hash/coverage check. No new VTO lifecycle was
-  warranted or created.
-- The 10% coverage floor remains explicitly labeled a conservative heuristic rather than scientific
-  validation.
+- Candidate truth is now a structured contract. Listing identity, exact variant, exact shade,
+  finish, source-image provenance, and same-face render provenance each retain a separate
+  `present | absent | unknown` state.
+- The commercial outcome is derived from that contract. An observed offer or opt-in alert can
+  appear only after a successful baseline, accepted/preferred human decision, source-backed listing
+  identity, exact variant/shade/finish, hashed source image above the 10% heuristic floor, and a
+  verified candidate VTO request/lifecycle/output. A unit test exercises this genuinely actionable
+  all-fields-present branch; incomplete and unknown fields fail closed.
+- The current hero stays honest. NYX is accepted/preferred as a visual direction, but exact variant
+  and shade are absent, source-image bytes/hash are unknown, and its candidate render has metadata
+  only. The UI therefore says **No actionable lead yet**, preserves the observed listing/offer as
+  evidence, blocks purchase language, and offers a refined-search handoff without a provider call.
+- Every shortlisted candidate is accounted for: Ngozi is system-excluded at 2.5% coverage, ABH is
+  human-rejected, and NYX is human-accepted/preferred. Any unresolved row blocks the outcome.
+- Three candidate manifests bind listing ids, titles, receipt hash, task/poll metadata, retained
+  output hashes/bytes, estimates, and coverage. Their missing source request and Perfect lifecycle
+  fields are explicit `null`s. A separate baseline manifest is the only candidate-stage artifact
+  with a genuine 19-poll Perfect Corp lifecycle receipt.
+- Current live image estimation now returns the SHA-256 and byte count of the exact fetched source
+  bytes. No historical hash is reconstructed where those bytes were not retained.
+- `docs/variant-evidence-audit.md` still finds no preserved exact-variant listing with stored image
+  bytes sufficient for offline qualification. No new SerpApi or Perfect Corp work was warranted.
 
 ## Commands and results
 
@@ -33,22 +38,23 @@ Run from the repository root with no new provider calls:
 
 | Command | Result |
 |---|---|
-| `npm run verify` | exit 0: TypeScript, ESLint, 6 Vitest files / 38 tests, Vite production build, secret scan |
-| `npm run build` | exit 0: 42 modules; `dist/index.html` 1.06 kB, CSS 15.91 kB, JS 222.19 kB |
-| `npm run capture:demo` | exit 0 twice: successful baseline required; 2 explicit decisions; human preference overrides CIE76; no actionable lead without exact variant; 3+ fixture badges; zero live-provider requests; zero non-local image requests; zero browser errors |
+| `npm run verify` | exit 0: TypeScript, ESLint, 8 Vitest files / 44 tests and Vite production build; the exact staged tree subsequently passed a secret scan over 80 files |
+| production build inside `npm run verify` | exit 0: 43 modules; `dist/index.html` 1.03 kB, CSS 17.06 kB, JS 229.50 kB |
+| `npm run capture:demo` | exit 0 twice: successful baseline required; all 3 candidates resolved as 1 system exclusion + 2 human decisions; preference overrides CIE76; incomplete provenance blocks action; 3+ fixture badges; zero live-provider requests; zero non-local image requests; zero browser errors |
 | controlled baseline-failure path inside `capture:demo` | injected failed fixture baseline; zero decision-panel and zero outcome-card elements; pass |
-| `git diff --check` | exit 0 |
+| provenance tests | pass: all 3 candidate listing/output bindings re-hash; missing request/lifecycle fields remain null; the baseline receipt/output re-hash independently |
+| action-policy tests | pass: one complete positive branch; current fixture and an unknown-field branch both stop |
 
 The two consecutive final captures produced identical SHA-256 values:
 
 | Artifact | SHA-256 |
 |---|---|
-| `judge-demo-opening.png` | `0a323ebf0110671504075e222f817df15682b57cc5181cfb6d092dc81f4a3fda` |
-| `judge-demo-verdict.png` | `780666494643c2c0e49aa05bbc51e0a5ec4b55075b9359c36b9c0e262ab52e91` |
-| `judge-demo-mobile-verdict.png` | `522daa8c597a5a7d41317bed8b1ee573caf6a2ab36a4e2f44b124cefaa7ceef0` |
-| `judge-devpost-thumbnail.png` | `3f33411c5732a61c191154b3415a2570433573e8dab9c7eea14a6bad210bb102` |
-| `judge-devpost-hunt.png` | `bfe1061d71b792ad2557e6d5f8655e8451cfe0ba2280e44de3d2a3acfc875a80` |
-| `judge-devpost-verdict.png` | `ce7916a1d3eda6796d58d7745571207f7280cbcfa456a9a3e31c3f8b05045b51` |
+| `judge-demo-opening.png` | `e4900b2f99cff73e480034fcc27936bdfe8bd14c08e913fab8caa94dcfc79630` |
+| `judge-demo-verdict.png` | `6bc714e87eecdeb5f6e307e189f8dfe5807ab19685ce9fe7b873772e5dc2443e` |
+| `judge-demo-mobile-verdict.png` | `bf4f415136c8f3d98271713cc30e08d9bf45e9e53aaef31d60f03cb9fd2fbbd5` |
+| `judge-devpost-thumbnail.png` | `e2db1a14aa1b98bf6321885d8136f4aac2786281dbd506c13f66888d5c03bbe9` |
+| `judge-devpost-hunt.png` | `b37850be3ee9920a0a0eeb27ff7281c95e35adfd90ae459f4486b1db43564792` |
+| `judge-devpost-verdict.png` | `9cbccf80cf9f6fcac1f1ed0ea17384553bab6722f957f65da2fa501ed0bc7a59` |
 
 ## Visual inspection
 
@@ -56,12 +62,13 @@ The two consecutive final captures produced identical SHA-256 values:
   configured-provider badges are visible; the porcelain/wine layout has no collision or crop.
 - `judge-devpost-hunt.png` at 1500×1000: `Observed listing candidates`, `SERPAPI: FIXTURE`, local
   `REC` thumbnails, merchant, price, source, and timestamp are readable without third-party images.
-- `judge-devpost-verdict.png` at 1500×1000: the remembered baseline and preferred candidate render,
-  both `VTO: FIXTURE` badges, rejected ABH, accepted/preferred NYX, `NO ACTIONABLE LEAD YET`, verbatim
-  preferred listing, offer, coverage, `CIE76 CONTEXT ONLY`, and preserved live receipts share one
-  frame.
-- `judge-demo-mobile-verdict.png` at 350×933: the complete stopped-outcome card, evidence strip, and
-  refined-search button wrap without horizontal overflow.
+- `judge-devpost-verdict.png` at 1500×1000: the complete three-row disposition ledger, system
+  exclusion, human rejection/preference, structured action gate, stopped outcome, and three-level
+  proof inventory remain legible in one frame. Candidate cards say metadata-only; the lost-shade
+  baseline alone says live receipt.
+- `judge-demo-mobile-verdict.png` at 350×1122: the stopped outcome, verbatim listing, missing-evidence
+  ledger, observed offer evidence link, heuristic caveat, and refined-search button wrap without
+  horizontal overflow.
 
 ## Provenance, cost, and remaining human gates
 
@@ -69,8 +76,11 @@ The two consecutive final captures produced identical SHA-256 values:
   SerpApi and Perfect Corp receipts predate this repair.
 - Repair verification made **zero** SerpApi calls, **zero** Perfect Corp calls, spent **zero**
   credits, and cost **$0**.
-- No candidate-specific input image/hash or new VTO lifecycle is claimed because no exact-variant
-  candidate cleared the offline evidence gate.
+- Candidate output hashes and task/poll metadata are claimed exactly as retained. Candidate-specific
+  source-image bytes/hashes and Perfect request/lifecycle receipts are explicitly **not** claimed.
+- The optional business wedge is an opt-in availability alert and disclosed affiliate handoff only
+  after an evidence-complete exact variant. Neither implementation nor customer demand, conversion,
+  willingness to pay, alert delivery, or affiliate enrollment is claimed.
 - This receipt does not prove a public deployment or video. Public repository visibility, public
   deployment, final 2:24 recording, YouTube upload, logged-out verification, and Devpost submission
   remain operator-owned human gates.

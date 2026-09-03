@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "5488601639792751465",
+  "listingIdentity": {
+    "state": "present",
+    "observedTitle": "NYX Professional Makeup Fat Matte Lipstick",
+    "merchant": "NYX Professional Makeup",
+    "observedOfferUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5488601639792751465,productid:8080224082283226962,headlineOfferDocid:11699592081473296849,imageDocid:7249042900344916876,rds:PC_12995633304376156534|PROD_PC_12995633304376156534,gpcid:12995633304376156534,mid:576462543211623971,pvt:hg&hl=en&gl=us&udm=28",
+    "sourceUrl": "https://www.google.com/search?ibp=oshop&q=mauve rose matte lipstick&prds=catalogid:5488601639792751465,productid:8080224082283226962,headlineOfferDocid:11699592081473296849,imageDocid:7249042900344916876,rds:PC_12995633304376156534|PROD_PC_12995633304376156534,gpcid:12995633304376156534,mid:576462543211623971,pvt:hg&hl=en&gl=us&udm=28",
+    "observedAt": "2026-09-01T01:52:38.961Z",
+    "sourceReceiptPath": "proofs/serpapi/2026-09-01-normalized.json",
+    "sourceReceiptSha256": "b6eade6ec3bd8b4261f5e025627840fc989888b1742f9ec779211f9436d35857",
+    "basis": "Candidate id, exact title, merchant, offer and source are present in the tracked normalized SerpApi receipt."
+  },
+  "exactVariant": {
+    "state": "absent",
+    "value": null,
+    "basis": "The preserved exact listing title names the product family but no variant identifier."
+  },
+  "exactShade": {
+    "state": "absent",
+    "value": null,
+    "basis": "The preserved exact listing title contains no shade name or shade code."
+  },
+  "finish": {
+    "state": "present",
+    "value": "matte",
+    "basis": "The exact preserved title explicitly says Matte Lipstick; formulation quality remains unverified."
+  },
+  "sourceImage": {
+    "state": "unknown",
+    "listingThumbnailUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRQHJotNjxVqUCfmpE419YpVN_0c1D8sFzNydyRaKArbL8mO8xbqZvhI1iUixAuDQfQd-74kFCv5j9o74yEeehUoM-C_gsKStMUj1nFEfqrjgYfU9ypeq4jBQ",
+    "actualRequestUrl": null,
+    "sha256": null,
+    "byteLength": null,
+    "coverage": 0.35199175824175827,
+    "estimatedHex": "#a23e40",
+    "method": "Dominant saturated color of the merchant product image (background pixels excluded); an estimate, not a lab match.",
+    "basis": "The legacy bundle retained an estimate and coverage, but not the fetched input bytes, input hash, or actual request record."
+  },
+  "sameFaceRender": {
+    "state": "present",
+    "proofLevel": "metadata_only",
+    "providerStatus": "fixture",
+    "taskId": "VdQOdFPr-bOA-C8JSLHEfE-R2ZKC_2gWSStrP5i1YLlV0ozKJVaUlPuk61Xr-f95",
+    "pollCount": 4,
+    "actualSourceFaceUrl": null,
+    "actualEffectRequest": null,
+    "lifecycleReceiptPath": null,
+    "outputImagePath": "public/fixtures/vto-demo-5488601639792751465.jpg",
+    "outputImageSha256": "ecf373ec5df6ef38a4e8ce168e7670eac8f5658d518e49bdcede6f561270da72",
+    "outputImageBytes": 1609008,
+    "basis": "Tracked output plus task id and poll count exist; candidate request and lifecycle response were not retained, so this is not a receipted lifecycle."
+  },
+  "systemExclusionReason": null
+}

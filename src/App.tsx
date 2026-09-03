@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { DemoComparisonBundle } from '../server/fixtures.ts';
 import { SAMPLE_FACE_URL, foundationEffect, lipColorEffect } from '../shared/effects.ts';
+import { unknownCandidateEvidence } from '../shared/evidence.ts';
 import {
   isSuccessfulVtoRender,
-  resolveReviewDecisions,
+  resolveCandidateDispositions,
   type CandidateReviewDecision,
 } from '../shared/reviewDecision.ts';
 import { assessShadeEvidenceCoverage } from '../shared/shadeEvidence.ts';
@@ -26,6 +27,9 @@ interface Health {
 interface ShadeEstimateResponse {
   hex?: string;
   coverage?: number;
+  sampledPixels?: number;
+  method?: string;
+  sourceImage?: { url: string; sha256: string; byteLength: number };
   error?: string;
 }
 
@@ -154,10 +158,13 @@ export default function App() {
       estimateError: null,
       render: null,
       rendering: false,
+      evidence: unknownCandidateEvidence(c),
+      systemExclusionReason: null,
     });
 
     if (dataSource === 'fixture') {
-      // Deterministic demo replay: recorded REAL lifecycles, labeled fixture.
+      // Deterministic replay: one receipted baseline plus candidate outputs
+      // whose narrower offline provenance is explicit in each manifest.
       setLostRendering(false);
       try {
         const res = await fetch('/api/demo/comparison-bundle');
@@ -168,17 +175,24 @@ export default function App() {
         const mapped = shortlist.map((c) => {
           const rec = byId.get(c.id);
           if (!rec) {
+            const reason = 'System excluded — no retained demo output for this candidate.';
             return {
               ...base(c),
-              estimateError: 'not in the demo recording — switch to live mode for this one',
+              estimateError: reason,
+              systemExclusionReason: reason,
             };
           }
           const assessment = assessShadeEvidenceCoverage(rec.estimateCoverage);
           if (!assessment.usable) {
+            const reason =
+              rec.evidence.systemExclusionReason ??
+              `System excluded — recorded image rejected: ${assessment.reason}.`;
             return {
               ...base(c),
               estimateCoverage: assessment.coverage,
-              estimateError: `recorded image rejected — ${assessment.reason}`,
+              estimateError: reason,
+              systemExclusionReason: reason,
+              evidence: { ...rec.evidence, systemExclusionReason: reason },
             };
           }
           return {
@@ -186,12 +200,18 @@ export default function App() {
             estimateHex: rec.estimateHex,
             estimateCoverage: rec.estimateCoverage,
             render: rec.render,
+            evidence: rec.evidence,
           };
         });
         setComparisons(mapped);
       } catch (err) {
+        const reason = `System excluded — ${(err as Error).message}`;
         setComparisons(
-          shortlist.map((c) => ({ ...base(c), estimateError: (err as Error).message })),
+          shortlist.map((c) => ({
+            ...base(c),
+            estimateError: reason,
+            systemExclusionReason: reason,
+          })),
         );
       }
       return;
@@ -216,7 +236,8 @@ export default function App() {
           setComparisons((prev) => prev.map((p) => (p.id === c.id ? { ...p, ...patch } : p)));
         };
         if (!c.thumbnailUrl) {
-          update({ estimateError: 'listing has no product image to estimate from' });
+          const reason = 'System excluded — listing has no product image to estimate from.';
+          update({ estimateError: reason, systemExclusionReason: reason });
           return;
         }
         try {
@@ -225,22 +246,79 @@ export default function App() {
           );
           const est = (await res.json()) as ShadeEstimateResponse;
           if (!res.ok || !est.hex) {
-            update({ estimateError: est.error ?? 'shade estimation failed' });
+            const reason = `System excluded — ${est.error ?? 'shade estimation failed'}.`;
+            update({ estimateError: reason, systemExclusionReason: reason });
             return;
           }
           const assessment = assessShadeEvidenceCoverage(est.coverage);
           if (!assessment.usable) {
+            const reason = `System excluded — merchant image rejected: ${assessment.reason}.`;
             update({
               estimateCoverage: assessment.coverage,
-              estimateError: `merchant image rejected — ${assessment.reason}`,
+              estimateError: reason,
+              systemExclusionReason: reason,
             });
             return;
           }
-          update({ estimateHex: est.hex, estimateCoverage: assessment.coverage, rendering: true });
+          const evidenceAfterEstimate = {
+            ...unknownCandidateEvidence(c),
+            sourceImage: {
+              state: est.sourceImage?.sha256 && est.sourceImage.byteLength ? ('present' as const) : ('unknown' as const),
+              listingThumbnailUrl: c.thumbnailUrl,
+              actualRequestUrl: est.sourceImage?.url ?? null,
+              sha256: est.sourceImage?.sha256 ?? null,
+              byteLength: est.sourceImage?.byteLength ?? null,
+              coverage: assessment.coverage,
+              estimatedHex: est.hex,
+              method: est.method ?? null,
+              basis: est.sourceImage
+                ? 'Current allow-listed input bytes were hashed and measured by LastTube.'
+                : 'Estimate returned without retained input provenance.',
+            },
+          };
+          update({
+            estimateHex: est.hex,
+            estimateCoverage: assessment.coverage,
+            rendering: true,
+            evidence: evidenceAfterEstimate,
+          });
           const render = await requestVto(est.hex, lost.category, dataSource);
-          update({ render, rendering: false });
+          const renderSucceeded = isSuccessfulVtoRender(render);
+          const evidenceAfterRender = {
+            ...evidenceAfterEstimate,
+            sameFaceRender: {
+              state: renderSucceeded ? ('present' as const) : ('absent' as const),
+              proofLevel:
+                renderSucceeded && render.providerStatus === 'live'
+                  ? ('runtime_live' as const)
+                  : ('missing' as const),
+              providerStatus: render.providerStatus,
+              taskId: render.taskId,
+              pollCount: render.pollCount,
+              actualSourceFaceUrl: SAMPLE_FACE_URL,
+              actualEffectRequest: JSON.stringify(effectsFor(lost.category, est.hex)),
+              lifecycleReceiptPath: null,
+              outputImagePath: render.imageUrl,
+              outputImageSha256: null,
+              outputImageBytes: null,
+              basis: renderSucceeded
+                ? 'Current live response completed; durable output bytes/hash are not yet retained.'
+                : 'Candidate VTO did not produce a successful image-bearing response.',
+            },
+          };
+          update({
+            render,
+            rendering: false,
+            evidence: evidenceAfterRender,
+            ...(renderSucceeded
+              ? {}
+              : {
+                  systemExclusionReason: `System excluded — candidate VTO ${render.providerStatus}.`,
+                }),
+          });
         } catch (err) {
-          update({ estimateError: (err as Error).message, rendering: false });
+          const reason = `System excluded — ${(err as Error).message}`;
+          update({ estimateError: reason, systemExclusionReason: reason, rendering: false });
         }
       });
     await Promise.all([baselinePromise, ...candidatePromises]);
@@ -314,27 +392,22 @@ export default function App() {
   const shadeStyle = { '--shade': activeHex } as CSSProperties;
 
   const allCandidatesSettled =
-    comparisons.length > 0 && comparisons.every((c) => c.render !== null || c.estimateError !== null);
+    comparisons.length > 0 &&
+    comparisons.every((c) => c.render !== null || c.systemExclusionReason !== null);
   const baselineSettled = !lostRendering && lostRender !== null;
   const comparisonSettled = baselineSettled && allCandidatesSettled;
   const baselineReady = isSuccessfulVtoRender(lostRender);
-  const comparisonHasErrors =
-    comparisons.some(
-      (c) =>
-        c.estimateError !== null ||
-        c.render?.providerStatus === 'failed' ||
-        c.render?.providerStatus === 'unavailable',
-    );
-  const reviewableIds = comparisons
-    .filter((c) => c.estimateHex !== null && c.render?.imageUrl)
-    .map((c) => c.id);
-  const reviewResolution = resolveReviewDecisions(
-    reviewableIds,
+  const reviewResolution = resolveCandidateDispositions(
+    comparisons.map((candidate) => ({
+      id: candidate.id,
+      reviewable:
+        !candidate.systemExclusionReason &&
+        candidate.estimateHex !== null &&
+        isSuccessfulVtoRender(candidate.render),
+      systemExclusionReason: candidate.systemExclusionReason,
+    })),
     reviewDecisions,
     preferredId,
-  );
-  const reviewableComparisons = comparisons.filter((candidate) =>
-    reviewableIds.includes(candidate.id),
   );
 
   return (
@@ -344,7 +417,7 @@ export default function App() {
           <p className="wordmark">
             Last<span className="tube">Tube</span>
           </p>
-          <p className="tagline">Your favorite shade vanished. Decide whether any lead is actionable.</p>
+          <p className="tagline">Your favorite shade vanished. Account for every candidate before you act.</p>
         </div>
         <div className="provider-strip">
           <ProviderStatusBadge name="SerpApi" status={providerBadge(health?.providers.serpapi)} />
@@ -362,7 +435,7 @@ export default function App() {
           </p>
           <p className="proof-mode-copy" aria-live="polite">
             {dataSource === 'fixture'
-              ? 'Receipted SerpApi and Perfect Corp responses replay locally. Every replay stays labeled FIXTURE.'
+              ? 'A receipted SerpApi search and lost-shade baseline replay locally. Candidate outputs retain metadata only; every replay stays labeled FIXTURE.'
               : 'The next hunt and comparison call the configured sponsor APIs and may consume event credits.'}
           </p>
         </div>
@@ -390,9 +463,9 @@ export default function App() {
         </h1>
         <p>
           Name the one you lost. LastTube gathers timestamped listing evidence, rejects images with
-          too little usable shade signal, then requires a successful Perfect Corp baseline plus
-          explicit accept, reject, and preference decisions on the same face. Missing exact-variant
-          evidence stops the outcome instead of inventing a lead.
+          too little usable shade signal, and records every shortlist row as system-excluded or
+          human-decided after a successful Perfect Corp baseline. Only an evidence-complete exact
+          variant can unlock an observed offer; missing fields produce an explicit stop.
         </p>
       </section>
 
@@ -475,23 +548,12 @@ export default function App() {
               </button>
             </div>
           )}
-          {comparisonSettled && baselineReady && comparisonHasErrors && (
-            <div className="recovery-row" role="status">
-              <p>
-                The comparison stopped rather than guessing. Resolve the provider or image error,
-                then retry the same shortlist.
-              </p>
-              <button type="button" className="btn btn-secondary" onClick={() => void startComparison()}>
-                Retry comparison{dataSource === 'live' ? ' (uses provider calls)' : ''}
-              </button>
-            </div>
-          )}
-          {comparisonSettled && baselineReady && reviewableComparisons.length > 0 && (
+          {comparisonSettled && baselineReady && comparisons.length > 0 && (
             <CandidateDecisionPanel
-              candidates={reviewableComparisons}
+              candidates={comparisons}
               activeId={activeId}
               decisions={reviewDecisions}
-              preferredId={reviewResolution.preferredId}
+              resolution={reviewResolution}
               onView={reviewCandidate}
               onDecide={decideCandidate}
               onPrefer={setPreferredId}
@@ -505,7 +567,10 @@ export default function App() {
                 lost={lost}
                 comparisons={comparisons}
                 acceptedIds={reviewResolution.acceptedIds}
+                rejectedIds={reviewResolution.rejectedIds}
+                systemExcludedIds={reviewResolution.systemExcludedIds}
                 preferredId={reviewResolution.preferredId}
+                baselineReady={baselineReady}
                 onRefine={refineSearch}
               />
             )}
@@ -519,16 +584,6 @@ export default function App() {
                 it to stop with no lead.
               </p>
             )}
-          {comparisonSettled && baselineReady && reviewableComparisons.length === 0 && (
-            <div className="verdict-card no-actionable-card" role="status">
-              <p className="act-label">Evidence stopped</p>
-              <h3>No actionable lead.</h3>
-              <p>No candidate produced both usable image evidence and a completed same-face render.</p>
-              <button type="button" className="btn" onClick={refineSearch}>
-                Refine search with exact shade terms
-              </button>
-            </div>
-          )}
           {comparisonSettled && <ProviderProofPanel />}
         </section>
       )}

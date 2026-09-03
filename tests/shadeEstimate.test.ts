@@ -1,11 +1,13 @@
 // Offline tests: evidence-derived shade estimation. Images are generated
 // in-memory with sharp — no network access.
 
+import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 import { deltaE } from '../shared/color.ts';
 import {
   estimateShadeFromBytes,
+  estimateShadeFromUrl,
   isAllowedImageUrl,
 } from '../server/shadeEstimate.ts';
 import {
@@ -57,6 +59,23 @@ describe('estimateShadeFromBytes', () => {
       .png()
       .toBuffer();
     await expect(estimateShadeFromBytes(bytes)).rejects.toThrow(/usable shade coverage/);
+  });
+});
+
+describe('estimateShadeFromUrl', () => {
+  it('returns the exact fetched input hash and byte count with the estimate', async () => {
+    const bytes = await solidPng('#a96a73');
+    const fetchImpl = (async () =>
+      new Response(new Uint8Array(bytes), { status: 200 })) as typeof fetch;
+    const estimate = await estimateShadeFromUrl(
+      'https://encrypted-tbn0.gstatic.com/shopping?q=fixture',
+      fetchImpl,
+    );
+    expect(estimate.sourceImage.byteLength).toBe(bytes.length);
+    expect(estimate.sourceImage.sha256).toBe(
+      createHash('sha256').update(bytes).digest('hex'),
+    );
+    expect(estimate.sourceImage.url).toContain('gstatic.com');
   });
 });
 

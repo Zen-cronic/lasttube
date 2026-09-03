@@ -2,6 +2,7 @@
 // lost shade rendered from memory beside the active candidate's render, a
 // swatch rail of estimated candidate shades, and per-render provider status.
 
+import type { CandidateEvidence } from '../../shared/evidence.ts';
 import type { VtoRender } from '../../shared/types.ts';
 import type { LostShade } from '../data/lostShades.ts';
 import { ProviderStatusBadge } from './ProviderStatusBadge.tsx';
@@ -20,6 +21,8 @@ export interface CandidateComparison {
   estimateError: string | null;
   render: VtoRender | null;
   rendering: boolean;
+  evidence: CandidateEvidence;
+  systemExclusionReason: string | null;
 }
 
 interface Props {
@@ -169,7 +172,10 @@ export function VtoStage({ lost, lostRender, lostRendering, comparisons, activeI
       )}
       {(lostRender ?? active?.render) && (
         <p className="caveat" style={{ color: 'oklch(0.62 0.015 40)' }}>
-          {(active?.render ?? lostRender)?.expiryNote}
+          {(active?.render ?? lostRender)?.expiryNote}{' '}
+          {active
+            ? `Candidate proof: ${active.evidence.sameFaceRender.proofLevel.replaceAll('_', ' ')}.`
+            : 'Lost-shade baseline: verified lifecycle receipt.'}
         </p>
       )}
     </div>

@@ -50,7 +50,8 @@ app.get('/api/search', async (c) => {
   return c.json(result, result.providerStatus === 'failed' ? 502 : 200);
 });
 
-// Deterministic demo replay: recorded real lifecycles, always labeled fixture.
+// Deterministic demo replay: one receipted baseline plus explicitly narrower
+// candidate output metadata, always labeled fixture.
 app.get('/api/demo/comparison-bundle', (c) => {
   try {
     return c.json(demoComparisonBundle());

@@ -1,22 +1,29 @@
-// Sanitized fixture data, derived from real provider receipts (see proofs/).
+// Sanitized fixture data with proof level declared per artifact (see proofs/).
 // Fixture results are ALWAYS stamped providerStatus:'fixture' — they can never
 // masquerade as live evidence anywhere downstream.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { BaselineEvidence, CandidateEvidence } from '../shared/evidence.ts';
 import type { SearchResultSet, VtoRender } from '../shared/types.ts';
 import { normalizeShoppingResponse } from './providers/serpapi.ts';
 import { RESULT_EXPIRY_NOTE } from './providers/perfectcorp.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixturesDir = path.join(here, 'providers', 'fixtures');
+const offlineProofsDir = path.join(here, '..', 'proofs', 'offline');
 
 export const FIXTURE_LABEL =
   'FIXTURE DATA — sanitized recording of a real provider response, not a live call.';
 
 function readFixture<T>(name: string): T {
   const file = path.join(fixturesDir, name);
+  return JSON.parse(fs.readFileSync(file, 'utf8')) as T;
+}
+
+function readOfflineProof<T>(name: string): T {
+  const file = path.join(offlineProofsDir, name);
   return JSON.parse(fs.readFileSync(file, 'utf8')) as T;
 }
 
@@ -63,7 +70,7 @@ export interface DemoComparisonBundle {
   fixture: true;
   label: string;
   recordedAt: string;
-  lost: { hex: string; note: string; render: VtoRender };
+  lost: { hex: string; note: string; render: VtoRender; evidence: BaselineEvidence };
   comparisons: Array<{
     candidateId: string;
     title: string;
@@ -71,6 +78,7 @@ export interface DemoComparisonBundle {
     estimateCoverage: number;
     estimateMethod: string;
     render: VtoRender;
+    evidence: CandidateEvidence;
   }>;
 }
 
@@ -92,9 +100,10 @@ function fixtureRender(
   };
 }
 
-/** Deterministic demo replay: recorded real lifecycles, stamped fixture. */
+/** Deterministic demo replay with baseline receipt and candidate metadata kept distinct. */
 export function demoComparisonBundle(): DemoComparisonBundle {
   const fix = readFixture<DemoComparisonBundleFile>('demo-comparisons.json');
+  const baselineEvidence = readOfflineProof<BaselineEvidence>('lost-shade-baseline.json');
   return {
     fixture: true,
     label: fix.label,
@@ -102,21 +111,31 @@ export function demoComparisonBundle(): DemoComparisonBundle {
     lost: {
       hex: fix.lost.hex,
       note: fix.lost.note,
-      render: fixtureRender(fix.recordedAt, null, 0, fix.lost.localImagePath),
-    },
-    comparisons: fix.comparisons.map((c) => ({
-      candidateId: c.candidateId,
-      title: c.title,
-      estimateHex: c.estimate.hex,
-      estimateCoverage: c.estimate.coverage,
-      estimateMethod: c.estimate.method,
       render: fixtureRender(
         fix.recordedAt,
-        c.render.taskId,
-        c.render.pollCount,
-        c.render.localImagePath,
+        baselineEvidence.taskId,
+        baselineEvidence.pollCount,
+        fix.lost.localImagePath,
       ),
-    })),
+      evidence: baselineEvidence,
+    },
+    comparisons: fix.comparisons.map((c) => {
+      const evidence = readOfflineProof<CandidateEvidence>(`candidate-${c.candidateId}.json`);
+      return {
+        candidateId: c.candidateId,
+        title: c.title,
+        estimateHex: c.estimate.hex,
+        estimateCoverage: c.estimate.coverage,
+        estimateMethod: c.estimate.method,
+        render: fixtureRender(
+          fix.recordedAt,
+          c.render.taskId,
+          c.render.pollCount,
+          c.render.localImagePath,
+        ),
+        evidence,
+      };
+    }),
   };
 }
 
